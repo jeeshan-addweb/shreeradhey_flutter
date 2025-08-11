@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/common/components/common_footer.dart';
-import 'package:shree_radhey/constants/app_images.dart';
-import 'package:shree_radhey/features/home/views/components/review_section.dart';
 
+import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
 import '../../../constants/app_colors.dart';
+import '../../../constants/app_images.dart';
 import '../../../constants/app_mock_data.dart';
 
 class ShopPage extends StatefulWidget {
@@ -131,17 +130,18 @@ class _ShopPageState extends State<ShopPage> {
             itemCount: AppMockData.mockProducts.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
+              final screenWidth = MediaQuery.of(context).size.width;
+              final cardWidth = screenWidth * 0.7;
               final product = AppMockData.mockProducts[index].copyWith();
-              return SizedBox(width: 270, child: ProductCard(model: product));
+              return SizedBox(
+                width: cardWidth,
+                child: ProductCard(model: product),
+              );
             },
           ),
           SizedBox(height: 40),
-          ReviewSection(),
-          SizedBox(height: 30, child: Container(color: AppColors.blue_eef1ed)),
+
           CommonFooter(),
-          SizedBox(height: 20),
-          Image.asset(AppImages.footer_cards),
-          SizedBox(height: 20),
         ],
       ),
     );

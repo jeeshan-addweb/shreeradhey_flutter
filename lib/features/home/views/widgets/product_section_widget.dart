@@ -118,10 +118,15 @@ class _ProductSectionState extends State<ProductSection> {
               itemCount: AppMockData.mockProducts.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
+                final screenWidth = MediaQuery.of(context).size.width;
+                final cardWidth = screenWidth * 0.7;
                 final product = AppMockData.mockProducts[index].copyWith(
                   tagText: widget.tagText,
                 );
-                return SizedBox(width: 270, child: ProductCard(model: product));
+                return SizedBox(
+                  width: cardWidth,
+                  child: ProductCard(model: product),
+                );
               },
             ),
           ),

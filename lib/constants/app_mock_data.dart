@@ -39,7 +39,7 @@ class AppMockData {
     ),
     ProductModel(
       imageUrl: AppImages.product_image,
-      title: 'SHREERADHEY Ghee (1L Pet Bottle)',
+      title: 'SHREERADHEY A2 gir cow ghee\n(1L Pet Bottle Pack of 2)',
       subtitle: 'Ghee',
       rating: 4.4,
       reviewCount: 82,
