@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
-import '../../../constants/app_images.dart';
+
 import 'components/banner_component.dart';
 import 'components/blog_section.dart';
 import 'components/core_valued_section.dart';
 import 'components/feature_slider_component.dart';
-import 'components/review_section.dart';
+
 import 'widgets/product_section_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -92,16 +92,8 @@ class _HomePageState extends State<HomePage> {
             FeatureSlider(),
 
             BlogSection(),
-            ReviewSection(),
-            SizedBox(
-              height: 30,
-              child: Container(color: AppColors.blue_eef1ed),
-            ),
 
             CommonFooter(),
-            SizedBox(height: 20),
-            Image.asset(AppImages.footer_cards),
-            SizedBox(height: 20),
           ],
         ),
       ),

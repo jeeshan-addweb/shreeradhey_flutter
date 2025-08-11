@@ -51,4 +51,7 @@ class AppImages {
   static String new_icon = "assets/icons/new.png";
   static String combo = "assets/icons/combo.png";
   static String on_sale = "assets/icons/on_sale.png";
+
+  // product detail
+  static String product_page_image = "assets/images/product_page_image.png";
 }

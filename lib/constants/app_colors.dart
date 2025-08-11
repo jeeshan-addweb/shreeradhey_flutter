@@ -56,7 +56,9 @@ class AppColors {
   // Product Card
   static Color save_red_e51900 = const Color(0xffe51900);
   static Color red_b12704 = const Color(0xffb12704);
+  static Color red_CC0003 = const Color(0xffCC0003);
   static Color blue_2da5f3 = const Color(0xff2da5f3);
+  static Color trans_A8B9A333 = const Color(0xffA8B9A333);
 
   static Color yellow_fbda43 = const Color(0xfffbda43);
   static Color pink_fffbec = const Color(0xfffffbec);

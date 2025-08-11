@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
+import '../../home/views/widgets/product_section_widget.dart';
+import 'components/faq_section.dart';
+import 'components/variant_card.dart';
+import 'widgets/additional_info_widget.dart';
+import 'widgets/description_widget.dart';
 
 class ProductDetailPage extends StatefulWidget {
   const ProductDetailPage({super.key});
@@ -13,6 +19,8 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget _buildCircleIcon(IconData icon, {required VoidCallback onTap}) {
     return Container(
+      height: 32,
+      width: 32,
       decoration: BoxDecoration(
         color: AppColors.white,
         shape: BoxShape.circle,
@@ -24,9 +32,31 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         ],
       ),
-      child: IconButton(icon: Icon(icon, size: 24), onPressed: onTap),
+      child: IconButton(
+        icon: Icon(icon, size: 24),
+        onPressed: onTap,
+        padding: EdgeInsets.zero,
+      ),
     );
   }
+
+  int selectedVariantIndex = 0;
+
+  final variants = [
+    {
+      "name": "1L Pet Bottle (Pack of 2)",
+      "original": 120.0,
+      "discounted": 110.0,
+      "percent": 8,
+    },
+    {
+      "name": "500ml Bottle",
+      "original": 65.0,
+      "discounted": 60.0,
+      "percent": 8,
+    },
+    {"name": "2L Bottle", "original": 220.0, "discounted": 200.0, "percent": 9},
+  ];
 
   int selectedImageIndex = 0;
 
@@ -83,7 +113,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
             // ====== MINI IMAGES ======
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 25),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
               child: SizedBox(
                 height: 70,
                 child: ListView.separated(
@@ -103,7 +133,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         decoration: BoxDecoration(
                           border: Border.all(
                             color:
-                                isSelected ? Colors.green : Colors.transparent,
+                                isSelected
+                                    ? AppColors.red_ef4444
+                                    : Colors.transparent,
                             width: 2,
                           ),
                           borderRadius: BorderRadius.circular(8),
@@ -112,8 +144,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           borderRadius: BorderRadius.circular(8),
                           child: Image.asset(
                             productImages[index],
-                            width: 60,
-                            height: 60,
+                            width: 70,
+                            height: 70,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -126,7 +158,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
             // ====== PRODUCT INFO ======
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -154,64 +186,258 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   // Product Title
                   const Text(
                     "SHREERADHEY A2 gir cow ghee (1L Pet Bottle)",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 4),
 
                   // Combo text
-                  const Text(
+                  Text(
                     "Combo, Ghee",
-                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                    style: TextStyle(
+                      color: AppColors.grey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: AppColors.orange_f29102,
+                        size: 20,
+                      ),
+                      Icon(
+                        Icons.star,
+                        color: AppColors.orange_f29102,
+                        size: 20,
+                      ),
+                      Icon(
+                        Icons.star,
+                        color: AppColors.orange_f29102,
+                        size: 20,
+                      ),
+                      Icon(
+                        Icons.star_half,
+                        color: AppColors.orange_f29102,
+                        size: 20,
+                      ),
+                      Icon(
+                        Icons.star_border,
+                        color: AppColors.orange_f29102,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '4.7 | 102 Reviews',
+                        style: TextStyle(fontSize: 14, color: AppColors.grey),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
 
                   // Price Row
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         "\$110.00",
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                          color: AppColors.blue_2da5f3,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
+
                       const SizedBox(width: 8),
-                      const Text(
+                      Text(
                         "\$115.00",
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
+                          fontSize: 22,
                           decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade100,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          "-4.3%",
-                          style: TextStyle(color: Colors.red, fontSize: 12),
+                          color: AppColors.black,
                         ),
                       ),
                     ],
                   ),
+                  Text(
+                    "FREE Delivery on prepaid Orders.",
+                    style: TextStyle(color: AppColors.grey_212121),
+                  ),
                   const SizedBox(height: 16),
 
                   // Select Variant section
-                  const Text(
+                  Text(
                     "Select Variant",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.grey_212121,
+                    ),
                   ),
+                  SizedBox(height: 12),
+                  GridView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: variants.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1.3, // adjust height/width ratio
+                        ),
+                    itemBuilder: (context, index) {
+                      final v = variants[index];
+                      return VariantCard(
+                        variantName: v["name"] as String,
+                        originalPrice: v["original"] as double,
+                        discountedPrice: v["discounted"] as double,
+                        discountPercent: v["percent"] as int,
+                        isSelected: selectedVariantIndex == index,
+                        onTap: () {
+                          setState(() {
+                            selectedVariantIndex = index;
+                          });
+                        },
+                      );
+                    },
+                  ),
+                  SizedBox(height: 12),
+                  Center(
+                    child: Text(
+                      "Explore More Variant",
+                      textAlign: TextAlign.center,
+
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.green_6cad10,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.green_6cad10,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Image.asset(AppImages.product_page_image),
+                  SizedBox(height: 20),
+                  Text(
+                    "Delivery Estimate",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.grey_212121,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      // Pincode TextField
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: "Enter your pincode",
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: AppColors.grey_bgscreen_f7fafc,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: AppColors.grey_e2e8f0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: AppColors.black),
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      // Check Button
+                      Container(
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.green_6cad10,
+                              AppColors.green_327801,
+                            ], // green gradient
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Check",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  descriptionWidget(),
+
+                  const SizedBox(height: 12),
+                  additionalInfoWidget(),
+                  SizedBox(height: 20),
+                  Text(
+                    "FAQ",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.grey_212121,
+                    ),
+                  ),
+                  FAQSection(
+                    faqs: [
+                      {
+                        "question": "What is the shelf life of this product?",
+                        "answer":
+                            "The product has a shelf life of 12 months from the date of manufacture.",
+                      },
+                      {
+                        "question": "Does it contain preservatives?",
+                        "answer":
+                            "No, our products are made with 100% natural ingredients.",
+                      },
+                      {
+                        "question": "Is this product vegan?",
+                        "answer": "Yes, it is completely plant-based.",
+                      },
+                    ],
+                  ),
+
+                  ProductSection(
+                    firstText: "",
+                    firstTextColor: AppColors.black,
+                    secondTextColor: AppColors.black,
+                    secondText: "Similar Products",
+                    sectionBgColor: AppColors.white,
+                    tagText: "Best Seller",
+                  ),
+
+                  SizedBox(height: 40),
                 ],
               ),
             ),
+            CommonFooter(),
           ],
         ),
       ),

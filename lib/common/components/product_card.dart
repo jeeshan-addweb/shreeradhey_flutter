@@ -39,11 +39,13 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      widget.model.imageUrl,
-                      height: 200,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+                    child: AspectRatio(
+                      aspectRatio: 4 / 3, // keeps image proportional
+                      child: Image.asset(
+                        widget.model.imageUrl,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),

@@ -1,4 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.addweb.shree_radhey">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+package="com.addweb.shree_radhey">
+<uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="shree_radhey"
         android:name="${applicationName}"

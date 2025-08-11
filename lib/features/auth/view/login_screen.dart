@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
+import '../../../utils/routes/app_route_path.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -20,7 +22,7 @@ class LoginScreen extends StatelessWidget {
           // Centered Card
           Center(
             child: Container(
-              height: 450,
+              height: MediaQuery.sizeOf(context).height * 0.50,
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -164,7 +166,9 @@ class LoginScreen extends StatelessWidget {
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            context.push(AppRoutePath.homeScreen);
+                          },
                           child: const Text(
                             "SUBMIT",
                             style: TextStyle(
