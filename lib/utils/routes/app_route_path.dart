@@ -9,4 +9,7 @@ class AppRoutePath {
   // Shop
   static const String shopScreen = '/shopScreen';
   static const String productDetail = '/productDetail';
+  // Wishlist
+  static const String wishlistScreen = '/wishlistScreen';
+  static const String myCart = '/myCart';
 }

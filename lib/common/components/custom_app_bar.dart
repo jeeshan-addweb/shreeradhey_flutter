@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
+import '../../utils/routes/app_route_path.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isDrawerOpen;
@@ -44,26 +46,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               Spacer(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Icon(
-                  Icons.search_outlined,
+                child: Image.asset(
+                  AppImages.search,
                   color: AppColors.black,
-                  size: 30,
+                  height: 30,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  context.push(AppRoutePath.wishlistScreen);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Image.asset(
+                    AppImages.wishlist,
+                    color: AppColors.black,
+                    height: 30,
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Icon(
-                  Icons.favorite_border_outlined,
+                child: Image.asset(
+                  AppImages.profile,
                   color: AppColors.black,
-                  size: 30,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Icon(
-                  Icons.person_outlined,
-                  color: AppColors.black,
-                  size: 30,
+                  height: 30,
                 ),
               ),
               Stack(

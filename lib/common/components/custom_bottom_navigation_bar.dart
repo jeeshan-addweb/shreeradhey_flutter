@@ -56,7 +56,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
               // context.go(AppRoutePath.dealsScreen);
               break;
             case 3:
-              // context.go(AppRoutePath.cartScreen);
+              context.go(AppRoutePath.myCart);
               break;
             case 4:
               // context.go(AppRoutePath.moreScreen);

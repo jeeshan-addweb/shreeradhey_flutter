@@ -18,6 +18,11 @@ class AppImages {
   static String cart = "assets/icons/cart.png";
   static String menu = "assets/icons/menu.png";
 
+  // AppBar
+  static String wishlist = "assets/icons/wishlist.png";
+  static String profile = "assets/icons/profile.png";
+  static String search = "assets/icons/search.png";
+
   // Product
   static String product_image = "assets/images/ghee.png";
 
