@@ -11,5 +11,11 @@ class AppRoutePath {
   static const String productDetail = '/productDetail';
   // Wishlist
   static const String wishlistScreen = '/wishlistScreen';
+  // Cart
   static const String myCart = '/myCart';
+  static const String cartPage = '/cartPage';
+
+  // Footer Menu
+  static const String faqScreen = '/faqScreen';
+  static const String a2girCowDesiGheePage = '/a2girCowDesiGheePage';
 }

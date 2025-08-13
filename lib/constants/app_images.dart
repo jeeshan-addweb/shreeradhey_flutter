@@ -59,4 +59,16 @@ class AppImages {
 
   // product detail
   static String product_page_image = "assets/images/product_page_image.png";
+  // Common Footer
+  static String a2gircowghee = "assets/images/a2gircowghee.png";
+  static String pure_and_organic_a2_ghee =
+      "assets/images/pure_and_organic_a2_ghee.png";
+  static String process = "assets/images/process.png";
+  static String eco_friendly = "assets/images/eco_friendly.png";
+  static String gir_cow = "assets/images/gir_cow.png";
+  static String a2_ghee = "assets/images/a2_ghee.png";
+  static String hh_cow = "assets/images/hh_cow.png";
+  static String organic_farm = "assets/images/organic_farm.png";
+  static String organic_sources = "assets/images/organic_sources.png";
+  static String hand_churned = "assets/images/hand_churned.png";
 }
