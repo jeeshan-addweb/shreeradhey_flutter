@@ -3,82 +3,128 @@ import 'package:flutter/material.dart';
 
 class CommonLabeledTextField extends StatelessWidget {
   final String label;
-  final String? hintText;
+  final String hint;
   final TextEditingController controller;
-  final TextInputType inputType;
-  final bool obscureText;
-  final Widget? suffixIcon;
-  final double? height;
-  final double? fontSizeTitle;
-  final double? borderRadius;
-  final Color? borderColor;
-  final Color? colorTitle;
-  final String? Function(String?)? validator;
-  final AutovalidateMode? autovalidateMode;
+  final bool isRequired;
+  final TextInputType keyboardType;
 
   const CommonLabeledTextField({
-    Key? key,
+    super.key,
     required this.label,
+    required this.hint,
     required this.controller,
-    this.inputType = TextInputType.text,
-    this.obscureText = false,
-    this.suffixIcon,
-    this.hintText,
-    this.height,
-    this.fontSizeTitle,
-    this.borderColor,
-    this.colorTitle,
-    this.borderRadius,
-    this.validator,
-    this.autovalidateMode,
-  }) : super(key: key);
+    this.isRequired = false,
+    this.keyboardType = TextInputType.text,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: fontSizeTitle ?? 14,
-            color: colorTitle ?? Colors.grey.shade800,
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.grey_212121,
+              fontWeight: FontWeight.w700,
+            ),
+            children:
+                isRequired
+                    ? [
+                      const TextSpan(
+                        text: " *",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ]
+                    : [],
           ),
         ),
         const SizedBox(height: 6),
-        SizedBox(
-          height: height,
-          child: TextFormField(
-            validator: validator,
-            controller: controller,
-            keyboardType: inputType,
-            obscureText: obscureText,
-            autovalidateMode: autovalidateMode,
-            decoration: InputDecoration(
-              hintText: hintText,
-              suffixIcon: suffixIcon,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 6),
-                borderSide: BorderSide(color: borderColor ?? AppColors.grey),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 6),
-                borderSide: BorderSide(color: borderColor ?? AppColors.grey),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 6),
-                borderSide: BorderSide(color: Colors.orange),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: BorderSide(
+                color: AppColors.grey_212121.withOpacity(0.2),
               ),
             ),
-            onTapOutside: (_) {
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class CommonLabeledDropdown extends StatelessWidget {
+  final String label;
+  final String hint;
+  final List<String> items;
+  final String? value;
+  final Function(String?) onChanged;
+  final bool isRequired;
+
+  const CommonLabeledDropdown({
+    super.key,
+    required this.label,
+    required this.hint,
+    required this.items,
+    required this.value,
+    required this.onChanged,
+    this.isRequired = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+            children:
+                isRequired
+                    ? [
+                      const TextSpan(
+                        text: " *",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ]
+                    : [],
+          ),
+        ),
+        const SizedBox(height: 6),
+        DropdownButtonFormField<String>(
+          value: value,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: const BorderSide(color: Colors.grey),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
+          ),
+          hint: Text(hint),
+          items:
+              items
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+          onChanged: onChanged,
         ),
       ],
     );

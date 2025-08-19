@@ -18,25 +18,28 @@ class TitleDescriptionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style:
-              titleStyle ??
-              TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                color: AppColors.grey_65758b,
-              ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          description,
-          style: descriptionStyle ?? const TextStyle(fontSize: 14),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        children: [
+          Text(
+            title,
+            style:
+                titleStyle ??
+                TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.grey_65758b,
+                ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            description,
+            style: descriptionStyle ?? const TextStyle(fontSize: 14),
+          ),
+        ],
+      ),
     );
   }
 }

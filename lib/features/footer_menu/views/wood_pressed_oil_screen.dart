@@ -12,48 +12,45 @@ import 'component/benefits_section.dart';
 import 'component/image_title_description_section.dart';
 import 'component/title_description_section.dart';
 
-class A2GirCowDesiGheePage extends StatefulWidget {
-  const A2GirCowDesiGheePage({super.key});
+class WoodPressedOilScreen extends StatefulWidget {
+  const WoodPressedOilScreen({super.key});
 
   @override
-  State<A2GirCowDesiGheePage> createState() => _A2GirCowDesiGheePageState();
+  State<WoodPressedOilScreen> createState() => _WoodPressedOilScreenState();
 }
 
-class _A2GirCowDesiGheePageState extends State<A2GirCowDesiGheePage> {
+class _WoodPressedOilScreenState extends State<WoodPressedOilScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Image.asset(AppImages.a2gircowghee, fit: BoxFit.contain),
+          Image.asset(AppImages.banner, fit: BoxFit.contain),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           TitleDescriptionSection(
-            title: "A2 Ghee – Pure & Organic",
-            description: '''In India and abroad, Shree Radhey provides home
-delivery of the best organic ghee that is fresh, pure, and
-healthful. Our A2 desi ghee is made from high-quality
-milk of superior Indian gir cow. Our A2 organic ghee
-contains all important nutrients that provide you with
-healthy living. Moreover, we ensure that the process of
-making A2 ghee is hygienic, chemical-free, and without
-any additives. Every day, we bring a jar of A2 pure cow
-ghee filled with health and happiness right from our farm
-to your door. Purchase pure a2 desi ghee for a healthy
-lifestyle for you and your family ''',
+            title: "Premium Wood-Pressed Oil: Pure, Natural, and Unparalleled",
+            description:
+                '''Dive into the world of pure and unadulterated oils with
+our range of premium Wooden Cold-Pressed Oils.
+Crafted with care and tradition, these oils are extracted
+using ancient methods that retain all the natural
+goodness of the ingredients, with preserved nutrients,
+unmatched purity, and a rich flavor profile.''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           TitleDescriptionSection(
-            title: "Our Products – Best Bilona Cow Ghee",
-            description:
-                '''Shree Radhey Ghee offers home delivery of fresh, pure,
-and healthy A2 ghee in India and in Abroad. Our A2 Gir
-Cow Ghee is best for your health, making your food
-delicious and rich in nutrients. We deliver a jar full of
-health and happiness straight from our farm to your
-doorstep every day. Unlike other companies, our ghee
-products are unadulterated and free from artificial
-preservatives. Buy our organic Gir cow ghee and give
-your family healthy living.''',
+            title: "Our Products – Best Wood Pressed Oils",
+            description: '''Shree Radhey now brings you the goodness of fresh,
+pure, and healthy wood pressed oils—delivered right to
+your doorstep across India and abroad. Extracted using
+traditional cold-press methods, our wood-pressed oils
+retain their natural nutrients, aroma, and flavor, making
+them a perfect choice for healthy cooking. Sourced
+directly from trusted farms, every bottle is free from
+chemicals, additives, and artificial preservatives. Unlike
+mass-produced alternatives, our wood pressed oils are
+unadulterated and crafted with care to support a
+healthier lifestyle.''',
           ),
 
           ProductSection(
@@ -62,57 +59,40 @@ your family healthy living.''',
             secondTextColor: AppColors.black,
             secondText: "",
             sectionBgColor: AppColors.white,
-            tagText: "Best Seller",
+            tagText: "Newly Launch",
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
-          Image.asset(AppImages.pure_and_organic_a2_ghee, fit: BoxFit.contain),
+          Image.asset(AppImages.woodpressoilBanner, fit: BoxFit.contain),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           TitleDescriptionSection(
-            title: "Reasons to Choose A2 Cow Desi Ghee",
-            description: '''When it comes to choosing the best A2 Ghee, Shree
-Radhey A2 Gir Cow Ghee is gaining popularity with each
-passing year because of its excellent uses for good
-heart, health, and mind. Significant uses of A2 Cow Ghee
-are- Ghee is an ingredient as pure as the traditional
-Bilona process. 100% Pure and Organic Bilona A2 Ghee
-contains no preservatives or additives. Instead, it is
-made using a Bilona Method where the Cow’s Milk is
-boiled and cooled naturally By hand churning it using
-Ravaiya. This desi pure cow ghee is made completely by
-hand and is completely digestible, meant for all age
-groups. Along with the traditional process, the cows are
-treated ethically with the natural breeding process
-without any artificial interference.''',
+            title: "Why to Choose Shree Radhey Wood Pressed Oil?",
+            description: '''When it comes to choosing the best wood-pressed oil,
+Shree Radhey’s range of traditionally extracted oils is
+gaining popularity for its incredible health benefits and
+natural purity. These oils are known to support heart
+health, boost immunity, and enhance overall well-being.
+Just like our time-honored methods, our wood-pressed
+oils are extracted using the cold-press (kachhi ghani)
+technique without any heat or chemicals, preserving their
+natural nutrients and aroma. 100% pure and chemical-
+free, our oils contain no preservatives or additives.
+Sourced from ethically grown seeds, our wooden-
+pressed oils are suitable for all your cooking needs.''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           TitleDescriptionSection(
-            title: "Why Shree Radhey Ghee?",
+            title: "Health Benefits of Wood-Pressed Oil",
             description:
-                '''Shree Radhey Ghee, a leading producer of dairy products
-focuses on the quality and tradition of its products. Shree
-Radhey offers a spoonful of good health and happiness
-by serving 100% pure Desi Ghee made from Indian Native
-Gir Cow’s milk. The products are free from artificial
-interference, preservatives, chemicals, flavors, and colors
-avoiding the use of any of the commercial tools or
-machinery. Shree Radhey is a premium quality brand
-having a goal to serve the best Bilona ghee in India which
-is rich in vitamins, minerals, and proteins. Shree Radhey
-happily delivers its products directly from farm to your
-doorstep every day in India and abroad.''',
+                '''Our wood-pressed oils offer a range of incredible health
+benefits, making them a smart and natural choice for
+your daily cooking. When it comes to nutritional value,
+Shree Radhey’s oils stand out among other brands for
+their purity, traditional extraction methods, and
+unmatched quality.''',
           ),
+
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
-          TitleDescriptionSection(
-            title: "Health Benefits of A2 Cow Desi Ghee",
-            description:
-                '''Our organic gir cow ghee has multiple benefits on health.
-When it comes to the nutritional value of ghee, our ghee
-comes first on the list with other ghee brands.
-Discussing some of these health benefits will definitely
-inspire you to buy our A2 ghee.''',
-          ),
-          SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
-          Image.asset(AppImages.process, fit: BoxFit.contain),
+          Image.asset(AppImages.benefits, fit: BoxFit.contain),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           BulletPoint(text: "Good for overall functioning of the body."),
           BulletPoint(text: "Maintains a healthy GUT."),
@@ -129,26 +109,31 @@ inspire you to buy our A2 ghee.''',
                     horizontal: 12.0,
                     vertical: 12.0,
                   ),
-                  child: Image.asset(AppImages.gir_cow, fit: BoxFit.contain),
+                  child: Image.asset(
+                    AppImages.process_woodpress,
+                    fit: BoxFit.contain,
+                  ),
                 ),
                 SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
                 TitleDescriptionSection(
-                  title: "A2 Bilona Cow Ghee – Our Process of Making",
+                  title: "Organic Wood-Pressed Oil – Our Process of Making",
                   description:
-                      '''A2 Cow Bilona Ghee is known as Desi A2 Gir Cow Ghee,
-is made utilizing the age-old Bilona Method and is a
-crucial ingredient that is 100% pure. The best Bilona ghee
-in India is used to naturally obtain cow’s milk in this
-technique. The milk is then cooked, cooled, and given a
-tablespoon of curd before being refrigerated for the
-night. After that, using Ravaiya, the curd is separated
-from buttermilk. After boiling the butter, only pure ghee is
-left. The “Bilona” best A2 desi cow ghee is a pure form of
-ghee that not only improves food flavor but also keeps a
-person physically and mentally fit. The daily use of A2
-cow Ghee is regarded as an essential component of
-one’s regimen. It is also used as a natural moisturizer for
-the skin and hair.''',
+                      '''At Shree Radhey, our organic wood-pressed oils are
+crafted using time-honored techniques that preserve
+purity, nutrition, and natural flavor. Our oil is extracted
+through a slow, chemical-free process that honors both
+health and heritage. We begin by carefully sourcing high-
+quality, organically grown seeds—such as mustard,
+sesame, groundnut, or coconut. These seeds are cleaned
+and then gently crushed using wooden churners at low
+temperatures to retain their natural nutrients,
+antioxidants, and aroma. No heat, chemicals, or additives
+are used during the process, ensuring that the oil
+remains 100% pure and nutrient-rich. Our wood-pressed
+oil not only enhance the flavor of your food but also
+support overall wellness—promoting heart health,
+improving digestion, and nourishing the skin and hair
+naturally.''',
                 ),
                 SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
               ],
@@ -156,58 +141,41 @@ the skin and hair.''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           TitleDescriptionSection(
-            title: "Vedic Bilona two-way Hand Churned Ghee",
-            description: '''Shree Radhey’s cow ghee is completely Hand churned
-using Bilona Method by the rural women. It follows the
-two-way hand churning process in making A2 Ghee from
-A2 milk produced by Gir Cows. The churning in the
-process is done using an earthen pot called Ravaiya in
-two motions- clockwise and anticlockwise. The
-traditional way of two-way churning is what makes A2
-cow gir ghee incomparable to other ghee available in the
-market. Also, this Hand Churned process provides
-plentiful opportunities and helps in creating an ideology
-of job creation among rural women for the economic
-upliftment of their families.''',
+            title: "Wood Pressed Oil – 100% Pure & Natural Cold",
+            description: '''Shree Radhey's wood-pressed oils are extracted using
+the age-old wooden cold-press (Ghani) method, where
+seeds are slowly crushed at low temperatures without
+the use of heat or chemicals. This ensures the oil retains
+all its natural nutrients, antioxidants, and rich flavor. Free
+from preservatives, additives, or artificial processing, our
+wood pressed oils are pure, unrefined, and packed with
+health benefits—making them the perfect choice for
+conscious cooking and holistic living.''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           TitleDescriptionSection(
-            title: "Cruelty free Procurement",
+            title: "Our Oil Products – Order Now",
             description:
-                '''We are always committed to cruelty free procurement of
-our products, and we believe that to get the best quality
-and healthy ghee first our cows should be healthy and
-happy. So we do everything for their health and to keep
-them disease free.''',
+                '''Our wood-pressed oil is a pure, high-quality oil made
+using traditional methods that have been trusted in India
+for generations. Rich in natural nutrients and
+antioxidants, it supports overall wellness—from
+improving digestion to promoting heart health. It's also
+known to nourish the skin and enhance natural radiance.
+So why wait? Bring home the goodness of our wood-
+pressed oil and enjoy a healthier lifestyle with every drop.''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
-          BulletPoint(text: "Good for overall functioning of the body."),
-          BulletPoint(text: "Maintains a healthy GUT."),
-          BulletPoint(text: "Rich in vitamins and minerals"),
-          BulletPoint(text: "Ideal for daily use"),
-          SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
-          Image.asset(AppImages.eco_friendly, fit: BoxFit.contain),
-          SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
-          TitleDescriptionSection(
-            title: "Our Products – Order Now",
-            description:
-                '''Our A2 ghee is a delicious, high-quality version of the
-same kind of ghee that’s been used for centuries in India,
-and has been known to cure everything from indigestion
-to cancer. It’s also great for your skin. So why wait, just
-order our ghee and enjoy the benefits of the best ghee
-available in the market with a healthy lifestyle.''',
-          ),
-
           ProductSection(
             firstText: "",
             firstTextColor: AppColors.black,
             secondTextColor: AppColors.black,
             secondText: "",
             sectionBgColor: AppColors.white,
-            tagText: "Best Seller",
+            tagText: "Newly Launch",
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
+
           Container(
             color: AppColors.pink_fffbec,
             width: double.infinity,
@@ -222,13 +190,14 @@ available in the market with a healthy lifestyle.''',
                 ),
                 SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
                 TitleDescriptionSection(
-                  title: "Uses of A2 Organic Ghee –Healthy & Tasty",
+                  title: "Uses of Wood Pressed Oil – Nutritious & Flavorful",
                   description:
-                      '''Ghee is the most common and is considered a primary
-food item in every Indian household. The A2 cow desi
-ghee is considered the purest form of ghee and has
-extraordinary healing factors. Some of the Major uses of
-A2 Cow Ghee are-''',
+                      '''Wood pressed oil is a staple in many Indian kitchens and
+is valued for its purity and nutritional benefits. Extracted
+through traditional slow-pressing methods without heat
+or chemicals, it retains its natural aroma, flavor, and
+nutrients. Here are some of the key uses of wood
+pressed oil:''',
                 ),
                 SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
                 BulletPoint(text: "Good for overall functioning of the body."),
@@ -241,18 +210,19 @@ A2 Cow Ghee are-''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           TitleDescriptionSection(
-            title: "Why Choose Shree Radhey for A2 Bilona Ghee?",
-            description:
-                '''Shree Radhey promotes Healthy living in an organic way.
-Shree Radhey offers the purest organic Gir Cow Ghee
-directly from the farm to your home in India and Abroad.
-It has its farm spread in acres of agricultural land and
-extensively follows a natural breeding process for its
-Cows because we believe in conserving Mother Nature
-through Natural practices. This means a pack full of
-100% goodness. Take a step and choose Shree Radhey’s
-for A2 Cow Ghee. We assure you that you will never
-regret your decision for choosing us.''',
+            title: "Naturally Extracted Wooden Cold Pressed Oils",
+            description: '''Shree Radhey offers Naturally Extracted Wooden Cold
+Pressed Oils crafted through traditional methods that
+preserve nature’s true essence. Using the age-old
+wooden Ghani technique, our oils are extracted slowly at
+low temperatures to retain their original nutrients, rich
+aroma, and natural flavor. Free from chemicals,
+preservatives, or artificial additives, our cold-pressed oils
+—like groundnut, sesame, and coconut—are perfect for
+cooking, skin care, and holistic wellness. Every bottle
+from Shree Radhey is a promise of purity, handcrafted
+with care and rooted in our commitment to healthy,
+organic living.''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           ImageTitleDescriptionSection(
@@ -290,7 +260,7 @@ produced is incomparable with other ghee.''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           Text(
-            "A2 Gir Cow Ghee FAQs",
+            "Wood-Pressed Oil FAQs",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w600,
@@ -321,7 +291,7 @@ produced is incomparable with other ghee.''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           AspectsSection(
-            title: "Aspects Of A2 Gir Cow Ghee",
+            title: "Aspects Of Wooden-Pressed Oil",
             aspects: [
               {"icon": AppImages.mental_health, "text": "Mental health"},
               {"icon": AppImages.physical_health, "text": "Physical health"},
@@ -333,18 +303,18 @@ produced is incomparable with other ghee.''',
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
 
           TitleDescriptionSection(
-            title: "    Gir Cow Desi Ghee for Healthy Life",
+            title: "Organic Wooden Cold Pressed Oil for a Healthier Lifestyle",
             description:
-                '''For every Indian traditional family, the concept of Shudh
-Desi Ghee will be of no surprise. Shudh Desi Ghee
-obtained from Desi Indian Gir Cow Breeds. Every mother
-prefers Shudh Desi Gir Cow Ghee to be loaded in all the
-dishes to make it more healthy and tasty. Gir Cow Ghee
-is prepared with a traditional method of the slow-burning
-process so that Ghee retains all the essential nutrients
-and fatty acids. Desi Gir Cow’s A2 Milk is used to
-produce Pure A2 Cow Ghee. The Ghee has numerous
-benefits.''',
+                '''In every traditional Indian household, the concept of
+using pure, chemical-free oils is deeply rooted. Wood-
+pressed oils, extracted using age-old cold pressing
+techniques, are a natural choice for those seeking flavor
+and wellness in their daily cooking. These oils are
+extracted at low temperatures without the use of heat or
+chemicals, helping retain their natural nutrients, aroma,
+and essential fatty acids. From mothers in the kitchen to
+wellness enthusiasts, wood-pressed oils are making a
+strong comeback. Here’s why:''',
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           BenefitsSection(

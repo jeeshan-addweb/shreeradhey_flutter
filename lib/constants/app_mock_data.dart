@@ -1,4 +1,5 @@
 import '../common/model/product_model.dart';
+import '../features/accounts/model/order_model.dart';
 import '../features/home/model/blog_model.dart';
 import '../features/home/model/client_review.dart';
 import '../features/home/model/core_value_model.dart';
@@ -23,7 +24,6 @@ class AppMockData {
           'The ghee bottles were packed very nicely. Arrived without any damage.',
       profileImage: AppImages.person,
     ),
-    // Add more...
   ];
 
   static List<ProductModel> mockProducts = [
@@ -133,4 +133,21 @@ class AppMockData {
     2: 0.0,
     1: 0.0,
   };
+
+  static List<OrderModel> dummyOrders = [
+    OrderModel(
+      orderId: "25723",
+      date: DateTime(2025, 6, 17),
+      status: "Processing",
+      totalAmount: 977.00,
+      itemCount: 1,
+    ),
+    OrderModel(
+      orderId: "25724",
+      date: DateTime(2025, 6, 18),
+      status: "Completed",
+      totalAmount: 1245.50,
+      itemCount: 2,
+    ),
+  ];
 }

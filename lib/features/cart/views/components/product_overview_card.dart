@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../constants/app_colors.dart';
 import '../../../../constants/app_images.dart';
+import '../../../../utils/routes/app_route_path.dart';
 
 class ProductOverviewCard extends StatelessWidget {
   const ProductOverviewCard({super.key});
@@ -249,7 +251,9 @@ class ProductOverviewCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.push(AppRoutePath.checkoutScreen);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,

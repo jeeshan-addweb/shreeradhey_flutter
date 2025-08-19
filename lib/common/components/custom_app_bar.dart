@@ -65,12 +65,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Image.asset(
-                  AppImages.profile,
-                  color: AppColors.black,
-                  height: 30,
+              GestureDetector(
+                onTap: () {
+                  context.push(AppRoutePath.accountPage);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Image.asset(
+                    AppImages.profile,
+                    color: AppColors.black,
+                    height: 30,
+                  ),
                 ),
               ),
               Stack(

@@ -50,7 +50,7 @@ class _CartPageState extends State<CartPage> {
             ),
           ),
 
-          CommonFooter(),
+          CommonFooter(isShow: false),
         ],
       ),
     );

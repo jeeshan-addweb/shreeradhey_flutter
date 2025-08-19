@@ -435,6 +435,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                   ),
                   FAQSection(
+                    faqColor: AppColors.black,
                     faqs: [
                       {
                         "question": "What is the shelf life of this product?",

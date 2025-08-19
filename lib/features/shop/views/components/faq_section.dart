@@ -4,8 +4,9 @@ import '../../../../constants/app_colors.dart';
 
 class FAQSection extends StatefulWidget {
   final List<Map<String, String>> faqs;
+  final Color faqColor;
 
-  const FAQSection({super.key, required this.faqs});
+  const FAQSection({super.key, required this.faqs, required this.faqColor});
 
   @override
   State<FAQSection> createState() => _FAQSectionState();
@@ -50,7 +51,7 @@ class _FAQSectionState extends State<FAQSection> {
                             color:
                                 isExpanded
                                     ? AppColors.red_CC0003
-                                    : AppColors.black,
+                                    : widget.faqColor,
                           ),
                         ),
                       ),

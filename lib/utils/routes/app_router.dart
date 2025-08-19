@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/features/accounts/view/account_page.dart';
 
 import '../../constants/app_mock_data.dart';
 import '../../features/auth/view/login_screen.dart';
+import '../../features/auth/view/otp_screen.dart';
 import '../../features/cart/views/cart_page.dart';
+import '../../features/cart/views/checkout_screen.dart';
 import '../../features/cart/views/my_cart.dart';
 import '../../features/dashboard/view/dashboard_screen.dart';
 import '../../features/footer_menu/views/a2_gir_cow_desi_ghee_page.dart';
 import '../../features/footer_menu/views/faq_screen.dart';
+import '../../features/footer_menu/views/wood_pressed_oil_screen.dart';
 import '../../features/home/views/home_page.dart';
 import '../../features/shop/views/product_detail_page.dart';
 import '../../features/shop/views/shop_page.dart';
@@ -17,13 +21,21 @@ import 'app_route_path.dart';
 class AppRouter {
   static final GoRouter _router = GoRouter(
     // debugLogDiagnostics: true,
-    initialLocation: AppRoutePath.cartPage,
+    initialLocation: AppRoutePath.login,
     routes: [
       GoRoute(
         name: 'login',
         path: AppRoutePath.login,
         builder: (BuildContext context, GoRouterState state) {
           return LoginScreen();
+        },
+      ),
+      GoRoute(
+        name: 'otpScreen',
+        path: AppRoutePath.otpScreen,
+        builder: (BuildContext context, GoRouterState state) {
+          final contact = state.extra as String;
+          return OtpScreen(contact: contact);
         },
       ),
 
@@ -79,6 +91,14 @@ class AppRouter {
             },
           ),
 
+          GoRoute(
+            name: 'checkoutScreen',
+            path: AppRoutePath.checkoutScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              return CheckoutScreen();
+            },
+          ),
+
           // Footer Menu
           GoRoute(
             name: 'faqScreen',
@@ -92,6 +112,22 @@ class AppRouter {
             path: AppRoutePath.a2girCowDesiGheePage,
             builder: (BuildContext context, GoRouterState state) {
               return A2GirCowDesiGheePage();
+            },
+          ),
+          GoRoute(
+            name: 'woodpressedoilScreen',
+            path: AppRoutePath.woodpressedoilScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              return WoodPressedOilScreen();
+            },
+          ),
+
+          // Accounts
+          GoRoute(
+            name: 'accountPage',
+            path: AppRoutePath.accountPage,
+            builder: (BuildContext context, GoRouterState state) {
+              return AccountPage();
             },
           ),
         ],

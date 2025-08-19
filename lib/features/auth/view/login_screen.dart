@@ -6,8 +6,16 @@ import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/routes/app_route_path.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +92,7 @@ class LoginScreen extends StatelessWidget {
                           Expanded(
                             child: TextField(
                               keyboardType: TextInputType.phone,
+                              controller: phoneController,
                               decoration: const InputDecoration(
                                 hintText: "Enter your mobile number",
                                 border: InputBorder.none,
@@ -126,6 +135,7 @@ class LoginScreen extends StatelessWidget {
 
                     // Email Field
                     TextField(
+                      controller: emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         hintText: "Enter your email address",
@@ -167,8 +177,28 @@ class LoginScreen extends StatelessWidget {
                             shadowColor: Colors.transparent,
                           ),
                           onPressed: () {
-                            context.push(AppRoutePath.homeScreen);
+                            String contact = "";
+
+                            if (phoneController.text.isNotEmpty) {
+                              contact = phoneController.text;
+                            } else if (emailController.text.isNotEmpty) {
+                              contact = emailController.text;
+                            }
+
+                            if (contact.isNotEmpty) {
+                              context.push(
+                                AppRoutePath.otpScreen,
+                                extra: contact, // 👈 pass phone/email
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Please enter phone or email"),
+                                ),
+                              );
+                            }
                           },
+
                           child: const Text(
                             "SUBMIT",
                             style: TextStyle(

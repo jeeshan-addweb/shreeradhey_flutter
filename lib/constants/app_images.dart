@@ -59,16 +59,31 @@ class AppImages {
 
   // product detail
   static String product_page_image = "assets/images/product_page_image.png";
-  // Common Footer
-  static String a2gircowghee = "assets/images/a2gircowghee.png";
+  // Common Footer -> A2 Gir Cow Screen
+  static String a2gircowghee = "assets/images/a2gir/a2gircowghee.png";
   static String pure_and_organic_a2_ghee =
-      "assets/images/pure_and_organic_a2_ghee.png";
-  static String process = "assets/images/process.png";
-  static String eco_friendly = "assets/images/eco_friendly.png";
-  static String gir_cow = "assets/images/gir_cow.png";
-  static String a2_ghee = "assets/images/a2_ghee.png";
-  static String hh_cow = "assets/images/hh_cow.png";
-  static String organic_farm = "assets/images/organic_farm.png";
-  static String organic_sources = "assets/images/organic_sources.png";
-  static String hand_churned = "assets/images/hand_churned.png";
+      "assets/images/a2gir/pure_and_organic_a2_ghee.png";
+  static String process = "assets/images/a2gir/process.png";
+  static String eco_friendly = "assets/images/a2gir/eco_friendly.png";
+  static String gir_cow = "assets/images/a2gir/gir_cow.png";
+  static String a2_ghee = "assets/images/a2gir/a2_ghee.png";
+  static String hh_cow = "assets/images/a2gir/hh_cow.png";
+  static String organic_farm = "assets/images/a2gir/organic_farm.png";
+  static String organic_sources = "assets/images/a2gir/organic_sources.png";
+  static String hand_churned = "assets/images/a2gir/hand_churned.png";
+
+  // Footer // Wood Pressed
+  static String banner = "assets/images/woodpressoil/banner.png";
+  static String woodpressoilBanner =
+      "assets/images/woodpressoil/woodpressoilBanner.png";
+  static String benefits = "assets/images/woodpressoil/benefits.png";
+  static String process_woodpress =
+      "assets/images/woodpressoil/process_woodpress.png";
+
+  // Images/Aspects
+  static String mental_health = "assets/images/aspects/mental_health.png";
+  static String physical_health = "assets/images/aspects/physical_health.png";
+  static String daily_diet = "assets/images/aspects/daily_diet.png";
+  static String pregnancy = "assets/images/aspects/pregnancy.png";
+  static String weigth_loss = "assets/images/aspects/weigth_loss.png";
 }
