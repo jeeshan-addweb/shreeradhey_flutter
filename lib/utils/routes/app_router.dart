@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shree_radhey/features/accounts/view/account_page.dart';
 
 import '../../constants/app_mock_data.dart';
+import '../../features/accounts/view/account_page.dart';
 import '../../features/auth/view/login_screen.dart';
 import '../../features/auth/view/otp_screen.dart';
 import '../../features/cart/views/cart_page.dart';
@@ -10,8 +10,12 @@ import '../../features/cart/views/checkout_screen.dart';
 import '../../features/cart/views/my_cart.dart';
 import '../../features/dashboard/view/dashboard_screen.dart';
 import '../../features/footer_menu/views/a2_gir_cow_desi_ghee_page.dart';
+import '../../features/footer_menu/views/blog_detail_screen.dart';
+import '../../features/footer_menu/views/blog_listing_screen.dart';
+import '../../features/footer_menu/views/dealership_form_screen.dart';
 import '../../features/footer_menu/views/faq_screen.dart';
 import '../../features/footer_menu/views/wood_pressed_oil_screen.dart';
+import '../../features/home/model/blog_model.dart';
 import '../../features/home/views/home_page.dart';
 import '../../features/shop/views/product_detail_page.dart';
 import '../../features/shop/views/shop_page.dart';
@@ -21,7 +25,7 @@ import 'app_route_path.dart';
 class AppRouter {
   static final GoRouter _router = GoRouter(
     // debugLogDiagnostics: true,
-    initialLocation: AppRoutePath.login,
+    initialLocation: AppRoutePath.cartPage,
     routes: [
       GoRoute(
         name: 'login',
@@ -119,6 +123,28 @@ class AppRouter {
             path: AppRoutePath.woodpressedoilScreen,
             builder: (BuildContext context, GoRouterState state) {
               return WoodPressedOilScreen();
+            },
+          ),
+          GoRoute(
+            name: 'dealershipFormScreen',
+            path: AppRoutePath.dealershipFormScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              return DealershipFormScreen();
+            },
+          ),
+          GoRoute(
+            name: 'bloglistingScreen',
+            path: AppRoutePath.bloglistingScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              return BlogListingScreen();
+            },
+          ),
+          GoRoute(
+            path: AppRoutePath.blogdetailScreen,
+            builder: (context, state) {
+              final blog = state.extra as BlogModel; // 👈 directly cast
+
+              return BlogDetailScreen(model: blog);
             },
           ),
 

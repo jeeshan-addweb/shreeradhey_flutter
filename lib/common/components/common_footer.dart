@@ -78,7 +78,12 @@ class CommonFooter extends StatelessWidget {
                           footerLink('Shipping and Delivery Policy'),
                           footerLink('Contact'),
                           footerLink('Terms & Conditions'),
-                          footerLink('Dealership Form'),
+                          footerLink(
+                            'Dealership Form',
+                            onTap: () {
+                              context.push(AppRoutePath.dealershipFormScreen);
+                            },
+                          ),
                           footerLink('Refund Policy'),
                           footerLink(
                             'A2 Gir Cow Desi Ghee',

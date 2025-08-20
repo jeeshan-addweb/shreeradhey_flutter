@@ -83,24 +83,36 @@ class AppMockData {
 
   static List<BlogModel> blogItems = [
     BlogModel(
+      writerName: "Akhil Shrivastav",
+      readTime: "5",
+      date: "18-05-25",
       imagePath: AppImages.product_image_blog,
       title: 'Health Benefits Of Using A2 Ghee In Raksha Bandhan Sweets',
       description:
           'Raksha Bandhan is more than just a festival – it’s a celebration of love, traditions, and togetherness.',
     ),
     BlogModel(
+      writerName: "Akhil Shrivastav",
+      readTime: "5",
+      date: "18-05-25",
       imagePath: AppImages.product_image_blog,
       title: 'How To Use Desi Ghee For Cold And Cough',
       description:
           'A2 Desi ghee, especially when sourced from native cow milk, using traditional methods, is a time-tested remedy.',
     ),
     BlogModel(
+      writerName: "Akhil Shrivastav",
+      readTime: "5",
+      date: "18-05-25",
       imagePath: AppImages.product_image_blog,
       title: 'How To Choose The Best A2 Cow Ghee In India',
       description:
           'In recent years, A2 cow ghee has gained significant popularity among health-conscious individuals.',
     ),
     BlogModel(
+      writerName: "Akhil Shrivastav",
+      readTime: "5",
+      date: "18-05-25",
       imagePath: AppImages.product_image_blog,
       title: 'Health Benefits Of Including A2 Cow Ghee In Your Monsoon Diet',
       description:

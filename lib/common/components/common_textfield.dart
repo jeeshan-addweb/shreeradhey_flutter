@@ -7,6 +7,7 @@ class CommonLabeledTextField extends StatelessWidget {
   final TextEditingController controller;
   final bool isRequired;
   final TextInputType keyboardType;
+  final double fontSize;
 
   const CommonLabeledTextField({
     super.key,
@@ -15,6 +16,7 @@ class CommonLabeledTextField extends StatelessWidget {
     required this.controller,
     this.isRequired = false,
     this.keyboardType = TextInputType.text,
+    this.fontSize = 14,
   });
 
   @override
@@ -26,9 +28,9 @@ class CommonLabeledTextField extends StatelessWidget {
           text: TextSpan(
             text: label,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: fontSize,
               color: AppColors.grey_212121,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w400,
             ),
             children:
                 isRequired

@@ -16,7 +16,7 @@ class DashboardPage extends StatelessWidget {
               "From your account dashboard you can view your recent orders, manage your shipping and billing addresses, and edit your password and account details.",
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 40),
           const CommonFooter(),
         ],
       ),

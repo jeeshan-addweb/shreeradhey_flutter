@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shree_radhey/features/accounts/view/address_screen.dart';
 
 import '../../../constants/app_colors.dart';
+import 'accounts_detail_page.dart';
 import 'dashboard_page.dart';
 import 'order_page.dart';
 
@@ -24,11 +26,11 @@ class _AccountPageState extends State<AccountPage> {
   ];
 
   final List<Widget> accountScreens = [
-    // DashboardPage(),
-    // OrderPage(),
-    Center(child: Text("Dashboard Screen")),
-    Center(child: Text("Order Screen")),
-    Center(child: Text("Addresses Screen")),
+    DashboardPage(),
+    OrderPage(),
+    AddressScreen(),
+    AccountDetailsPage(),
+
     Center(child: Text("Account Details Screen")),
     Center(child: Text("Rewards Points Screen")),
     Center(child: Text("Log out Screen")),

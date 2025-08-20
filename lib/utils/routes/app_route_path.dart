@@ -21,6 +21,9 @@ class AppRoutePath {
   static const String faqScreen = '/faqScreen';
   static const String a2girCowDesiGheePage = '/a2girCowDesiGheePage';
   static const String woodpressedoilScreen = '/woodpressedoilScreen';
+  static const String dealershipFormScreen = '/dealershipFormScreen';
+  static const String bloglistingScreen = '/bloglistingScreen';
+  static const String blogdetailScreen = '/blogdetailScreen';
   // Accounts
   static const String accountPage = '/accountPage';
 }

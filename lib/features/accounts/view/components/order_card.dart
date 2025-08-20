@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shree_radhey/common/components/gradient_button.dart';
 import 'package:shree_radhey/constants/app_colors.dart' show AppColors;
 import '../../model/order_model.dart';
 import 'package:intl/intl.dart';
@@ -86,9 +87,14 @@ class OrderCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                _buildGradientButton(text: "VIEW", onPressed: onView),
+                Expanded(
+                  child: GradientButton(text: "VIEW", onPressed: onView),
+                ),
+
                 const SizedBox(width: 10),
-                _buildGradientButton(text: "INVOICE", onPressed: onInvoice),
+                Expanded(
+                  child: GradientButton(text: "INVOICE", onPressed: onInvoice),
+                ),
               ],
             ),
           ],
@@ -98,35 +104,35 @@ class OrderCard extends StatelessWidget {
   }
 }
 
-Widget _buildGradientButton({
-  required String text,
-  required VoidCallback onPressed,
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [AppColors.green_6cad10, AppColors.green_327801],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ),
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        minimumSize: const Size(100, 40),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: AppColors.white,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ),
-  );
-}
+// Widget _buildGradientButton({
+//   required String text,
+//   required VoidCallback onPressed,
+// }) {
+//   return Container(
+//     decoration: BoxDecoration(
+//       gradient: LinearGradient(
+//         colors: [AppColors.green_6cad10, AppColors.green_327801],
+//         begin: Alignment.topCenter,
+//         end: Alignment.bottomCenter,
+//       ),
+//       borderRadius: BorderRadius.circular(8),
+//     ),
+//     child: ElevatedButton(
+//       onPressed: onPressed,
+//       style: ElevatedButton.styleFrom(
+//         backgroundColor: Colors.transparent,
+//         shadowColor: Colors.transparent,
+//         minimumSize: const Size(100, 40),
+//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+//       ),
+//       child: Text(
+//         text,
+//         style: TextStyle(
+//           color: AppColors.white,
+//           fontSize: 14,
+//           fontWeight: FontWeight.w600,
+//         ),
+//       ),
+//     ),
+//   );
+// }

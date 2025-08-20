@@ -1,0 +1,244 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../constants/app_colors.dart';
+import '../../../constants/app_mock_data.dart';
+import '../../../utils/routes/app_route_path.dart';
+import '../../home/model/blog_model.dart';
+import 'component/blog_carousel.dart';
+
+class BlogListingScreen extends StatefulWidget {
+  const BlogListingScreen({super.key});
+
+  @override
+  State<BlogListingScreen> createState() => _BlogListingScreenState();
+}
+
+class _BlogListingScreenState extends State<BlogListingScreen> {
+  String selectedFilter = "All";
+  String searchQuery = "";
+  final _hCtrl = ScrollController();
+
+  @override
+  void dispose() {
+    _hCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Filtered blogs
+    final filteredBlogs =
+        AppMockData.blogItems.where((blog) {
+          final matchesFilter =
+              selectedFilter == "All" || blog.title.contains(selectedFilter);
+          final matchesSearch =
+              blog.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+              blog.description.toLowerCase().contains(
+                searchQuery.toLowerCase(),
+              );
+          return matchesFilter && matchesSearch;
+        }).toList();
+
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Blog", style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 4),
+              const Text("Home / Blog", style: TextStyle(color: Colors.red)),
+
+              const SizedBox(height: 16),
+              BlogCarousel(blogs: AppMockData.blogItems),
+
+              const SizedBox(height: 16),
+
+              /// --- Filter + Search ---
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Dropdown
+                    DropdownButtonFormField<String>(
+                      value: selectedFilter,
+                      decoration: const InputDecoration(
+                        labelText: "Filter By",
+                        border: OutlineInputBorder(),
+                      ),
+                      items:
+                          ["All", "Health", "Recipes", "Tips"]
+                              .map(
+                                (item) => DropdownMenuItem(
+                                  value: item,
+                                  child: Text(item),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
+                        setState(() => selectedFilter = value ?? "All");
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Search
+                    TextField(
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        hintText: "Search...",
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        setState(() => searchQuery = value);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              /// --- Vertical Blog List ---
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredBlogs.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 20),
+                itemBuilder: (context, index) {
+                  final blog = filteredBlogs[index];
+                  return _VerticalBlogCard(blog: blog);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _VerticalBlogCard extends StatefulWidget {
+  final BlogModel blog;
+  const _VerticalBlogCard({required this.blog});
+
+  @override
+  State<_VerticalBlogCard> createState() => _VerticalBlogCardState();
+}
+
+class _VerticalBlogCardState extends State<_VerticalBlogCard> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: GestureDetector(
+        onTap: () {
+          context.push(
+            AppRoutePath.blogdetailScreen,
+            extra: widget.blog, // 👈 pass whole model
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: AppColors.grey_94a3b8),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
+                child: Image.asset(
+                  widget.blog.imagePath,
+                  height: 250,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              // Title + Description
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          widget.blog.writerName ?? "",
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            color: AppColors.grey_3C403D,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          widget.blog.date ?? "",
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            color: AppColors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.blog.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.blog.description,
+                      maxLines: _expanded ? null : 2,
+                      overflow:
+                          _expanded
+                              ? TextOverflow.visible
+                              : TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.grey_3C403D,
+                      ),
+                    ),
+                    if (widget.blog.description.length > 80)
+                      GestureDetector(
+                        onTap: () => setState(() => _expanded = !_expanded),
+                        child: Text(
+                          _expanded ? "Read less" : "Read more",
+                          style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 6),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

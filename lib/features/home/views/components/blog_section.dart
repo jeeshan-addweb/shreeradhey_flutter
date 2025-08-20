@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../constants/app_colors.dart';
 import '../../../../constants/app_images.dart';
 import '../../../../constants/app_mock_data.dart';
+import '../../../../utils/routes/app_route_path.dart';
 import 'blog_card.dart';
 import 'special_offer_card.dart';
 
@@ -80,7 +82,9 @@ class BlogSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.push(AppRoutePath.bloglistingScreen);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,

@@ -17,6 +17,7 @@ class OrderPage extends StatelessWidget {
           ...AppMockData.dummyOrders.map((order) {
             return OrderCard(order: order, onView: () {}, onInvoice: () {});
           }).toList(),
+          const SizedBox(height: 40),
 
           /// Footer
           const CommonFooter(),
