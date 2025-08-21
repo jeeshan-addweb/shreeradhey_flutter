@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
 import '../../features/home/views/components/review_section.dart';
+import '../../utils/routes/app_route_path.dart';
 
 class CommonFooter extends StatelessWidget {
-  const CommonFooter({super.key});
+  final bool isShow;
+  const CommonFooter({super.key, this.isShow = true});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ReviewSection(),
+        isShow ? ReviewSection() : SizedBox(),
         SizedBox(height: 30, child: Container(color: AppColors.blue_eef1ed)),
         Container(
           color: AppColors.footer_1a2531,
@@ -75,11 +78,31 @@ class CommonFooter extends StatelessWidget {
                           footerLink('Shipping and Delivery Policy'),
                           footerLink('Contact'),
                           footerLink('Terms & Conditions'),
-                          footerLink('Dealership Form'),
+                          footerLink(
+                            'Dealership Form',
+                            onTap: () {
+                              context.push(AppRoutePath.dealershipFormScreen);
+                            },
+                          ),
                           footerLink('Refund Policy'),
-                          footerLink('A2 Gir Cow Desi Ghee'),
-                          footerLink("FAQ's"),
-                          footerLink('Wood Pressed Oil'),
+                          footerLink(
+                            'A2 Gir Cow Desi Ghee',
+                            onTap: () {
+                              context.push(AppRoutePath.a2girCowDesiGheePage);
+                            },
+                          ),
+                          footerLink(
+                            "FAQ's",
+                            onTap: () {
+                              context.push(AppRoutePath.faqScreen);
+                            },
+                          ),
+                          footerLink(
+                            'Wood Pressed Oil',
+                            onTap: () {
+                              context.push(AppRoutePath.woodpressedoilScreen);
+                            },
+                          ),
                         ]
                         .map(
                           (child) => SizedBox(
@@ -114,8 +137,8 @@ class CommonFooter extends StatelessWidget {
 
                   // Certifications Column
                   Padding(
-                    padding: const EdgeInsets.only(
-                      right: 60,
+                    padding: EdgeInsets.only(
+                      right: MediaQuery.sizeOf(context).width * 0.0999,
                     ), // adjust as needed
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

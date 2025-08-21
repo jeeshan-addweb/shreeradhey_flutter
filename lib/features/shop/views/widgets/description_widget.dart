@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../common/components/bullet_point.dart';
 import '../../../../constants/app_colors.dart';
 
 Widget descriptionWidget() {
@@ -19,36 +20,14 @@ Widget descriptionWidget() {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
-              _BulletPoint(text: "Made from 100% organic ingredients"),
-              _BulletPoint(text: "No preservatives or artificial flavors"),
-              _BulletPoint(text: "Rich in vitamins and minerals"),
-              _BulletPoint(text: "Ideal for daily use"),
+              BulletPoint(text: "Made from 100% organic ingredients"),
+              BulletPoint(text: "No preservatives or artificial flavors"),
+              BulletPoint(text: "Rich in vitamins and minerals"),
+              BulletPoint(text: "Ideal for daily use"),
             ],
           ),
         ),
       ],
     ),
   );
-}
-
-class _BulletPoint extends StatelessWidget {
-  final String text;
-  const _BulletPoint({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "• ",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 16))),
-        ],
-      ),
-    );
-  }
 }

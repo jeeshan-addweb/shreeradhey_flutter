@@ -17,6 +17,8 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
+    const double tagSize = 48; // fixed size for SAVE tag
+    const double tagPadding = 12; // distance from edges
     return GestureDetector(
       onTap: () {
         context.push(AppRoutePath.productDetail);
@@ -40,7 +42,7 @@ class _ProductCardState extends State<ProductCard> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: AspectRatio(
-                      aspectRatio: 4 / 3, // keeps image proportional
+                      aspectRatio: 4 / 3,
                       child: Image.asset(
                         widget.model.imageUrl,
                         width: double.infinity,
@@ -52,13 +54,13 @@ class _ProductCardState extends State<ProductCard> {
 
                 // Save tag with triangle clip
                 Positioned(
-                  top: 8,
-                  left: 12,
+                  top: tagPadding,
+                  left: tagPadding,
                   child: ClipPath(
                     clipper: SaveTagClipper(),
                     child: Container(
-                      width: 50,
-                      height: 48,
+                      width: tagSize,
+                      height: tagSize,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: AppColors.save_red_e51900,
@@ -94,11 +96,12 @@ class _ProductCardState extends State<ProductCard> {
 
                 // Best seller tag (same size as SAVE tag)
                 Positioned(
-                  top: 8,
-                  right: 12,
+                  top: tagPadding,
+                  right: tagPadding,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    height: 40,
+
+                    height: tagSize,
                     decoration: BoxDecoration(
                       color:
                           widget.model.tagText == "Newly Launch"
@@ -144,8 +147,8 @@ class _ProductCardState extends State<ProductCard> {
               child: Text(
                 widget.model.title,
                 style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
                 ),
               ),
             ),
@@ -155,7 +158,7 @@ class _ProductCardState extends State<ProductCard> {
                 widget.model.subtitle,
                 style: TextStyle(
                   color: AppColors.grey,
-                  fontSize: 15,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -166,23 +169,26 @@ class _ProductCardState extends State<ProductCard> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Row(
                 children: [
-                  Icon(Icons.star, color: AppColors.orange_f29102, size: 20),
-                  Icon(Icons.star, color: AppColors.orange_f29102, size: 20),
-                  Icon(Icons.star, color: AppColors.orange_f29102, size: 20),
+                  Icon(Icons.star, color: AppColors.orange_f29102, size: 18),
+                  Icon(Icons.star, color: AppColors.orange_f29102, size: 18),
+                  Icon(Icons.star, color: AppColors.orange_f29102, size: 18),
                   Icon(
                     Icons.star_half,
                     color: AppColors.orange_f29102,
-                    size: 20,
+                    size: 18,
                   ),
                   Icon(
                     Icons.star_border,
                     color: AppColors.orange_f29102,
-                    size: 20,
+                    size: 18,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '${widget.model.rating} | ${widget.model.reviewCount} Reviews',
-                    style: TextStyle(fontSize: 14, color: AppColors.grey),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.grey_212121,
+                    ),
                   ),
                 ],
               ),
@@ -198,7 +204,7 @@ class _ProductCardState extends State<ProductCard> {
                     '\$${widget.model.price.toStringAsFixed(2)}',
                     style: TextStyle(
                       color: AppColors.blue_2da5f3,
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -206,8 +212,9 @@ class _ProductCardState extends State<ProductCard> {
                   Text(
                     '\$${widget.model.oldPrice.toStringAsFixed(2)}',
                     style: TextStyle(
+                      fontSize: 12,
                       decoration: TextDecoration.lineThrough,
-                      color: AppColors.black,
+                      color: AppColors.grey_212121,
                     ),
                   ),
                   Padding(
@@ -219,13 +226,16 @@ class _ProductCardState extends State<ProductCard> {
                           style: TextStyle(
                             color: AppColors.green_327801,
                             fontWeight: FontWeight.w600,
-                            fontSize: 15,
+                            fontSize: 16,
                           ),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'with coupon',
-                          style: TextStyle(color: AppColors.grey),
+                          style: TextStyle(
+                            color: AppColors.grey_212121,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),

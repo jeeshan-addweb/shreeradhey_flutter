@@ -8,6 +8,8 @@ class ProductModel {
   final double oldPrice;
   final double couponPrice;
   final String tagText;
+  final String? description;
+  final double? discountPercent;
 
   ProductModel({
     required this.imageUrl,
@@ -19,6 +21,8 @@ class ProductModel {
     required this.oldPrice,
     required this.couponPrice,
     this.tagText = "Best Seller",
+    this.description,
+    this.discountPercent,
   });
   ProductModel copyWith({
     String? imageUrl,
@@ -30,6 +34,8 @@ class ProductModel {
     double? rating,
     int? reviewCount,
     String? tagText,
+    String? description,
+    double? discountPercent,
   }) {
     return ProductModel(
       imageUrl: imageUrl ?? this.imageUrl,
@@ -41,6 +47,8 @@ class ProductModel {
       rating: rating ?? this.rating,
       reviewCount: reviewCount ?? this.reviewCount,
       tagText: tagText ?? this.tagText,
+      description: description ?? this.description,
+      discountPercent: discountPercent ?? this.discountPercent,
     );
   }
 }

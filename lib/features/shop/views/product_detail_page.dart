@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shree_radhey/constants/app_mock_data.dart';
+import 'package:shree_radhey/features/shop/views/components/product_detail_review_section.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
@@ -76,6 +78,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "Home / Ghee /  SHREERADHEY A2 gir cow ghee (1L Pet Bottle),",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.red, // like your design's breadcrumb
+                ),
+              ),
+            ),
             // ====== IMAGE SECTION ======
             Stack(
               children: [
@@ -398,6 +411,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   additionalInfoWidget(),
                   SizedBox(height: 20),
                   Text(
+                    "Reviews (20)",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.black,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ProductDetailReviewSection(
+                    averageRating: 4.7,
+                    totalReviews: 20,
+                    ratingDistribution: AppMockData.mockRatingDistribution,
+                    reviews: AppMockData.mockReviews,
+                  ),
+                  SizedBox(height: 20),
+                  Text(
                     "FAQ",
                     style: TextStyle(
                       fontSize: 20,
@@ -406,6 +435,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                   ),
                   FAQSection(
+                    faqColor: AppColors.black,
                     faqs: [
                       {
                         "question": "What is the shelf life of this product?",

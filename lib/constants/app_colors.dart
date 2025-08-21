@@ -45,6 +45,7 @@ class AppColors {
 
   static Color white_bg_f2f5f8 = const Color(0xfff2f5f8);
   static Color white_f1f5f9 = const Color(0xffff1f5f9);
+  static Color white_f9f9f9 = const Color(0xfff9f9f9);
 
   // Footer Color
   static Color footer_1a2531 = const Color(0xff1a2531);
@@ -61,7 +62,9 @@ class AppColors {
   static Color trans_A8B9A333 = const Color(0xffA8B9A333);
 
   static Color yellow_fbda43 = const Color(0xfffbda43);
+  static Color yellow_FFBC00 = const Color(0xffFFBC00);
   static Color pink_fffbec = const Color(0xfffffbec);
+  static Color pink_fffced = const Color(0xfffffced);
 
   // Review bg
   static Color blue_eef1ed = const Color(0xffeef1ed);

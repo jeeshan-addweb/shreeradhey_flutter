@@ -72,6 +72,7 @@ class _ProductSectionState extends State<ProductSection> {
 
   @override
   Widget build(BuildContext context) {
+    final cardHeight = MediaQuery.of(context).size.width * 1.3;
     return Container(
       color: widget.sectionBgColor,
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -110,7 +111,7 @@ class _ProductSectionState extends State<ProductSection> {
 
           // Carousel
           SizedBox(
-            height: MediaQuery.sizeOf(context).height * 0.54,
+            height: cardHeight,
             child: ListView.separated(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
@@ -125,6 +126,7 @@ class _ProductSectionState extends State<ProductSection> {
                 );
                 return SizedBox(
                   width: cardWidth,
+
                   child: ProductCard(model: product),
                 );
               },

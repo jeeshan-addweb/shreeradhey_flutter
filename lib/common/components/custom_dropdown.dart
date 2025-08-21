@@ -17,6 +17,7 @@ class CustomDropdown extends StatefulWidget {
     required this.onChanged,
     this.useDefaultHeight = false,
     this.initialValue,
+    required String? Function(dynamic value) validator,
   });
 
   @override

@@ -5,6 +5,8 @@ import '../../../common/components/custom_bottom_navigation_bar.dart';
 import '../../../constants/app_images.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../utils/routes/app_route_path.dart';
+
 class DashboardScreen extends StatefulWidget {
   final Widget child;
   const DashboardScreen({super.key, required this.child});
@@ -60,11 +62,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _drawerItem(AppImages.best_seller, "Best Sellers"),
-                  _drawerItem(AppImages.ghee, "A2 Ghee"),
-                  _drawerItem(AppImages.oil, "Wood Pressed Oils"),
-                  _drawerItem(AppImages.shop, "Shop"),
-                  _drawerItem(AppImages.contact, "Contact"),
+                  _drawerItem(
+                    context,
+                    AppImages.best_seller,
+                    "Best Sellers",
+                    () {},
+                  ),
+                  _drawerItem(context, AppImages.ghee, "A2 Ghee", () {
+                    context.push(AppRoutePath.a2girCowDesiGheePage);
+                  }),
+                  _drawerItem(context, AppImages.oil, "Wood Pressed Oils", () {
+                    context.push(AppRoutePath.woodpressedoilScreen);
+                  }),
+                  _drawerItem(context, AppImages.shop, "Shop", () {}),
+                  _drawerItem(context, AppImages.contact, "Contact", () {}),
                 ],
               ),
             ),
@@ -79,11 +90,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _drawerItem(String icon, String title) {
+  Widget _drawerItem(
+    BuildContext context,
+    String icon,
+    String title,
+    VoidCallback onTap,
+  ) {
     return ListTile(
       leading: Image.asset(icon, height: 23, width: 23),
       title: Text(title, style: TextStyle(fontWeight: FontWeight.w500)),
-      onTap: () {},
+      onTap: () {
+        setState(() {
+          _isDrawerOpen = false;
+        });
+        onTap();
+      },
     );
   }
 }
