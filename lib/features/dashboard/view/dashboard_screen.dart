@@ -16,12 +16,19 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _getIndexFromLocation(String location) {
-    if (location.startsWith('/shop')) return 1;
-    if (location.startsWith('/deals')) return 2;
-    if (location.startsWith('/cart')) return 3;
-    if (location.startsWith('/menu')) return 4;
-    return 0; // default to Home
+  int _getIndexFromLocation(BuildContext context) {
+    final uri = GoRouterState.of(context).uri.toString();
+    final extra = GoRouterState.of(context).extra;
+    if (uri.startsWith('/shop')) {
+      if (extra is int) {
+        if (extra == 5) return 2;
+        return 1;
+      }
+      return 1;
+    }
+    if (uri.startsWith('/cart')) return 3;
+    if (uri.startsWith('/menu')) return 4;
+    return 0;
   }
 
   bool _isDrawerOpen = false;
@@ -75,7 +82,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     context.push(AppRoutePath.woodpressedoilScreen);
                   }),
                   _drawerItem(context, AppImages.shop, "Shop", () {}),
-                  _drawerItem(context, AppImages.contact, "Contact", () {}),
+                  _drawerItem(context, AppImages.contact, "Contact", () {
+                    context.push(AppRoutePath.contactUsScreen);
+                  }),
                 ],
               ),
             ),
@@ -83,9 +92,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _getIndexFromLocation(
-          GoRouterState.of(context).uri.toString(),
-        ),
+        currentIndex: _getIndexFromLocation(context),
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go(AppRoutePath.homeScreen);
+              break;
+            case 1:
+              context.go(AppRoutePath.shopScreen, extra: 0); // Shop
+              break;
+            case 2:
+              context.go(AppRoutePath.shopScreen, extra: 5); // Deals
+              break;
+            case 3:
+              context.go(AppRoutePath.cartPage);
+              break;
+            case 4:
+              // context.go(AppRoutePath.moreScreen);
+              break;
+          }
+        },
       ),
     );
   }

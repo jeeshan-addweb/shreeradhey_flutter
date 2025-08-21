@@ -7,8 +7,13 @@ import '../../utils/routes/app_route_path.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
+  final Function(int) onTap;
 
-  CustomBottomNavigationBar({super.key, required this.currentIndex});
+  CustomBottomNavigationBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   final List<String> icons = [
     AppImages.home,
@@ -50,13 +55,13 @@ class CustomBottomNavigationBar extends StatelessWidget {
               context.go(AppRoutePath.homeScreen);
               break;
             case 1:
-              context.go(AppRoutePath.shopScreen);
+              context.go(AppRoutePath.shopScreen, extra: 0); // All
               break;
             case 2:
-              // context.go(AppRoutePath.dealsScreen);
+              context.go(AppRoutePath.shopScreen, extra: 5); // All
               break;
             case 3:
-              context.go(AppRoutePath.myCart);
+              context.go(AppRoutePath.cartPage);
               break;
             case 4:
               // context.go(AppRoutePath.moreScreen);

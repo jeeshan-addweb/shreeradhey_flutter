@@ -4,7 +4,12 @@ import '../../model/blog_model.dart';
 
 class BlogCard extends StatefulWidget {
   final BlogModel blogModel;
-  const BlogCard({super.key, required this.blogModel});
+  final bool showDescription;
+  const BlogCard({
+    super.key,
+    required this.blogModel,
+    this.showDescription = true,
+  });
 
   @override
   State<BlogCard> createState() => _BlogCardState();
@@ -63,12 +68,18 @@ class _BlogCardState extends State<BlogCard> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      widget.blogModel.description,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    if (widget.showDescription) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        widget.blogModel.description,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ],
                 ),
               ),
