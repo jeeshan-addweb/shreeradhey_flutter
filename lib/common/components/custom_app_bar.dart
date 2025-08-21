@@ -78,29 +78,34 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-              Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Image.asset(
-                      AppImages.cart,
-                      color: AppColors.black,
-                      height: 30,
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: CircleAvatar(
-                      radius: 8,
-                      backgroundColor: AppColors.green_327801,
-                      child: Text(
-                        "0",
-                        style: TextStyle(fontSize: 10, color: Colors.white),
+              GestureDetector(
+                onTap: () {
+                  context.push(AppRoutePath.myCart);
+                },
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Image.asset(
+                        AppImages.cart,
+                        color: AppColors.black,
+                        height: 30,
                       ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: CircleAvatar(
+                        radius: 8,
+                        backgroundColor: AppColors.green_327801,
+                        child: Text(
+                          "0",
+                          style: TextStyle(fontSize: 10, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

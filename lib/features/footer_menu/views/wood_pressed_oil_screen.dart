@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../common/components/awards_and_certification_section.dart';
 import '../../../common/components/bullet_point.dart';
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
@@ -339,7 +340,29 @@ strong comeback. Here’s why:''',
               },
             ],
           ),
-
+          SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
+          AwardsAndCertificationsSection(
+            awards: [
+              AwardItem(
+                imageUrl:
+                    "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
+                title: "ISO 9001 Certification",
+              ),
+              AwardItem(
+                imageUrl:
+                    "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800",
+                title: "Best Organic Brand 2024",
+              ),
+              AwardItem(
+                imageUrl: "https://picsum.photos/800/400?random=3",
+                title: "FSSAI Certified",
+              ),
+              AwardItem(
+                imageUrl: "https://picsum.photos/800/400?random=4",
+                title: "Environmental Excellence Award",
+              ),
+            ],
+          ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           FeatureSlider(),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),

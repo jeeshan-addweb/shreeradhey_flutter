@@ -35,9 +35,9 @@ class CommonLabeledTextField extends StatelessWidget {
             children:
                 isRequired
                     ? [
-                      const TextSpan(
+                      TextSpan(
                         text: " *",
-                        style: TextStyle(color: Colors.red),
+                        style: TextStyle(color: AppColors.black),
                       ),
                     ]
                     : [],
@@ -164,9 +164,8 @@ class CommonEmailTextField extends StatelessWidget {
           Text(
             label!,
             style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-              color: Colors.grey.shade800,
+              color: AppColors.grey_212121,
+              fontWeight: FontWeight.w400,
             ),
           ),
           const SizedBox(height: 6),
@@ -236,9 +235,8 @@ class _CommonPasswordTextFieldState extends State<CommonPasswordTextField> {
           Text(
             widget.label!,
             style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-              color: Colors.grey.shade800,
+              color: AppColors.grey_212121,
+              fontWeight: FontWeight.w400,
             ),
           ),
           const SizedBox(height: 6),
@@ -314,9 +312,8 @@ class CommonPhoneTextField extends StatelessWidget {
           Text(
             label!,
             style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: fontSizeTitle ?? 14,
-              color: Colors.grey.shade800,
+              color: AppColors.grey_212121,
+              fontWeight: FontWeight.w400,
             ),
           ),
           const SizedBox(height: 6),

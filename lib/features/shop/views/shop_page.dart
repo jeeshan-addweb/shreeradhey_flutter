@@ -7,14 +7,20 @@ import '../../../constants/app_images.dart';
 import '../../../constants/app_mock_data.dart';
 
 class ShopPage extends StatefulWidget {
-  const ShopPage({super.key});
+  final int initialCategoryIndex;
+  const ShopPage({super.key, this.initialCategoryIndex = 0});
 
   @override
   State<ShopPage> createState() => _ShopPageState();
 }
 
 class _ShopPageState extends State<ShopPage> {
-  int selectedIndex = 0;
+  late int selectedIndex;
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.initialCategoryIndex;
+  }
 
   final List<Map<String, String>> categories = [
     {"title": "All", "image": AppImages.shree},

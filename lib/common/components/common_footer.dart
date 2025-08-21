@@ -72,19 +72,56 @@ class CommonFooter extends StatelessWidget {
                 runSpacing: 8,
                 children:
                     [
-                          footerLink('About Us'),
-                          footerLink('Privacy Policy'),
-                          footerLink('Blog'),
-                          footerLink('Shipping and Delivery Policy'),
-                          footerLink('Contact'),
-                          footerLink('Terms & Conditions'),
+                          footerLink(
+                            'About Us',
+                            onTap: () {
+                              context.push(AppRoutePath.aboutUsPage);
+                            },
+                          ),
+                          footerLink(
+                            'Privacy Policy',
+                            onTap: () {
+                              context.push(AppRoutePath.privacyPolicyPage);
+                            },
+                          ),
+                          footerLink(
+                            'Blog',
+                            onTap: () {
+                              context.push(AppRoutePath.bloglistingScreen);
+                            },
+                          ),
+                          footerLink(
+                            'Shipping and Delivery Policy',
+                            onTap: () {
+                              context.push(
+                                AppRoutePath.shippingAndDeliveryPolicyPage,
+                              );
+                            },
+                          ),
+                          footerLink(
+                            'Contact',
+                            onTap: () {
+                              context.push(AppRoutePath.dealershipFormScreen);
+                            },
+                          ),
+                          footerLink(
+                            'Terms & Conditions',
+                            onTap: () {
+                              context.push(AppRoutePath.termsAndConditionsPage);
+                            },
+                          ),
                           footerLink(
                             'Dealership Form',
                             onTap: () {
                               context.push(AppRoutePath.dealershipFormScreen);
                             },
                           ),
-                          footerLink('Refund Policy'),
+                          footerLink(
+                            'Refund Policy',
+                            onTap: () {
+                              context.push(AppRoutePath.refundPolicyPage);
+                            },
+                          ),
                           footerLink(
                             'A2 Gir Cow Desi Ghee',
                             onTap: () {
@@ -124,13 +161,33 @@ class CommonFooter extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      footerLink('My account'),
+                      footerLink(
+                        'My account',
+                        onTap: () {
+                          context.push(AppRoutePath.dealershipFormScreen);
+                        },
+                      ),
                       const SizedBox(height: 8),
-                      footerLink('Cart'),
+                      footerLink(
+                        'Cart',
+                        onTap: () {
+                          context.push(AppRoutePath.cartPage);
+                        },
+                      ),
                       const SizedBox(height: 8),
-                      footerLink('Checkout'),
+                      footerLink(
+                        'Checkout',
+                        onTap: () {
+                          context.push(AppRoutePath.checkoutScreen);
+                        },
+                      ),
                       const SizedBox(height: 8),
-                      footerLink('Wishlist'),
+                      footerLink(
+                        'Wishlist',
+                        onTap: () {
+                          context.push(AppRoutePath.wishlistScreen);
+                        },
+                      ),
                       const SizedBox(height: 8),
                     ],
                   ),

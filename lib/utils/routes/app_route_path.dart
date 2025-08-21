@@ -24,6 +24,13 @@ class AppRoutePath {
   static const String dealershipFormScreen = '/dealershipFormScreen';
   static const String bloglistingScreen = '/bloglistingScreen';
   static const String blogdetailScreen = '/blogdetailScreen';
+  static const String contactUsScreen = '/contactUsScreen';
+  static const String aboutUsPage = '/aboutUsPage';
+  static const String refundPolicyPage = '/refundPolicyPage';
+  static const String privacyPolicyPage = '/privacyPolicyPage';
+  static const String termsAndConditionsPage = '/termsAndConditionsPage';
+  static const String shippingAndDeliveryPolicyPage =
+      '/shippingAndDeliveryPolicyPage';
   // Accounts
   static const String accountPage = '/accountPage';
 }
