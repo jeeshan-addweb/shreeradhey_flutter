@@ -27,7 +27,7 @@ class VariantCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: isSelected ? const Color(0xFF327801) : AppColors.grey_e2e8f0,
+            color: isSelected ? AppColors.green_6cad10 : AppColors.grey_e2e8f0,
             width: 2,
           ),
           borderRadius: BorderRadius.circular(12),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/features/cart/views/components/payment_method_card.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
 import '../../../constants/app_colors.dart';
+import 'components/payment_method_card.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});

@@ -16,15 +16,19 @@ class _CoreValueCardState extends State<CoreValueCard> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: SizedBox(
-        height: 450,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: 400,
+          maxHeight: MediaQuery.of(context).size.height * 0.52,
+        ),
         child: Stack(
           alignment: Alignment.center,
           children: [
             Positioned(
               top:
-                  MediaQuery.of(context).size.height *
-                  0.30, // Adjust this value as needed
+                  (MediaQuery.of(context).size.width * 0.75) *
+                  0.9, // ~60% of image height
+
               child: Container(
                 width: MediaQuery.sizeOf(context).width * 0.9,
                 padding: const EdgeInsets.fromLTRB(
@@ -102,8 +106,9 @@ class _CoreValueCardState extends State<CoreValueCard> {
             Positioned(
               top: 0,
               child: Container(
-                width: 300,
-                height: 300, // Adjust height as needed
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.width * 0.7,
+
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(12),

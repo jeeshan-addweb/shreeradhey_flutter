@@ -29,215 +29,224 @@ class _LoginScreenState extends State<LoginScreen> {
 
           // Centered Card
           Center(
-            child: Container(
-              height: MediaQuery.sizeOf(context).height * 0.50,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 500,
+                minHeight: MediaQuery.of(context).size.height * 0.52,
+                maxHeight: MediaQuery.of(context).size.height * 0.55,
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Title
-                    const Text(
-                      "Log In",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
+              child: Container(
+                height: MediaQuery.sizeOf(context).height * 0.50,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Title
+                      const Text(
+                        "Log In",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    // Mobile Number label
-                    const Text(
-                      "Mobile Number",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                      // Mobile Number label
+                      const Text(
+                        "Mobile Number",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-                    // Mobile Number Field with country picker
-                    // Mobile Number Field with country picker
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
-                        borderRadius: BorderRadius.circular(6),
-                        color: Colors.white,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(left: 4),
-                            child: CountryCodePicker(
-                              onChanged: (code) {},
-                              initialSelection: 'IN',
-                              favorite: ['+91', 'IN'],
-                              showCountryOnly: false,
-                              showOnlyCountryWhenClosed: false,
-                              alignLeft: false,
-                              padding: EdgeInsets.zero,
+                      // Mobile Number Field with country picker
+                      // Mobile Number Field with country picker
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(6),
+                          color: Colors.white,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.only(left: 4),
+                              child: CountryCodePicker(
+                                onChanged: (code) {},
+                                initialSelection: 'IN',
+                                favorite: ['+91', 'IN'],
+                                showCountryOnly: false,
+                                showOnlyCountryWhenClosed: false,
+                                alignLeft: false,
+                                padding: EdgeInsets.zero,
+                              ),
                             ),
-                          ),
-                          Container(
-                            height: 46,
-                            width: 1,
-                            color: Colors.grey.shade400,
-                          ),
-                          Expanded(
-                            child: TextField(
-                              keyboardType: TextInputType.phone,
-                              controller: phoneController,
-                              decoration: const InputDecoration(
-                                hintText: "Enter your mobile number",
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 14,
+                            Container(
+                              height: 46,
+                              width: 1,
+                              color: Colors.grey.shade400,
+                            ),
+                            Expanded(
+                              child: TextField(
+                                keyboardType: TextInputType.phone,
+                                controller: phoneController,
+                                decoration: const InputDecoration(
+                                  hintText: "Enter your mobile number",
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 14,
+                                  ),
                                 ),
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Divider
+                      Row(
+                        children: const [
+                          Expanded(child: Divider()),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 6),
+                            child: Text("or", style: TextStyle(fontSize: 16)),
                           ),
+                          Expanded(child: Divider()),
                         ],
                       ),
-                    ),
 
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 12),
 
-                    // Divider
-                    Row(
-                      children: const [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 6),
-                          child: Text("or", style: TextStyle(fontSize: 16)),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Email label
-                    const Text(
-                      "Email Address",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Email Field
-                    TextField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintText: "Enter your email address",
-                        hintStyle: TextStyle(color: AppColors.grey_94a3b8),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
+                      // Email label
+                      const Text(
+                        "Email Address",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
 
-                    const SizedBox(height: 16),
-
-                    // Submit Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.green_6cad10,
-                              AppColors.green_327801,
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
+                      // Email Field
+                      TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: "Enter your email address",
+                          hintStyle: TextStyle(color: AppColors.grey_94a3b8),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(6),
                           ),
-                          borderRadius: BorderRadius.circular(8),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
                         ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Submit Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.green_6cad10,
+                                AppColors.green_327801,
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
                             ),
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          onPressed: () {
-                            String contact = "";
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                            ),
+                            onPressed: () {
+                              String contact = "";
 
-                            if (phoneController.text.isNotEmpty) {
-                              contact = phoneController.text;
-                            } else if (emailController.text.isNotEmpty) {
-                              contact = emailController.text;
-                            }
+                              if (phoneController.text.isNotEmpty) {
+                                contact = phoneController.text;
+                              } else if (emailController.text.isNotEmpty) {
+                                contact = emailController.text;
+                              }
 
-                            if (contact.isNotEmpty) {
-                              context.push(
-                                AppRoutePath.otpScreen,
-                                extra: contact, // 👈 pass phone/email
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Please enter phone or email"),
-                                ),
-                              );
-                            }
-                          },
+                              if (contact.isNotEmpty) {
+                                context.push(
+                                  AppRoutePath.otpScreen,
+                                  extra: contact, // 👈 pass phone/email
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Please enter phone or email",
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
 
-                          child: const Text(
-                            "SUBMIT",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                            child: const Text(
+                              "SUBMIT",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    // T&C text
-                    const Text.rich(
-                      TextSpan(
-                        text: "By proceeding, you are agreeing to our ",
-                        style: TextStyle(fontSize: 14),
-                        children: [
-                          TextSpan(
-                            text: "T&C",
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
+                      // T&C text
+                      const Text.rich(
+                        TextSpan(
+                          text: "By proceeding, you are agreeing to our ",
+                          style: TextStyle(fontSize: 14),
+                          children: [
+                            TextSpan(
+                              text: "T&C",
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          TextSpan(text: " and "),
-                          TextSpan(
-                            text: "Privacy policy",
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
+                            TextSpan(text: " and "),
+                            TextSpan(
+                              text: "Privacy policy",
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

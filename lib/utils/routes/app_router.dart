@@ -9,6 +9,7 @@ import '../../features/cart/views/cart_page.dart';
 import '../../features/cart/views/checkout_screen.dart';
 import '../../features/cart/views/my_cart.dart';
 import '../../features/dashboard/view/dashboard_screen.dart';
+import '../../features/deals/views/deals_screen.dart';
 import '../../features/footer_menu/views/a2_gir_cow_desi_ghee_page.dart';
 import '../../features/footer_menu/views/about_us_page.dart';
 import '../../features/footer_menu/views/blog_detail_screen.dart';
@@ -74,8 +75,14 @@ class AppRouter {
             name: 'shop',
             path: AppRoutePath.shopScreen,
             builder: (BuildContext context, GoRouterState state) {
-              final initialIndex = state.extra as int? ?? 0;
-              return ShopPage(initialCategoryIndex: initialIndex);
+              return ShopPage();
+            },
+          ),
+          GoRoute(
+            name: 'deals',
+            path: AppRoutePath.dealsScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              return DealsScreen();
             },
           ),
           GoRoute(

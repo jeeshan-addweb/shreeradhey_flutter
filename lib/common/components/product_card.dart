@@ -17,8 +17,8 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
-    const double tagSize = 48; // fixed size for SAVE tag
-    const double tagPadding = 12; // distance from edges
+    double tagSize = MediaQuery.of(context).size.width * 0.12; // ~12% of screen
+    double tagPadding = 12;
     return GestureDetector(
       onTap: () {
         context.push(AppRoutePath.productDetail);
@@ -42,7 +42,7 @@ class _ProductCardState extends State<ProductCard> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: AspectRatio(
-                      aspectRatio: 4 / 3,
+                      aspectRatio: 8 / 6,
                       child: Image.asset(
                         widget.model.imageUrl,
                         width: double.infinity,
@@ -101,7 +101,7 @@ class _ProductCardState extends State<ProductCard> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
 
-                    height: tagSize,
+                    height: 30,
                     decoration: BoxDecoration(
                       color:
                           widget.model.tagText == "Newly Launch"
@@ -249,43 +249,107 @@ class _ProductCardState extends State<ProductCard> {
             // Add to cart button with icon on right
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.green_6cad10, AppColors.green_327801],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              child: SizedBox(
+                width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    minimumSize: const Size.fromHeight(40),
+                    padding: EdgeInsets.zero, // 👈 remove default padding
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
+                    minimumSize: const Size.fromHeight(40),
+                    shadowColor: Colors.transparent,
+                    backgroundColor:
+                        Colors.transparent, // gradient will go inside
+                  ).copyWith(
+                    // 👇 add gradient background directly in button
+                    backgroundColor: WidgetStateProperty.all<Color>(
+                      Colors.transparent,
+                    ),
+                    overlayColor: WidgetStateProperty.all<Color>(
+                      Colors.transparent,
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Add to cart',
-                        style: TextStyle(color: AppColors.white, fontSize: 16),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.green_6cad10,
+                          AppColors.green_327801,
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
-                      SizedBox(width: 5),
-                      Icon(
-                        Icons.shopping_cart,
-                        color: AppColors.white,
-                        size: 20,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      constraints: const BoxConstraints(minHeight: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Add to cart',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Icon(
+                            Icons.shopping_cart,
+                            color: AppColors.white,
+                            size: 20,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
+
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       gradient: LinearGradient(
+            //         colors: [AppColors.green_6cad10, AppColors.green_327801],
+            //         begin: Alignment.topCenter,
+            //         end: Alignment.bottomCenter,
+            //       ),
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     child: ElevatedButton(
+            //       onPressed: () {},
+            //       style: ElevatedButton.styleFrom(
+            //         backgroundColor: Colors.transparent,
+            //         shadowColor: Colors.transparent,
+            //         minimumSize: const Size.fromHeight(40),
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(8),
+            //         ),
+            //       ),
+            //       child: Row(
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           Text(
+            //             'Add to cart',
+            //             style: TextStyle(color: AppColors.white, fontSize: 16),
+            //           ),
+            //           SizedBox(width: 5),
+            //           Icon(
+            //             Icons.shopping_cart,
+            //             color: AppColors.white,
+            //             size: 20,
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

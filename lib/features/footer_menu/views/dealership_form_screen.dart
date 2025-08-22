@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/common/components/common_footer.dart';
-import 'package:shree_radhey/common/components/gradient_button.dart';
 
+import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
+import '../../../common/components/gradient_button.dart';
 import '../../../constants/app_colors.dart';
 
 class DealershipFormScreen extends StatefulWidget {

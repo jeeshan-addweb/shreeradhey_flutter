@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/constants/app_mock_data.dart';
-import 'package:shree_radhey/features/shop/views/components/product_detail_review_section.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
+import '../../../constants/app_mock_data.dart';
 import '../../home/views/widgets/product_section_widget.dart';
 import 'components/faq_section.dart';
+import 'components/product_detail_review_section.dart';
 import 'components/variant_card.dart';
 import 'widgets/additional_info_widget.dart';
 import 'widgets/description_widget.dart';
@@ -28,7 +28,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: AppColors.black.withOpacity(0.05),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

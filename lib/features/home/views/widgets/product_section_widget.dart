@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../common/components/product_card.dart';
+import '../../../../constants/app_colors.dart';
 import '../../../../constants/app_mock_data.dart';
 
 class ProductSection extends StatefulWidget {
@@ -91,7 +92,10 @@ class _ProductSectionState extends State<ProductSection> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: widget.firstTextColor,
-                      fontStyle: FontStyle.italic,
+                      fontStyle:
+                          widget.firstTextColor == AppColors.red_b12704
+                              ? FontStyle.italic
+                              : FontStyle.normal,
                       fontSize: 28,
                     ),
                   ),
@@ -100,6 +104,10 @@ class _ProductSectionState extends State<ProductSection> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: widget.secondTextColor,
+                      fontStyle:
+                          widget.secondTextColor == AppColors.red_b12704
+                              ? FontStyle.italic
+                              : FontStyle.normal,
                       fontSize: 28,
                     ),
                   ),

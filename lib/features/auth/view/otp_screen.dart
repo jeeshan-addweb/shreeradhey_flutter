@@ -2,8 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
-import 'package:shree_radhey/utils/routes/app_route_path.dart';
+
 import '../../../constants/app_images.dart';
+import '../../../utils/routes/app_route_path.dart';
 
 class OtpScreen extends StatefulWidget {
   final String contact;
