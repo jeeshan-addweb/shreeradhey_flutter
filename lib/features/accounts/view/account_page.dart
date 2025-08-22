@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/features/accounts/view/address_screen.dart';
 
 import '../../../constants/app_colors.dart';
 import 'accounts_detail_page.dart';
+import 'address_screen.dart';
 import 'dashboard_page.dart';
 import 'order_page.dart';
 

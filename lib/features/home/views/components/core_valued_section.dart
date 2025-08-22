@@ -26,7 +26,7 @@ class _CoreValuedSectionState extends State<CoreValuedSection> {
             text: TextSpan(
               children: [
                 const TextSpan(
-                  text: "THE SHREE RADHEY COMMITMENT",
+                  text: "THE SHREE RADHEY COMMITMENT |",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -35,7 +35,7 @@ class _CoreValuedSectionState extends State<CoreValuedSection> {
                 ),
 
                 TextSpan(
-                  text: " | CORE\n VALUES",
+                  text: " CORE\n VALUES",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.red_b12704, // Or Colors.red

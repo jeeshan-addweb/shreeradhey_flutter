@@ -71,38 +71,53 @@ class BlogSection extends StatelessWidget {
 
           // View All Blogs button
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.green_6cad10, AppColors.green_327801],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: 250, // button never exceeds this
                 ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ElevatedButton(
-                onPressed: () {
-                  context.push(AppRoutePath.bloglistingScreen);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  minimumSize: const Size.fromHeight(40),
-                  shape: RoundedRectangleBorder(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.green_6cad10, AppColors.green_327801],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'View All Blogs',
-                      style: TextStyle(color: AppColors.white, fontSize: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.push(AppRoutePath.bloglistingScreen);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      minimumSize: const Size.fromHeight(40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    SizedBox(width: 5),
-                    Icon(Icons.arrow_forward, color: AppColors.white, size: 20),
-                  ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min, // 👈 prevents stretching
+                      children: [
+                        Text(
+                          'View All Blogs',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Icon(
+                          Icons.arrow_forward,
+                          color: AppColors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),

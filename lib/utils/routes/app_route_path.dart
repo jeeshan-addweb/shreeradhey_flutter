@@ -9,6 +9,7 @@ class AppRoutePath {
   static const String homeScreen = '/homeScreen';
   // Shop
   static const String shopScreen = '/shopScreen';
+  static const String dealsScreen = '/dealsScreen';
   static const String productDetail = '/productDetail';
   // Wishlist
   static const String wishlistScreen = '/wishlistScreen';

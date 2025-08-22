@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/common/components/common_footer.dart';
 
+import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 
 class FaqScreen extends StatefulWidget {

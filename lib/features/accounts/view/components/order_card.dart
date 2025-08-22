@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/common/components/gradient_button.dart';
-import 'package:shree_radhey/constants/app_colors.dart' show AppColors;
+
+import '../../../../common/components/gradient_button.dart';
+import '../../../../constants/app_colors.dart';
 import '../../model/order_model.dart';
 import 'package:intl/intl.dart';
 

@@ -28,24 +28,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   child: AboutUsCard(
                     imagePath: AppImages.gir_cow,
                     title: "Our Story",
-                    description: '''
-          Shree Radhey is a well-known name
-          in the organic farming
-          industry. Started by Mr. Abhimanyu
-          Singh Rathore and Mrs. Renu
-          Nathawat, our products are sourced
-          directly from our farm, processed
-          under stringent quality measures to
-          ensure you get the best of what
-          nature has to offer. We have been at
-          this for 6 years now and it’s just
-          getting better as we innovate and
-          bring more options on your plate.
-          Whether you’re looking for pure
-          ghee or indigenous spices, your
-          search for healthy, natural, pure food
-          ends here. 
-                        ''',
+                    description:
+                        " Shree Radhey is a well-known name in the organic farming industry. Started by Mr. Abhimanyu Singh Rathore and Mrs. Renu Nathawat, our products are sourced directly from our farm, processed under stringent quality measures to ensure you get the best of what nature has to offer. We have been at this for 6 years now and it’s just getting better as we innovate and bring more options on your plate.Whether you’re looking for pure ghee or indigenous spices, your search for healthy, natural, pure food ends here.",
                   ),
                 ),
 

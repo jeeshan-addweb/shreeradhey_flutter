@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/common/components/common_footer.dart';
-import 'package:shree_radhey/constants/app_mock_data.dart';
-import 'package:shree_radhey/features/footer_menu/views/component/related_blog_section.dart';
 
+import '../../../common/components/common_footer.dart';
 import '../../../constants/app_images.dart';
+import '../../../constants/app_mock_data.dart';
 import '../../home/model/blog_model.dart';
 import '../model/blog_section._model.dart';
+import 'component/related_blog_section.dart';
 import 'component/table_of_content_card.dart';
 
 class BlogDetailScreen extends StatefulWidget {

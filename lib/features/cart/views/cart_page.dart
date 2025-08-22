@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shree_radhey/constants/app_colors.dart';
-import 'package:shree_radhey/features/cart/views/components/product_overview_card.dart';
-import 'package:shree_radhey/features/home/views/widgets/product_section_widget.dart';
 
 import '../../../common/components/common_footer.dart';
+import '../../../constants/app_colors.dart';
+import '../../home/views/widgets/product_section_widget.dart';
+import 'components/product_overview_card.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
