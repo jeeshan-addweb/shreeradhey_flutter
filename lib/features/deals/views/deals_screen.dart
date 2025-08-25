@@ -15,6 +15,7 @@ class DealsScreen extends StatefulWidget {
 
 class _DealsScreenState extends State<DealsScreen> {
   int selectedIndex = 5;
+  final ScrollController _categoryScrollController = ScrollController();
 
   final List<Map<String, String>> categories = [
     {"title": "All", "image": AppImages.shree},
@@ -24,6 +25,34 @@ class _DealsScreenState extends State<DealsScreen> {
     {"title": "Combo", "image": AppImages.combo},
     {"title": "On Sale", "image": AppImages.on_sale},
   ];
+  @override
+  void initState() {
+    super.initState();
+
+    // 👇 Auto-scroll to selected index after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelected();
+    });
+  }
+
+  void _scrollToSelected() {
+    // each item is ~100px wide (88 + padding + spacing)
+    double itemWidth = 100 + 12; // adjust if design changes
+    double offset = selectedIndex * itemWidth;
+
+    _categoryScrollController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _categoryScrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -37,6 +66,7 @@ class _DealsScreenState extends State<DealsScreen> {
             color: AppColors.blue_eef1ed,
             height: 150, // container + text
             child: ListView.separated(
+              controller: _categoryScrollController,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               itemCount: categories.length,
@@ -49,6 +79,7 @@ class _DealsScreenState extends State<DealsScreen> {
                   onTap: () {
                     setState(() {
                       selectedIndex = index;
+                      _scrollToSelected();
                       // Trigger product list update here
                     });
                   },

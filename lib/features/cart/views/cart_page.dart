@@ -27,14 +27,16 @@ class _CartPageState extends State<CartPage> {
                   CrossAxisAlignment.start, // so text aligns like your design
               children: [
                 Text(
-                  "Home / Cart}",
+                  "Home / Cart",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: Colors.red, // like your design's breadcrumb
                   ),
                 ),
-
+                SizedBox(height: 20),
+                ProductOverviewCard(),
+                SizedBox(height: 20),
                 ProductSection(
                   firstText: "",
                   firstTextColor: AppColors.black,
@@ -44,7 +46,7 @@ class _CartPageState extends State<CartPage> {
                   tagText: "Newly Launch",
                 ),
 
-                ProductOverviewCard(),
+                // ProductOverviewCard(),
                 SizedBox(height: 20),
               ],
             ),

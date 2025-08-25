@@ -46,7 +46,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   final variants = [
     {
-      "name": "1L Pet Bottle (Pack of 2)",
+      "name": "1L Pet Bottle (Pack of 2) skxsxszxjszxbhjjhbjjhbcjbjb",
       "original": 120.0,
       "discounted": 110.0,
       "percent": 8,
@@ -73,6 +73,103 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.grey.shade300)),
+        ),
+        child: Row(
+          children: [
+            // Quantity Selector
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.remove),
+                    onPressed: () {
+                      setState(() {
+                        if (quantity > 1) quantity--;
+                      });
+                    },
+                  ),
+                  Text(
+                    quantity.toString(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      setState(() {
+                        quantity++;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            // Add to Cart Button
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.green_6cad10,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+
+                label: Text(
+                  "Add to Cart",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.white,
+                  ),
+                ),
+                icon: const Icon(Icons.shopping_cart, color: Colors.white),
+              ),
+            ),
+
+            const SizedBox(width: 8),
+
+            // Buy Now Button
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  // handle buy now
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.green_6cad10),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  "Buy Now",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       backgroundColor: AppColors.white,
       body: SingleChildScrollView(
         child: Column(

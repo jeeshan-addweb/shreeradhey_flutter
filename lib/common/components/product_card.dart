@@ -21,7 +21,7 @@ class _ProductCardState extends State<ProductCard> {
     double tagPadding = 12;
     return GestureDetector(
       onTap: () {
-        context.push(AppRoutePath.productDetail);
+        context.push(AppRoutePath.productDetail, extra: {'hideNav': true});
       },
       child: Card(
         color: AppColors.white,

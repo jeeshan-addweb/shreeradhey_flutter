@@ -60,7 +60,9 @@ class AppRouter {
       // 🧭 MEMBER SHELL ROUTE (Main App with Bottom Nav)
       ShellRoute(
         builder: (context, state, child) {
-          return DashboardScreen(child: child);
+          final extra = state.extra as Map<String, dynamic>?;
+          final hideNav = extra?['hideNav'] == true;
+          return DashboardScreen(child: child, showBottomNav: !hideNav);
         },
         routes: [
           //Home flow

@@ -54,13 +54,16 @@ unadulterated and crafted with care to support a
 healthier lifestyle.''',
           ),
 
-          ProductSection(
-            firstText: "",
-            firstTextColor: AppColors.black,
-            secondTextColor: AppColors.black,
-            secondText: "",
-            sectionBgColor: AppColors.white,
-            tagText: "Newly Launch",
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ProductSection(
+              firstText: "",
+              firstTextColor: AppColors.black,
+              secondTextColor: AppColors.black,
+              secondText: "",
+              sectionBgColor: AppColors.white,
+              tagText: "Newly Launch",
+            ),
           ),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.02),
           Image.asset(AppImages.woodpressoilBanner, fit: BoxFit.contain),

@@ -33,6 +33,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               Builder(
                 builder:
                     (context) => IconButton(
+                      padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
                       icon: Icon(
                         isDrawerOpen ? Icons.close : Icons.menu,
                         size: 30,
@@ -80,7 +81,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  context.push(AppRoutePath.myCart);
+                  context.push(AppRoutePath.cartPage);
                 },
                 child: Stack(
                   children: [

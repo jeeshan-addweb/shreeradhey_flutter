@@ -95,7 +95,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         length: 6,
                         showCursor: true,
                         onCompleted: (pin) {
-                          context.push(AppRoutePath.cartPage);
+                          context.push(AppRoutePath.homeScreen);
                         },
                       ),
                     ),

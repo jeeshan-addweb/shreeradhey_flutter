@@ -9,7 +9,12 @@ import '../../../utils/routes/app_route_path.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Widget child;
-  const DashboardScreen({super.key, required this.child});
+  final bool showBottomNav;
+  const DashboardScreen({
+    super.key,
+    required this.child,
+    this.showBottomNav = true,
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -84,11 +89,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _getIndexFromLocation(
-          GoRouterState.of(context).uri.toString(),
-        ),
-      ),
+      bottomNavigationBar:
+          widget.showBottomNav
+              ? CustomBottomNavigationBar(
+                currentIndex: _getIndexFromLocation(
+                  GoRouterState.of(context).uri.toString(),
+                ),
+                onMenuTap: _toggleDrawer,
+              )
+              : null,
     );
   }
 
