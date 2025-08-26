@@ -33,6 +33,7 @@ class _ReviewSectionState extends State<ReviewSection> {
                     const TextSpan(
                       text: "WHAT ",
                       style: TextStyle(
+                        fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                         fontSize: 28,
@@ -51,6 +52,7 @@ class _ReviewSectionState extends State<ReviewSection> {
                     const TextSpan(
                       text: "ABOUT US",
                       style: TextStyle(
+                        fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                         fontSize: 28,

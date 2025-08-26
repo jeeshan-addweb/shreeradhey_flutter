@@ -18,13 +18,37 @@ class _AboutUsPageState extends State<AboutUsPage> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Home",
+                        style: TextStyle(color: AppColors.black),
+                      ),
+                      TextSpan(
+                        text: " / ",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                      TextSpan(
+                        text: "About Us",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                    ],
+                  ),
+                ),
                 Padding(
-                  padding: const EdgeInsets.all(40.0),
+                  padding: const EdgeInsets.all(30.0),
                   child: AboutUsCard(
                     imagePath: AppImages.gir_cow,
                     title: "Our Story",
@@ -38,34 +62,22 @@ class _AboutUsPageState extends State<AboutUsPage> {
                     AboutUsInfoItem(
                       iconPath: AppImages.cart,
                       title: "Our Beliefs",
-                      description: ''' 
-We believe everyone deserves food with the
-ingredients they would choose, without any
-chemicals. We have a range of certified organic
-products to ensure purity and make your world
-healthy with organic products.
+                      description:
+                          '''We believe everyone deserves food with the ingredients they would choose, without any chemicals. We have a range of certified organic products to ensure purity and make your world healthy with organic products.
                           ''',
                     ),
                     AboutUsInfoItem(
                       iconPath: AppImages.cart,
                       title: "100% Natural and Certified",
-                      description: ''' 
-We believe everyone deserves food with the
-ingredients they would choose, without any
-chemicals. We have a range of certified organic
-products to ensure purity and make your world
-healthy with organic products.
+                      description:
+                          '''We believe everyone deserves food with the ingredients they would choose, without any chemicals. We have a range of certified organic products to ensure purity and make your world healthy with organic products.
                           ''',
                     ),
                     AboutUsInfoItem(
                       iconPath: AppImages.cart,
                       title: "Our Promise to our customers",
-                      description: ''' 
-We believe everyone deserves food with the
-ingredients they would choose, without any
-chemicals. We have a range of certified organic
-products to ensure purity and make your world
-healthy with organic products.
+                      description:
+                          '''We believe everyone deserves food with the ingredients they would choose, without any chemicals. We have a range of certified organic products to ensure purity and make your world healthy with organic products.
                           ''',
                     ),
                   ],

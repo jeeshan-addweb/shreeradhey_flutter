@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../common/components/common_footer.dart';
+import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../constants/app_mock_data.dart';
 import '../../home/model/blog_model.dart';
@@ -85,29 +86,35 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Home / ",
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
-                    const Text(
-                      "Blog",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        "/ ${widget.model.title}",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        softWrap: true,
+                    children: [
+                      TextSpan(
+                        text: "Home",
+                        style: TextStyle(color: AppColors.black),
                       ),
-                    ),
-                  ],
+                      TextSpan(
+                        text: " / ",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                      TextSpan(
+                        text: "Blog",
+                        style: TextStyle(color: AppColors.black),
+                      ),
+                      TextSpan(
+                        text: " / ",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                      TextSpan(
+                        text: widget.model.title,
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 16),

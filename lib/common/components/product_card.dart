@@ -21,7 +21,7 @@ class _ProductCardState extends State<ProductCard> {
     double tagPadding = 12;
     return GestureDetector(
       onTap: () {
-        context.push(AppRoutePath.productDetail);
+        context.push(AppRoutePath.productDetail, extra: {'hideNav': true});
       },
       child: Card(
         color: AppColors.white,
@@ -157,7 +157,7 @@ class _ProductCardState extends State<ProductCard> {
               child: Text(
                 widget.model.subtitle,
                 style: TextStyle(
-                  color: AppColors.grey,
+                  color: AppColors.grey_65758b,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -205,7 +205,7 @@ class _ProductCardState extends State<ProductCard> {
                     style: TextStyle(
                       color: AppColors.blue_2da5f3,
                       fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   SizedBox(height: 4),
@@ -225,7 +225,7 @@ class _ProductCardState extends State<ProductCard> {
                           'Best Price \$${widget.model.couponPrice.toStringAsFixed(0)}',
                           style: TextStyle(
                             color: AppColors.green_327801,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             fontSize: 16,
                           ),
                         ),

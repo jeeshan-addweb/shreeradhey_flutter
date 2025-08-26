@@ -26,15 +26,43 @@ class _CartPageState extends State<CartPage> {
               crossAxisAlignment:
                   CrossAxisAlignment.start, // so text aligns like your design
               children: [
-                Text(
-                  "Home / Cart}",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red, // like your design's breadcrumb
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Home",
+                        style: TextStyle(
+                          color: AppColors.grey_3C403D,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: " / ",
+                        style: TextStyle(
+                          color: AppColors.red_CC0003,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "Cart",
+                        style: TextStyle(
+                          color: AppColors.red_CC0003,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
+                SizedBox(height: 20),
+                ProductOverviewCard(),
+                SizedBox(height: 20),
                 ProductSection(
                   firstText: "",
                   firstTextColor: AppColors.black,
@@ -44,7 +72,7 @@ class _CartPageState extends State<CartPage> {
                   tagText: "Newly Launch",
                 ),
 
-                ProductOverviewCard(),
+                // ProductOverviewCard(),
                 SizedBox(height: 20),
               ],
             ),

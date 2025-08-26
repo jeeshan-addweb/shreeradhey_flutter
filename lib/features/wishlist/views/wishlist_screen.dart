@@ -18,7 +18,45 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start, // so text aligns like your design
+              children: [
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Home ",
+                        style: TextStyle(color: AppColors.black),
+                      ),
+                      TextSpan(
+                        text: "/ ",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                      TextSpan(
+                        text: "Wishlist",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 20),
+                Text(
+                  "MY WISHLIST",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ),
           ListView.separated(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
@@ -41,13 +79,16 @@ class _WishlistScreenState extends State<WishlistScreen> {
             },
           ),
           SizedBox(height: 20),
-          ProductSection(
-            firstText: "",
-            firstTextColor: AppColors.black,
-            secondTextColor: AppColors.black,
-            secondText: "Similar Products".toUpperCase(),
-            sectionBgColor: AppColors.white,
-            tagText: "Best Seller",
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: ProductSection(
+              firstText: "",
+              firstTextColor: AppColors.black,
+              secondTextColor: AppColors.black,
+              secondText: "Similar Products".toUpperCase(),
+              sectionBgColor: AppColors.white,
+              tagText: "Best Seller",
+            ),
           ),
           SizedBox(height: 20),
           CommonFooter(),

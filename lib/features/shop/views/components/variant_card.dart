@@ -70,6 +70,9 @@ class VariantCard extends StatelessWidget {
                   color: isSelected ? Colors.white : AppColors.grey_212121,
                   fontWeight: FontWeight.w500,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis, // 👈 add "..." if too long
+                textAlign: TextAlign.center, // 👈 center align inside the box
               ),
             ),
 

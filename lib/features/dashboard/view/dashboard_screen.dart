@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../common/components/custom_app_bar.dart';
 import '../../../common/components/custom_bottom_navigation_bar.dart';
+
 import '../../../constants/app_images.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,7 +10,12 @@ import '../../../utils/routes/app_route_path.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Widget child;
-  const DashboardScreen({super.key, required this.child});
+  final bool showBottomNav;
+  const DashboardScreen({
+    super.key,
+    required this.child,
+    this.showBottomNav = true,
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -49,6 +55,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(child: widget.child),
             ],
           ),
+          if (_isDrawerOpen)
+            GestureDetector(
+              onTap: _toggleDrawer,
+              child: Container(color: Colors.transparent),
+            ),
 
           /// Custom sliding drawer
           AnimatedPositioned(
@@ -66,7 +77,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     context,
                     AppImages.best_seller,
                     "Best Sellers",
-                    () {},
+                    () {
+                      context.push(AppRoutePath.bestSellerScreen);
+                    },
                   ),
                   _drawerItem(context, AppImages.ghee, "A2 Ghee", () {
                     context.push(AppRoutePath.a2girCowDesiGheePage);
@@ -74,7 +87,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   _drawerItem(context, AppImages.oil, "Wood Pressed Oils", () {
                     context.push(AppRoutePath.woodpressedoilScreen);
                   }),
-                  _drawerItem(context, AppImages.shop, "Shop", () {}),
+                  _drawerItem(context, AppImages.shop, "Shop", () {
+                    context.push(AppRoutePath.shopScreen);
+                  }),
                   _drawerItem(context, AppImages.contact, "Contact", () {
                     context.push(AppRoutePath.contactUsScreen);
                   }),
@@ -84,11 +99,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _getIndexFromLocation(
-          GoRouterState.of(context).uri.toString(),
-        ),
-      ),
+      bottomNavigationBar:
+          widget.showBottomNav
+              ? CustomBottomNavigationBar(
+                currentIndex: _getIndexFromLocation(
+                  GoRouterState.of(context).uri.toString(),
+                ),
+                onMenuTap: _toggleDrawer,
+              )
+              : null,
     );
   }
 

@@ -123,7 +123,7 @@ class _ProductSectionState extends State<ProductSection> {
             child: ListView.separated(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              // padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: AppMockData.mockProducts.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {

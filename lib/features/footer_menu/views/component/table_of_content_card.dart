@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../constants/app_colors.dart';
+
 class TableOfContentCard extends StatelessWidget {
   final List<String> contents;
   final Function(int) onItemTap; // callback when tapped
@@ -13,6 +15,7 @@ class TableOfContentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: SizedBox(

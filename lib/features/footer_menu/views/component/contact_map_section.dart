@@ -21,27 +21,27 @@ class ContactMapSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LatLng location = LatLng(latitude, longitude);
+    // final LatLng location = LatLng(latitude, longitude);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         /// Google Map
-        SizedBox(
-          height: 250,
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(target: location, zoom: 14),
-            markers: {
-              Marker(
-                markerId: const MarkerId("office"),
-                position: location,
-                infoWindow: InfoWindow(title: "Shree Radhey A2 Ghee"),
-              ),
-            },
-            zoomControlsEnabled: false,
-          ),
-        ),
-        const SizedBox(height: 16),
+        // SizedBox(
+        //   height: 250,
+        //   child: GoogleMap(
+        //     initialCameraPosition: CameraPosition(target: location, zoom: 14),
+        //     markers: {
+        //       Marker(
+        //         markerId: const MarkerId("office"),
+        //         position: location,
+        //         infoWindow: InfoWindow(title: "Shree Radhey A2 Ghee"),
+        //       ),
+        //     },
+        //     zoomControlsEnabled: false,
+        //   ),
+        // ),
+        // const SizedBox(height: 16),
 
         /// Address
         Column(
