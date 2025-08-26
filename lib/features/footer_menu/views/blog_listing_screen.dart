@@ -50,7 +50,28 @@ class _BlogListingScreenState extends State<BlogListingScreen> {
             children: [
               Text("Blog", style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 4),
-              const Text("Home / Blog", style: TextStyle(color: Colors.red)),
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "Home ",
+                      style: TextStyle(color: AppColors.black),
+                    ),
+                    TextSpan(
+                      text: "/ ",
+                      style: TextStyle(color: AppColors.red_CC0003),
+                    ),
+                    TextSpan(
+                      text: "Blog",
+                      style: TextStyle(color: AppColors.red_CC0003),
+                    ),
+                  ],
+                ),
+              ),
 
               const SizedBox(height: 16),
               BlogCarousel(blogs: AppMockData.blogItems),

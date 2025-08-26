@@ -36,14 +36,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Home / Checkout",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Home",
+                        style: TextStyle(color: AppColors.black),
+                      ),
+                      TextSpan(
+                        text: " / ",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                      TextSpan(
+                        text: "Checkout",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                    ],
                   ),
                 ),
+
                 const SizedBox(height: 16),
                 const Text(
                   "Shipping details",

@@ -29,6 +29,7 @@ class AppRoutePath {
   static const String aboutUsPage = '/aboutUsPage';
   static const String refundPolicyPage = '/refundPolicyPage';
   static const String privacyPolicyPage = '/privacyPolicyPage';
+  static const String bestSellerScreen = '/bestSellerScreen';
   static const String termsAndConditionsPage = '/termsAndConditionsPage';
   static const String shippingAndDeliveryPolicyPage =
       '/shippingAndDeliveryPolicyPage';

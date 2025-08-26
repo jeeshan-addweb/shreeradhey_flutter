@@ -12,6 +12,7 @@ import '../../features/dashboard/view/dashboard_screen.dart';
 import '../../features/deals/views/deals_screen.dart';
 import '../../features/footer_menu/views/a2_gir_cow_desi_ghee_page.dart';
 import '../../features/footer_menu/views/about_us_page.dart';
+import '../../features/footer_menu/views/best_seller_screen.dart';
 import '../../features/footer_menu/views/blog_detail_screen.dart';
 import '../../features/footer_menu/views/blog_listing_screen.dart';
 import '../../features/footer_menu/views/contact_us_screen.dart';
@@ -60,8 +61,12 @@ class AppRouter {
       // 🧭 MEMBER SHELL ROUTE (Main App with Bottom Nav)
       ShellRoute(
         builder: (context, state, child) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final hideNav = extra?['hideNav'] == true;
+          final extra = state.extra;
+          bool hideNav = false;
+
+          if (extra is Map<String, dynamic>) {
+            hideNav = extra['hideNav'] == true;
+          }
           return DashboardScreen(child: child, showBottomNav: !hideNav);
         },
         routes: [
@@ -167,6 +172,13 @@ class AppRouter {
             path: AppRoutePath.refundPolicyPage,
             builder: (BuildContext context, GoRouterState state) {
               return RefundPolicyPage();
+            },
+          ),
+          GoRoute(
+            name: 'bestSellerScreen',
+            path: AppRoutePath.bestSellerScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              return BestSellerScreen();
             },
           ),
           GoRoute(

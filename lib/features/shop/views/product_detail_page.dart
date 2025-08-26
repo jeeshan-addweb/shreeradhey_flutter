@@ -88,24 +88,39 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Minus
                   IconButton(
-                    icon: const Icon(Icons.remove),
+                    icon: const Icon(Icons.remove, size: 16),
                     onPressed: () {
                       setState(() {
                         if (quantity > 1) quantity--;
                       });
                     },
                   ),
-                  Text(
-                    quantity.toString(),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+
+                  // Divider
+                  Container(width: 1, height: 50, color: Colors.grey.shade300),
+
+                  // Quantity Text
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      quantity.toString(),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
+
+                  // Divider
+                  Container(width: 1, height: 50, color: Colors.grey.shade300),
+
+                  // Plus
                   IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, size: 16),
                     onPressed: () {
                       setState(() {
                         quantity++;
@@ -118,27 +133,37 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
             const SizedBox(width: 12),
 
-            // Add to Cart Button
+            // Add to Cart Button with Gradient
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.green_6cad10,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.green_6cad10, AppColors.green_327801],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-
-                label: Text(
-                  "Add to Cart",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.white,
+                child: ElevatedButton.icon(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0, // remove shadow since gradient is outside
+                    backgroundColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
+                  label: Text(
+                    "Add to Cart",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.white,
+                    ),
+                  ),
+                  icon: const Icon(Icons.shopping_cart, color: Colors.white),
                 ),
-                icon: const Icon(Icons.shopping_cart, color: Colors.white),
               ),
             ),
 
@@ -177,12 +202,54 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Text(
-                "Home / Ghee /  SHREERADHEY A2 gir cow ghee (1L Pet Bottle),",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.red, // like your design's breadcrumb
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "Home",
+                      style: TextStyle(
+                        color: AppColors.grey_3C403D,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: " / ",
+                      style: TextStyle(
+                        color: AppColors.red_CC0003,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "Ghee",
+                      style: TextStyle(
+                        color: AppColors.grey_3C403D,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: " / ",
+                      style: TextStyle(
+                        color: AppColors.red_CC0003,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "SHREERADHEY A2 gir cow ghee (1L Pet Bottle),",
+                      style: TextStyle(
+                        color: AppColors.red_CC0003,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

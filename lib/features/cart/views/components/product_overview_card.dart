@@ -4,8 +4,24 @@ import '../../../../constants/app_colors.dart';
 import '../../../../constants/app_images.dart';
 import '../../../../utils/routes/app_route_path.dart';
 
-class ProductOverviewCard extends StatelessWidget {
+class ProductOverviewCard extends StatefulWidget {
   const ProductOverviewCard({super.key});
+
+  @override
+  State<ProductOverviewCard> createState() => _ProductOverviewCardState();
+}
+
+class _ProductOverviewCardState extends State<ProductOverviewCard> {
+  int quantity = 1;
+  void _incrementQuantity() {
+    setState(() => quantity++);
+  }
+
+  void _decrementQuantity() {
+    setState(() {
+      if (quantity > 1) quantity--;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +73,14 @@ class ProductOverviewCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
 
-                      _QuantitySelector(),
+                      QuantitySelector(
+                        quantity: quantity,
+                        onIncrement: () => setState(() => quantity++),
+                        onDecrement:
+                            () => setState(() {
+                              if (quantity > 1) quantity--;
+                            }),
+                      ),
                       const SizedBox(height: 6),
 
                       Text(
@@ -305,49 +328,65 @@ class _DashedLinePainter extends CustomPainter {
 }
 
 // Quantity Selector Widget
-class _QuantitySelector extends StatelessWidget {
-  const _QuantitySelector();
+class QuantitySelector extends StatelessWidget {
+  final int quantity;
+  final VoidCallback onIncrement;
+  final VoidCallback onDecrement;
+
+  const QuantitySelector({
+    super.key,
+    required this.quantity,
+    required this.onIncrement,
+    required this.onDecrement,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 32,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _QuantityButton(icon: Icons.remove, onTap: () {}),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: const Text("1", style: TextStyle(fontSize: 14)),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _QuantityBox(
+          child: IconButton(
+            icon: const Icon(Icons.remove, size: 16),
+            onPressed: onDecrement,
           ),
-          _QuantityButton(icon: Icons.add, onTap: () {}),
-        ],
-      ),
+        ),
+        const SizedBox(width: 4),
+        _QuantityBox(
+          child: Text(
+            quantity.toString(),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+        ),
+        const SizedBox(width: 4),
+        _QuantityBox(
+          child: IconButton(
+            icon: const Icon(Icons.add, size: 16),
+            onPressed: onIncrement,
+          ),
+        ),
+      ],
     );
   }
 }
 
-// Quantity Button
-class _QuantityButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
+// Reusable Box
+class _QuantityBox extends StatelessWidget {
+  final Widget child;
 
-  const _QuantityButton({required this.icon, required this.onTap});
+  const _QuantityBox({required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 28,
-        height: 32,
-        alignment: Alignment.center,
-        child: Icon(icon, size: 16),
+    return Container(
+      width: 36,
+      height: 32,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(6),
       ),
+      alignment: Alignment.center,
+      child: child,
     );
   }
 }

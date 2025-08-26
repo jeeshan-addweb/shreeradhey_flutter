@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
 import '../../../common/components/gradient_button.dart';
+import '../../../constants/app_colors.dart';
 import 'component/contact_map_section.dart';
 
 class ContactUsScreen extends StatefulWidget {
@@ -32,22 +33,45 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "CONTACT US",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 40,
+                          margin: const EdgeInsets.symmetric(horizontal: 40),
+                          height: 2,
+                          color: AppColors.black,
+                        ),
+                        const Text(
+                          "CONTACT US",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          margin: const EdgeInsets.symmetric(horizontal: 40),
+                          height: 2,
+                          color: AppColors.black,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Get In Touch With Us !",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.red.shade700,
+                  SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 36.0),
+                    child: Text(
+                      "Get In Touch With Us !",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red.shade700,
+                      ),
                     ),
                   ),
                 ],
@@ -56,7 +80,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 
             /// Form Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 36.0),
               child: Form(
                 key: _formKey,
                 child: Column(
