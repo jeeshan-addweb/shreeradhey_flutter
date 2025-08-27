@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 
 import '../../../constants/app_images.dart';
 import '../../../utils/routes/app_route_path.dart';
+import '../controller/auth_controller.dart';
 
 class OtpScreen extends StatefulWidget {
   final String contact;
@@ -94,8 +96,19 @@ class _OtpScreenState extends State<OtpScreen> {
                         controller: pinController,
                         length: 6,
                         showCursor: true,
-                        onCompleted: (pin) {
+                        onCompleted: (pin) async {
                           context.push(AppRoutePath.homeScreen);
+                          // final controller = Get.find<AuthController>();
+                          // await controller.verifyOtp(widget.contact, pin);
+                          // if (controller.token.isNotEmpty) {
+                          //   context.go(
+                          //     AppRoutePath.homeScreen,
+                          //   ); // navigate to home
+                          // } else {
+                          //   ScaffoldMessenger.of(context).showSnackBar(
+                          //     const SnackBar(content: Text("Invalid OTP")),
+                          //   );
+                          // }
                         },
                       ),
                     ),

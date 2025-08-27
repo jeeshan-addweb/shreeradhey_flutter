@@ -144,7 +144,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: ElevatedButton.icon(
+                child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     elevation: 0, // remove shadow since gradient is outside
@@ -154,15 +154,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  label: Text(
-                    "Add to Cart",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.white,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Add to Cart",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.shopping_cart, color: Colors.white),
+                    ],
                   ),
-                  icon: const Icon(Icons.shopping_cart, color: Colors.white),
                 ),
               ),
             ),
@@ -622,7 +628,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     firstText: "",
                     firstTextColor: AppColors.black,
                     secondTextColor: AppColors.black,
-                    secondText: "Similar Products",
+                    secondText: "Similar Products".toUpperCase(),
                     sectionBgColor: AppColors.white,
                     tagText: "Best Seller",
                   ),

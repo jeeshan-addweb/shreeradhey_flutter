@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/routes/app_route_path.dart';
+import '../controller/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -182,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               String contact = "";
 
                               if (phoneController.text.isNotEmpty) {
@@ -192,9 +194,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
 
                               if (contact.isNotEmpty) {
+                                // final controller = Get.find<AuthController>();
+                                // await controller.requestOtp(contact);
                                 context.push(
                                   AppRoutePath.otpScreen,
-                                  extra: contact, // 👈 pass phone/email
+                                  extra: contact,
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
