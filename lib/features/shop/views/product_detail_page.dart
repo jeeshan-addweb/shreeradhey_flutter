@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shree_radhey/features/shop/views/components/add_review_section.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
@@ -595,6 +596,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ratingDistribution: AppMockData.mockRatingDistribution,
                     reviews: AppMockData.mockReviews,
                   ),
+                  SizedBox(height: 20),
+                  AddReviewSection(),
                   SizedBox(height: 20),
                   Text(
                     "FAQ",

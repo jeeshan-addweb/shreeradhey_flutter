@@ -130,17 +130,17 @@ class WishlistProductCard extends StatelessWidget {
                   // Rating
                   Row(
                     children: [
-                      ...List.generate(5, (index) {
-                        return Icon(
-                          index < model.rating.floor()
-                              ? Icons.star
-                              : index < model.rating
-                              ? Icons.star_half
-                              : Icons.star_border,
-                          color: AppColors.orange_f29102,
-                          size: 13,
-                        );
-                      }),
+                      // ...List.generate(5, (index) {
+                      //   return Icon(
+                      //     index < model.rating.floor()
+                      //         ? Icons.star
+                      //         : index < model.rating
+                      //         ? Icons.star_half
+                      //         : Icons.star_border,
+                      //     color: AppColors.orange_f29102,
+                      //     size: 13,
+                      //   );
+                      // }),
                       const SizedBox(width: 6),
                       Text(
                         "(${model.reviewCount})",
@@ -173,7 +173,7 @@ class WishlistProductCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "₹${model.price.toStringAsFixed(2)}",
+                        "₹${model.price}",
                         style: TextStyle(
                           color: AppColors.blue_2da5f3,
                           fontSize: 18,
@@ -182,7 +182,7 @@ class WishlistProductCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        "₹${model.oldPrice.toStringAsFixed(2)}",
+                        "₹${model.oldPrice}",
                         style: TextStyle(
                           fontSize: 12,
                           decoration: TextDecoration.lineThrough,

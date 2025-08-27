@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../constants/app_mock_data.dart';
+import '../controller/shop_controller.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -14,6 +16,7 @@ class ShopPage extends StatefulWidget {
 }
 
 class _ShopPageState extends State<ShopPage> {
+  final ShopController controller = Get.put(ShopController());
   int selectedIndex = 0;
 
   final List<Map<String, String>> categories = [
@@ -24,6 +27,13 @@ class _ShopPageState extends State<ShopPage> {
     {"title": "Combo", "image": AppImages.combo},
     {"title": "On Sale", "image": AppImages.on_sale},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchProducts("All");
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -148,22 +158,36 @@ class _ShopPageState extends State<ShopPage> {
           ),
 
           // SizedBox(height: 40),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: AppMockData.mockProducts.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final screenWidth = MediaQuery.of(context).size.width;
-              final cardWidth = screenWidth * 0.7;
-              final product = AppMockData.mockProducts[index].copyWith();
-              return SizedBox(
-                width: cardWidth,
-                child: ProductCard(model: product),
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (controller.error.isNotEmpty) {
+                return Center(child: Text("Error: ${controller.error}"));
+              }
+              if (controller.products.isEmpty) {
+                return const Center(child: Text("No Products Found"));
+              }
+              return ListView.separated(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: controller.products.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final screenWidth = MediaQuery.of(context).size.width;
+                  final cardWidth = screenWidth * 0.7;
+                  final product = controller.products[index];
+                  final pro = AppMockData.mockProducts[index].copyWith();
+                  return SizedBox(
+                    width: cardWidth,
+                    child: ProductCard(model: pro),
+                  );
+                },
               );
-            },
+            }),
           ),
           SizedBox(height: 40),
 

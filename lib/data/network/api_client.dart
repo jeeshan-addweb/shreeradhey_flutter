@@ -11,9 +11,7 @@ class ApiClient {
   }
 
   ApiClient._internal() {
-    final HttpLink httpLink = HttpLink(
-      Endpoints.baseUrl, // use from endpoints.dart
-    );
+    final HttpLink httpLink = HttpLink(Endpoints.baseUrl);
 
     client = GraphQLClient(
       link: httpLink,

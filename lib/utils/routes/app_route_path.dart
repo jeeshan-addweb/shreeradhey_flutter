@@ -35,4 +35,5 @@ class AppRoutePath {
       '/shippingAndDeliveryPolicyPage';
   // Accounts
   static const String accountPage = '/accountPage';
+  static const String orderDetailScreen = '/orderDetailScreen';
 }
