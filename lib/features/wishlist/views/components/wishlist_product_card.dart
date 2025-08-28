@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/model/product_model.dart';
+import '../../../../common/model/ui_product_model.dart';
 import '../../../../constants/app_colors.dart';
 
 class WishlistProductCard extends StatelessWidget {
-  final ProductModel model;
+  final UiProductModel model;
   final VoidCallback onRemove;
   final VoidCallback onAddToCart;
 

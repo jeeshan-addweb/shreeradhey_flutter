@@ -1,46 +1,64 @@
 import 'package:get/get.dart';
-import '../models/product_model.dart';
+import 'package:shree_radhey/common/model/ui_product_model.dart';
+import 'package:shree_radhey/features/shop/models/product_mapper.dart';
+import '../models/api_product_model.dart';
+import '../models/product_detail_model.dart';
 import '../repo/shop_repo.dart';
 
 class ShopController extends GetxController {
   final ShopRepo _repo = ShopRepo();
 
-  var products = <ProductModel>[].obs;
+  var products = <UiProductModel>[].obs;
   var isLoading = false.obs;
   var error = "".obs;
+
+  var isDetailLoading = false.obs;
+  var productDetail = Rxn<ProductDetailModel>();
 
   Future<void> fetchProducts(String category) async {
     try {
       isLoading.value = true;
       error.value = "";
-      List<ProductModel> data = [];
+      List<ProductsNode> apiData = [];
 
       switch (category) {
         case "All":
-          data = await _repo.getAllProducts();
+          apiData = await _repo.getAllProducts();
           break;
         case "New":
-          data = await _repo.getNewProducts();
+          apiData = await _repo.getNewProducts();
           break;
         case "Ghee":
-          data = await _repo.getProductsByCategory("ghee");
+          apiData = await _repo.getProductsByCategory("ghee");
           break;
         case "Oil":
-          data = await _repo.getProductsByCategory("oil");
+          apiData = await _repo.getProductsByCategory("oil");
           break;
         case "Combo":
-          data = await _repo.getProductsByCategory("combo");
+          apiData = await _repo.getProductsByCategory("combo");
           break;
         case "On Sale":
-          data = await _repo.getOnSaleProducts();
+          apiData = await _repo.getOnSaleProducts();
           break;
       }
 
-      products.assignAll(data);
+      products.assignAll(apiData.map((e) => e.toUiModel()).toList());
     } catch (e) {
       error.value = e.toString();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchProductDetail(String slug) async {
+    try {
+      isDetailLoading.value = true;
+      final detail = await _repo.getProductDetail(slug);
+      productDetail.value = detail;
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    } finally {
+      isDetailLoading.value = false;
     }
   }
 }

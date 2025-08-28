@@ -52,13 +52,13 @@ class CustomBottomNavigationBar extends StatelessWidget {
         onTap: () {
           switch (index) {
             case 0:
-              context.go(AppRoutePath.homeScreen);
+              context.push(AppRoutePath.homeScreen);
               break;
             case 1:
-              context.go(AppRoutePath.shopScreen); // All
+              context.push(AppRoutePath.shopScreen); // All
               break;
             case 2:
-              context.go(AppRoutePath.dealsScreen); // All
+              context.push(AppRoutePath.dealsScreen); // All
               break;
             case 3:
               context.go(AppRoutePath.cartPage);

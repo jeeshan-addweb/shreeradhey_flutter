@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
+import '../../../common/components/product_shimmer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
-import '../../../constants/app_mock_data.dart';
 import '../controller/shop_controller.dart';
 
 class ShopPage extends StatefulWidget {
@@ -59,7 +59,7 @@ class _ShopPageState extends State<ShopPage> {
                   onTap: () {
                     setState(() {
                       selectedIndex = index;
-                      // Trigger product list update here
+                      controller.fetchProducts(categories[index]['title']!);
                     });
                   },
                   child: Column(
@@ -158,37 +158,55 @@ class _ShopPageState extends State<ShopPage> {
           ),
 
           // SizedBox(height: 40),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (controller.error.isNotEmpty) {
-                return Center(child: Text("Error: ${controller.error}"));
-              }
-              if (controller.products.isEmpty) {
-                return const Center(child: Text("No Products Found"));
-              }
+          Obx(() {
+            if (controller.isLoading.value) {
+              // Show shimmer cards while loading
               return ListView.separated(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: controller.products.length,
+                itemCount:
+                    controller
+                        .products
+                        .length, // number of shimmer placeholders
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final screenWidth = MediaQuery.of(context).size.width;
                   final cardWidth = screenWidth * 0.7;
-                  final product = controller.products[index];
-                  final pro = AppMockData.mockProducts[index].copyWith();
                   return SizedBox(
                     width: cardWidth,
-                    child: ProductCard(model: pro),
+                    child:
+                        const ProductCardShimmer(), // 👈 use your shimmer widget here
                   );
                 },
               );
-            }),
-          ),
+            }
+            if (controller.error.isNotEmpty) {
+              return Center(child: Text("Error: ${controller.error}"));
+            }
+            if (controller.products.isEmpty) {
+              return const Center(child: Text("No Products Found"));
+            }
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              // itemCount: AppMockData.mockProducts.length,
+              itemCount: controller.products.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final screenWidth = MediaQuery.of(context).size.width;
+                final cardWidth = screenWidth * 0.7;
+                final product = controller.products[index];
+                // final pro = AppMockData.mockProducts[index].copyWith();
+                return SizedBox(
+                  width: cardWidth,
+                  child: ProductCard(model: product),
+                );
+              },
+            );
+          }),
           SizedBox(height: 40),
 
           CommonFooter(),

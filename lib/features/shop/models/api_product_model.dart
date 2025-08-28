@@ -4,24 +4,25 @@
 
 import 'dart:convert';
 
-ProductModel productModelFromJson(String str) =>
-    ProductModel.fromJson(json.decode(str));
+ApiProductModel productModelFromJson(String str) =>
+    ApiProductModel.fromJson(json.decode(str));
 
-String productModelToJson(ProductModel data) => json.encode(data.toJson());
+String productModelToJson(ApiProductModel data) => json.encode(data.toJson());
 
-class ProductModel {
+class ApiProductModel {
   Data? data;
   Extensions? extensions;
 
-  ProductModel({this.data, this.extensions});
+  ApiProductModel({this.data, this.extensions});
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-    extensions:
-        json["extensions"] == null
-            ? null
-            : Extensions.fromJson(json["extensions"]),
-  );
+  factory ApiProductModel.fromJson(Map<String, dynamic> json) =>
+      ApiProductModel(
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        extensions:
+            json["extensions"] == null
+                ? null
+                : Extensions.fromJson(json["extensions"]),
+      );
 
   Map<String, dynamic> toJson() => {
     "data": data?.toJson(),

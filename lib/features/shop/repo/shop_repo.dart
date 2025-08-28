@@ -1,13 +1,14 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../data/network/api_client.dart';
-import '../models/product_model.dart';
+import '../models/api_product_model.dart';
+import '../models/product_detail_model.dart';
 
 class ShopRepo {
   final _client = ApiClient().graphQLClient;
 
   // 1. All Products
-  Future<List<ProductModel>> getAllProducts() async {
+  Future<List<ProductsNode>> getAllProducts() async {
     const query = r'''
       query GetShopProducts {
         products(first: 16, where: {orderby: {field: DATE, order: DESC}}) {
@@ -35,7 +36,7 @@ class ShopRepo {
   }
 
   // 2. Newly Launched Products
-  Future<List<ProductModel>> getNewProducts() async {
+  Future<List<ProductsNode>> getNewProducts() async {
     const query = r'''
       query GetProductsByProductLabel {
         productLabel(id: "new-arrivals", idType: SLUG) {
@@ -66,11 +67,11 @@ class ShopRepo {
     if (result.hasException) throw Exception(result.exception.toString());
 
     final nodes = result.data?["productLabel"]?["products"]?["nodes"] ?? [];
-    return (nodes as List).map((e) => ProductModel.fromJson(e)).toList();
+    return (nodes as List).map((e) => ProductsNode.fromJson(e)).toList();
   }
 
   // 3. Products by Category
-  Future<List<ProductModel>> getProductsByCategory(String categorySlug) async {
+  Future<List<ProductsNode>> getProductsByCategory(String categorySlug) async {
     final query = r'''
       query GetShopProducts($category: String) {
         products(
@@ -105,11 +106,11 @@ class ShopRepo {
     if (result.hasException) throw Exception(result.exception.toString());
 
     final nodes = result.data?["products"]?["nodes"] ?? [];
-    return (nodes as List).map((e) => ProductModel.fromJson(e)).toList();
+    return (nodes as List).map((e) => ProductsNode.fromJson(e)).toList();
   }
 
   // 4. On Sale Products
-  Future<List<ProductModel>> getOnSaleProducts() async {
+  Future<List<ProductsNode>> getOnSaleProducts() async {
     const query = r'''
       query GetShopProducts {
         products(
@@ -140,11 +141,121 @@ class ShopRepo {
   }
 
   // Common fetcher
-  Future<List<ProductModel>> _fetchProducts(String query) async {
+  Future<List<ProductsNode>> _fetchProducts(String query) async {
     final result = await _client.query(QueryOptions(document: gql(query)));
     if (result.hasException) throw Exception(result.exception.toString());
 
     final nodes = result.data?["products"]?["nodes"] ?? [];
-    return (nodes as List).map((e) => ProductModel.fromJson(e)).toList();
+    return (nodes as List).map((e) => ProductsNode.fromJson(e)).toList();
+  }
+
+  Future<ProductDetailModel> getProductDetail(String slug) async {
+    const String query = '''
+     query GetProductDetails(\$slug: ID!) {
+     product(id: \$slug, idType: SLUG) {
+          id
+          databaseId
+          name
+          slug
+          description
+          shortDescription
+          type
+          ... on SimpleProduct {
+            productSubtitle
+            price
+            regularPrice
+            salePrice
+            bestPrice
+            stockStatus
+            discountPercentage
+            averageRating
+            reviewCount
+            totalSales
+            sku
+            dateOnSaleFrom
+            dateOnSaleTo
+            downloadable
+            virtual
+            featured
+            weight
+            faqContent {
+              question
+              answer
+            }
+            ratingBreakdown {
+              count
+              percentage
+              star
+            }
+            image {
+              sourceUrl
+              altText
+            }
+            galleryImages {
+              nodes {
+                sourceUrl
+                altText
+              }
+            }
+            attributes {
+              nodes {
+                name
+                label
+                options
+                visible
+                variation
+              }
+            }
+          }
+          productCategories {
+            nodes {
+              name
+              slug
+            }
+          }
+          reviews(first: 10) {
+            nodes {
+              id
+              content
+              date
+              rating
+              author {
+                node {
+                  name
+                  avatar {
+                    url
+                    width
+                    height
+                  }
+                }
+              }
+            }
+          }
+          related(first: 8) {
+            nodes {
+              id
+              name
+              slug
+              ... on SimpleProduct {
+                price
+                image {
+                  sourceUrl
+                }
+              }
+            }
+          }
+        }
+      }
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(document: gql(query), variables: {'slug': slug}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return ProductDetailModel.fromJson(result.data!['product']);
   }
 }

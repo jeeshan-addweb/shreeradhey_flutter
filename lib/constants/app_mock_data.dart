@@ -1,4 +1,4 @@
-import '../common/model/product_model.dart';
+import '../common/model/ui_product_model.dart';
 import '../features/accounts/model/order_model.dart';
 import '../features/home/model/blog_model.dart';
 import '../features/home/model/client_review.dart';
@@ -26,28 +26,28 @@ class AppMockData {
     ),
   ];
 
-  static List<ProductModel> mockProducts = [
-    ProductModel(
+  static List<UiProductModel> mockProducts = [
+    UiProductModel(
       imageUrl: AppImages.product_image,
       title: 'SHREERADHEY A2 gir cow ghee(1L Pet Bottle Pack of 2)',
       subtitle: 'Combo, Ghee',
       rating: 4.7,
       reviewCount: 109,
-      price: 110,
-      oldPrice: 145,
-      couponPrice: 94,
+      price: "110",
+      oldPrice: "145",
+      couponPrice: "94",
       tagText: "Best Seller",
       discountPercent: 14,
     ),
-    ProductModel(
+    UiProductModel(
       imageUrl: AppImages.product_image,
       title: 'SHREERADHEY A2 gir cow ghee(1L Pet Bottle Pack of 2)',
       subtitle: 'Ghee',
       rating: 4.4,
       reviewCount: 82,
-      price: 68,
-      oldPrice: 70,
-      couponPrice: 55,
+      price: "110",
+      oldPrice: "145",
+      couponPrice: "94",
       tagText: "Best Seller",
       description:
           "Experience the richness of Shree Radhey Pure Desi Ghee in a convenient 500 ml PET bottle. Made with milk from…",

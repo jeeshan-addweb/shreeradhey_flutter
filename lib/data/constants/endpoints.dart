@@ -3,5 +3,5 @@ class Endpoints {
 
   static const String loginMemberEndpoint = 'auth/login';
   static const String baseUrl =
-      " https://shreeradheydairystaging.mystagingwebsite.com/graphql";
+      "https://shreeradheydairystaging.mystagingwebsite.com/graphql";
 }

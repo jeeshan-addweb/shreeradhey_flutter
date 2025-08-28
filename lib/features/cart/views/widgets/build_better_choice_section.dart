@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/model/product_model.dart';
+import '../../../../common/model/ui_product_model.dart';
 import '../../../../constants/app_colors.dart';
 
-Widget buildBetterChoiceSection(ProductModel item, BuildContext context) {
+Widget buildBetterChoiceSection(UiProductModel item, BuildContext context) {
   double cardWidth = MediaQuery.of(context).size.width * 0.95;
   return Container(
     width: cardWidth,
@@ -99,7 +99,7 @@ Widget buildBetterChoiceSection(ProductModel item, BuildContext context) {
               Row(
                 children: [
                   Text(
-                    'Best Price \$${item.couponPrice.toStringAsFixed(0)}',
+                    'Best Price \$${item.couponPrice}',
                     style: TextStyle(
                       color: AppColors.green_327801,
                       fontWeight: FontWeight.w600,

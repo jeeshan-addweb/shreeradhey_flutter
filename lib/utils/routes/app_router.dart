@@ -96,9 +96,10 @@ class AppRouter {
           ),
           GoRoute(
             name: 'productdetail',
-            path: AppRoutePath.productDetail,
+            path: AppRoutePath.productDetail, // now '/productDetail/:slug'
             builder: (BuildContext context, GoRouterState state) {
-              return ProductDetailPage();
+              final slug = state.extra as String;
+              return ProductDetailPage(slug: slug);
             },
           ),
 

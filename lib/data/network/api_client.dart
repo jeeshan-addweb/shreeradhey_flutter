@@ -15,7 +15,7 @@ class ApiClient {
 
     client = GraphQLClient(
       link: httpLink,
-      cache: GraphQLCache(store: HiveStore()),
+      cache: GraphQLCache(store: InMemoryStore()),
     );
   }
 
