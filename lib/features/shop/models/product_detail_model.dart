@@ -64,7 +64,7 @@ class Product {
   List<RatingBreakdown>? ratingBreakdown;
   ImageElement? image;
   GalleryImages? galleryImages;
-  Attributes? attributes;
+  dynamic attributes;
   ProductCategories? productCategories;
   Reviews? reviews;
   Related? related;
@@ -146,10 +146,7 @@ class Product {
         json["galleryImages"] == null
             ? null
             : GalleryImages.fromJson(json["galleryImages"]),
-    attributes:
-        json["attributes"] == null
-            ? null
-            : Attributes.fromJson(json["attributes"]),
+    attributes: json["attributes"],
     productCategories:
         json["productCategories"] == null
             ? null
@@ -193,66 +190,10 @@ class Product {
             : List<dynamic>.from(ratingBreakdown!.map((x) => x.toJson())),
     "image": image?.toJson(),
     "galleryImages": galleryImages?.toJson(),
-    "attributes": attributes?.toJson(),
+    "attributes": attributes,
     "productCategories": productCategories?.toJson(),
     "reviews": reviews?.toJson(),
     "related": related?.toJson(),
-  };
-}
-
-class Attributes {
-  List<AttributesNode>? nodes;
-
-  Attributes({this.nodes});
-
-  factory Attributes.fromJson(Map<String, dynamic> json) => Attributes(
-    nodes:
-        json["nodes"] == null
-            ? []
-            : List<AttributesNode>.from(
-              json["nodes"]!.map((x) => AttributesNode.fromJson(x)),
-            ),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "nodes":
-        nodes == null ? [] : List<dynamic>.from(nodes!.map((x) => x.toJson())),
-  };
-}
-
-class AttributesNode {
-  String? name;
-  String? label;
-  List<String>? options;
-  bool? visible;
-  bool? variation;
-
-  AttributesNode({
-    this.name,
-    this.label,
-    this.options,
-    this.visible,
-    this.variation,
-  });
-
-  factory AttributesNode.fromJson(Map<String, dynamic> json) => AttributesNode(
-    name: json["name"],
-    label: json["label"],
-    options:
-        json["options"] == null
-            ? []
-            : List<String>.from(json["options"]!.map((x) => x)),
-    visible: json["visible"],
-    variation: json["variation"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "name": name,
-    "label": label,
-    "options":
-        options == null ? [] : List<dynamic>.from(options!.map((x) => x)),
-    "visible": visible,
-    "variation": variation,
   };
 }
 

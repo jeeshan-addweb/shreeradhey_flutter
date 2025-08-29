@@ -21,11 +21,15 @@ class _ProductCardState extends State<ProductCard> {
     double tagPadding = 12;
     return GestureDetector(
       onTap: () {
-        context.pushNamed(
-          'productdetail',
-          pathParameters: {'slug': widget.model.slug ?? ""},
-          extra: {'hideNav': true},
+        context.push(
+          AppRoutePath.productDetail,
+          // pathParameters: {'slug': widget.model.slug ?? ""},
+          extra: {'hideNav': true, 'slug': widget.model.slug},
         );
+        // context.pushNamed(
+        //   AppRoutePath.productDetail,
+        //   extra: 'coconut-oil-5ltr',
+        // );
       },
       child: Card(
         color: AppColors.white,

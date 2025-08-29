@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../data/network/api_client.dart';
@@ -38,29 +39,39 @@ class ShopRepo {
   // 2. Newly Launched Products
   Future<List<ProductsNode>> getNewProducts() async {
     const query = r'''
-      query GetProductsByProductLabel {
-        productLabel(id: "new-arrivals", idType: SLUG) {
-          products(first: 12, where: {orderby: {field: DATE, order: DESC}}) {
-            nodes {
-              id
-              name
-              slug
-              uri
-              image { sourceUrl altText }
-              productCategories { nodes { name slug } }
-              ... on SimpleProduct {
-                price
-                regularPrice
-                salePrice
-                bestPrice
-                discountPercentage
-                averageRating
-                reviewCount 
-              }
-            }
-          }
-        }
-      }
+     query GetProductsByProductLabel {
+ productLabel(id: "newly-launch", idType: SLUG) {
+   name
+   slug
+   products(first: 12, where: {orderby: {field: DATE, order: DESC}}) {
+     nodes {
+       id
+       name
+       slug
+       uri
+       image {
+         sourceUrl
+         altText
+       }
+       productCategories {
+         nodes {
+           name
+           slug
+         }
+       }
+       ... on SimpleProduct {
+         price
+         regularPrice
+         salePrice
+         bestPrice
+         discountPercentage
+         averageRating
+         reviewCount 
+       }
+     }
+   }
+ }
+}
     ''';
 
     final result = await _client.query(QueryOptions(document: gql(query)));
@@ -150,112 +161,123 @@ class ShopRepo {
   }
 
   Future<ProductDetailModel> getProductDetail(String slug) async {
-    const String query = '''
-     query GetProductDetails(\$slug: ID!) {
-     product(id: \$slug, idType: SLUG) {
-          id
-          databaseId
+    String query = '''
+    query GetProductDetails {
+    product(id: "$slug" , idType: SLUG) {
+    id
+    databaseId
+    name
+    slug
+    description
+    shortDescription
+    type
+    ... on SimpleProduct {
+      productSubtitle
+      price
+      regularPrice
+      salePrice
+      bestPrice
+      stockStatus
+      discountPercentage
+      averageRating
+      reviewCount
+      totalSales
+      sku
+      dateOnSaleFrom
+      dateOnSaleTo
+      downloadable
+      virtual
+      featured
+      weight
+      faqContent {
+        question
+        answer
+      }
+      ratingBreakdown {
+        count
+        percentage
+        star
+      }
+      image {
+        sourceUrl
+        altText
+      }
+      galleryImages {
+        nodes {
+          sourceUrl
+          altText
+        }
+      }
+      attributes {
+        nodes {
           name
-          slug
-          description
-          shortDescription
-          type
-          ... on SimpleProduct {
-            productSubtitle
-            price
-            regularPrice
-            salePrice
-            bestPrice
-            stockStatus
-            discountPercentage
-            averageRating
-            reviewCount
-            totalSales
-            sku
-            dateOnSaleFrom
-            dateOnSaleTo
-            downloadable
-            virtual
-            featured
-            weight
-            faqContent {
-              question
-              answer
-            }
-            ratingBreakdown {
-              count
-              percentage
-              star
-            }
-            image {
-              sourceUrl
-              altText
-            }
-            galleryImages {
-              nodes {
-                sourceUrl
-                altText
-              }
-            }
-            attributes {
-              nodes {
-                name
-                label
-                options
-                visible
-                variation
-              }
-            }
-          }
-          productCategories {
-            nodes {
-              name
-              slug
-            }
-          }
-          reviews(first: 10) {
-            nodes {
-              id
-              content
-              date
-              rating
-              author {
-                node {
-                  name
-                  avatar {
-                    url
-                    width
-                    height
-                  }
-                }
-              }
-            }
-          }
-          related(first: 8) {
-            nodes {
-              id
-              name
-              slug
-              ... on SimpleProduct {
-                price
-                image {
-                  sourceUrl
-                }
-              }
+          label
+          options
+          visible
+          variation
+        }
+      }
+    }
+    productCategories {
+      nodes {
+        name
+        slug
+      }
+    }
+    reviews(first: 10) {
+      nodes {
+        id
+        content
+        date
+        rating
+        author {
+          node {
+            name
+            avatar {
+              url
+              width
+              height
             }
           }
         }
       }
+    }
+    related(first: 8) {
+      nodes {
+        id
+        name
+        slug
+        ... on SimpleProduct {
+          price
+          image {
+            sourceUrl
+          }
+        }
+      }
+    }
+  }
+}
     ''';
 
     final result = await _client.query(
       QueryOptions(document: gql(query), variables: {'slug': slug}),
     );
 
+    debugPrint("result.data : ${result.data}");
+
     if (result.hasException) {
       throw Exception(result.exception.toString());
     }
 
-    return ProductDetailModel.fromJson(result.data!['product']);
+    if (result.data != null) {
+      debugPrint("haalo");
+      ProductDetailModel productDetailModel = ProductDetailModel.fromJson({
+        "data": result.data,
+      });
+      debugPrint("productDetailModel : ${productDetailModel.data}");
+      return productDetailModel;
+    } else {
+      throw Exception("No Data Found");
+    }
   }
 }

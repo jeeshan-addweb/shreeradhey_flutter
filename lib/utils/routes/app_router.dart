@@ -35,7 +35,7 @@ import 'app_route_path.dart';
 class AppRouter {
   static final GoRouter _router = GoRouter(
     // debugLogDiagnostics: true,
-    initialLocation: AppRoutePath.login,
+    initialLocation: AppRoutePath.homeScreen,
     routes: [
       GoRoute(
         name: 'login',
@@ -96,13 +96,21 @@ class AppRouter {
           ),
           GoRoute(
             name: 'productdetail',
-            path: AppRoutePath.productDetail, // now '/productDetail/:slug'
+            path: AppRoutePath.productDetail,
             builder: (BuildContext context, GoRouterState state) {
-              final slug = state.extra as String;
+              final slug = (state.extra as Map)['slug'] as String;
               return ProductDetailPage(slug: slug);
             },
           ),
 
+          // GoRoute(
+          //   name: 'productdetail',
+          //   path: AppRoutePath.productDetail,
+          //   builder: (BuildContext context, GoRouterState state) {
+          //     final slug = state.extra as String; // cast properly
+          //     return ProductDetailPage(slug: slug);
+          //   },
+          // ),
           GoRoute(
             name: 'wishlist',
             path: AppRoutePath.wishlistScreen,

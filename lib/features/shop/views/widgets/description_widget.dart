@@ -33,6 +33,7 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import '../../../../constants/app_colors.dart';
 
@@ -52,10 +53,22 @@ Widget descriptionWidget(String description) {
           width: double.infinity,
           color: AppColors.blue_eef1ed,
           padding: const EdgeInsets.all(8),
-          child: Text(
-            description.isNotEmpty ? description : "No description available",
-            style: const TextStyle(fontSize: 14),
-          ),
+          child:
+              description.isNotEmpty
+                  ? Html(
+                    data: description,
+                    style: {
+                      "body": Style(
+                        fontSize: FontSize(14),
+                        color: Colors.black87,
+                        margin: Margins.zero,
+                      ),
+                    },
+                  )
+                  : const Text(
+                    "No description available",
+                    style: TextStyle(fontSize: 14),
+                  ),
         ),
       ],
     ),

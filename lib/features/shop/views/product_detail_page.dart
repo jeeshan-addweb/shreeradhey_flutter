@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/features/shop/views/components/add_review_section.dart';
+import 'package:shree_radhey/features/shop/views/widgets/related_product_section.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
-import '../../../constants/app_mock_data.dart';
-import '../../home/views/widgets/product_section_widget.dart';
+import '../../../utils/review_utils.dart';
 import '../controller/shop_controller.dart';
 import 'components/faq_section.dart';
 import 'components/product_detail_review_section.dart';
@@ -79,7 +79,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void initState() {
     super.initState();
     debugPrint("Slug is ${widget.slug}");
-    controller.fetchProductDetail(widget.slug);
+    controller.fetchProductDetail(context, widget.slug);
   }
 
   @override
@@ -223,6 +223,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         if (detail == null) {
           return const Center(child: Text("Product not found"));
         }
+        final ratingDistribution = buildRatingDistribution(
+          detail.ratingBreakdown,
+        );
+
+        final reviews = buildReviews(detail.reviews?.nodes);
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -614,7 +619,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     additionalInfoWidget(),
                     SizedBox(height: 20),
                     Text(
-                      "Reviews (20)",
+                      "Reviews ${(detail.reviewCount)}",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
@@ -623,49 +628,47 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                     SizedBox(height: 20),
                     ProductDetailReviewSection(
-                      averageRating: 4.7,
-                      totalReviews: 20,
-                      ratingDistribution: AppMockData.mockRatingDistribution,
-                      reviews: AppMockData.mockReviews,
+                      averageRating: (detail.averageRating ?? 0).toDouble(),
+                      totalReviews: detail.reviewCount ?? 0,
+                      ratingDistribution: ratingDistribution,
+                      reviews: reviews,
                     ),
                     SizedBox(height: 20),
                     AddReviewSection(),
                     SizedBox(height: 20),
-                    Text(
-                      "FAQ",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.grey_212121,
-                      ),
-                    ),
-                    FAQSection(
-                      faqColor: AppColors.black,
-                      faqs: [
-                        {
-                          "question": "What is the shelf life of this product?",
-                          "answer":
-                              "The product has a shelf life of 12 months from the date of manufacture.",
-                        },
-                        {
-                          "question": "Does it contain preservatives?",
-                          "answer":
-                              "No, our products are made with 100% natural ingredients.",
-                        },
-                        {
-                          "question": "Is this product vegan?",
-                          "answer": "Yes, it is completely plant-based.",
-                        },
-                      ],
-                    ),
 
-                    ProductSection(
+                    if (detail.faqContent != null &&
+                        detail.faqContent!.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      const Text(
+                        "FAQ",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      FAQSection(
+                        faqColor: AppColors.black,
+                        faqs:
+                            detail.faqContent!
+                                .map(
+                                  (faq) => {
+                                    "question": faq.question ?? "",
+                                    "answer": faq.answer ?? "",
+                                  },
+                                )
+                                .toList(),
+                      ),
+                    ],
+
+                    RelatedProductSection(
                       firstText: "",
                       firstTextColor: AppColors.black,
                       secondTextColor: AppColors.black,
                       secondText: "Similar Products".toUpperCase(),
                       sectionBgColor: AppColors.white,
-                      tagText: "Best Seller",
+
+                      products: detail.related?.nodes ?? [],
                     ),
 
                     SizedBox(height: 40),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import '../../../../constants/app_colors.dart';
 
@@ -44,7 +45,7 @@ class _FAQSectionState extends State<FAQSection> {
                     children: [
                       Expanded(
                         child: Text(
-                          faq["question"]!,
+                          faq["question"] ?? "",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -68,12 +69,24 @@ class _FAQSectionState extends State<FAQSection> {
                     firstChild: const SizedBox.shrink(),
                     secondChild: Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        faq["answer"]!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.grey_212121,
-                        ),
+                      child: Html(
+                        data: faq["answer"] ?? "",
+                        style: {
+                          "body": Style(
+                            fontSize: FontSize(14),
+                            color: AppColors.grey_212121,
+                            margin: Margins.zero,
+                          ),
+                          "p": Style(margin: Margins.zero),
+                          "ul": Style(
+                            margin: Margins.zero,
+                            padding: HtmlPaddings.only(left: 16),
+                          ),
+                          "li": Style(
+                            fontSize: FontSize(14),
+                            color: AppColors.grey_212121,
+                          ),
+                        },
                       ),
                     ),
                     crossFadeState:

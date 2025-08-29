@@ -23,7 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(height: 40, child: Container(color: AppColors.green_6cad10)),
+        SizedBox(height: 42, child: Container(color: AppColors.green_6cad10)),
         TopBannerToggle(),
         Container(
           height: kToolbarHeight + 20,

@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/common/model/ui_product_model.dart';
 import 'package:shree_radhey/features/shop/models/product_mapper.dart';
+import '../../../common/components/custom_snackbar.dart';
 import '../models/api_product_model.dart';
 import '../models/product_detail_model.dart';
 import '../repo/shop_repo.dart';
@@ -50,13 +52,16 @@ class ShopController extends GetxController {
     }
   }
 
-  Future<void> fetchProductDetail(String slug) async {
+  Future<void> fetchProductDetail(BuildContext context, String slug) async {
     try {
       isDetailLoading.value = true;
-      final detail = await _repo.getProductDetail(slug);
-      productDetail.value = detail;
+      productDetail.value = await _repo.getProductDetail(slug);
+      debugPrint("detail : ${productDetail.value?.data?.toJson()}");
+      //  = detail;
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      debugPrint("haalo error");
+      CustomSnackbars.showError(context, "Something went wrong: $e");
+      debugPrint("eRROR IS $e");
     } finally {
       isDetailLoading.value = false;
     }

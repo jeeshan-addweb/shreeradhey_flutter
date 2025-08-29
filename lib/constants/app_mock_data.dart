@@ -3,7 +3,6 @@ import '../features/accounts/model/order_model.dart';
 import '../features/home/model/blog_model.dart';
 import '../features/home/model/client_review.dart';
 import '../features/home/model/core_value_model.dart';
-import '../features/shop/views/components/product_detail_review_section.dart';
 import 'app_images.dart';
 
 class AppMockData {
@@ -120,23 +119,23 @@ class AppMockData {
     ),
   ];
 
-  static List<ReviewModel> mockReviews = [
-    ReviewModel(
-      name: "Ananya Joshi",
-      date: "August 1, 2025",
-      verified: true,
-      comment:
-          "The PET bottle is travel-friendly and leak-proof. The ghee has a grainy texture and rich color that proves its authenticity.",
-      rating: 5,
-    ),
-    ReviewModel(
-      name: "Rahul Sharma",
-      date: "July 20, 2025",
-      verified: false,
-      comment: "Good product, but delivery took longer than expected.",
-      rating: 4,
-    ),
-  ];
+  // static List<ReviewModel> mockReviews = [
+  //   ReviewModel(
+  //     name: "Ananya Joshi",
+  //     date: "August 1, 2025",
+  //     verified: true,
+  //     comment:
+  //         "The PET bottle is travel-friendly and leak-proof. The ghee has a grainy texture and rich color that proves its authenticity.",
+  //     rating: 5,
+  //   ),
+  //   ReviewModel(
+  //     name: "Rahul Sharma",
+  //     date: "July 20, 2025",
+  //     verified: false,
+  //     comment: "Good product, but delivery took longer than expected.",
+  //     rating: 4,
+  //   ),
+  // ];
 
   static Map<int, double> mockRatingDistribution = {
     5: 0.66,
