@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
 import '../../../common/components/common_footer.dart';
-import '../../../common/components/product_shimmer.dart';
 import '../../../constants/app_colors.dart';
 
 import 'components/banner_component.dart';
+
 import 'components/blog_section.dart';
 import 'components/core_valued_section.dart';
 import 'components/feature_slider_component.dart';
@@ -21,48 +21,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.put(HomeController(), permanent: true);
 
   @override
   void initState() {
     super.initState();
     controller.fetchHomeData();
+    controller.fetchBlogs();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return ListView.separated(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount:
-                controller.allProducts.length, // number of shimmer placeholders
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final screenWidth = MediaQuery.of(context).size.width;
-              final cardWidth = screenWidth * 0.7;
-              return SizedBox(
-                width: cardWidth,
-                child:
-                    const ProductCardShimmer(), // 👈 use your shimmer widget here
-              );
-            },
-          );
-        }
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 20),
-              BannerComponent(),
-              SizedBox(height: 40),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ProductSection(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            BannerComponent(),
+            const SizedBox(height: 40),
+
+            // ✅ Each section gets its own Obx
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Obx(
+                () => ProductSection(
                   firstText: "BESTSELLERS",
                   firstTextColor: AppColors.red_b12704,
                   secondText: " | PURE JOY IN EVERY PICK",
@@ -71,14 +54,19 @@ class _HomePageState extends State<HomePage> {
                   secondTextColor: AppColors.black,
                   categoryText: "All",
                   products: controller.allProducts,
+                  showShimmer: controller.isProductsLoading.value,
                 ),
               ),
-              SizedBox(height: 20),
-              Divider(height: 2, color: AppColors.grey),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ProductSection(
+            ),
+
+            const SizedBox(height: 20),
+            Divider(height: 2, color: AppColors.grey),
+            const SizedBox(height: 20),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Obx(
+                () => ProductSection(
                   firstText: "NEWLY LAUNCHED",
                   firstTextColor: AppColors.red_b12704,
                   secondText: " | CLEAN.FRESH.PURE",
@@ -87,18 +75,18 @@ class _HomePageState extends State<HomePage> {
                   secondTextColor: AppColors.black,
                   categoryText: "New",
                   products: controller.newProducts,
+                  showShimmer: controller.isProductsLoading.value,
                 ),
               ),
+            ),
 
-              SizedBox(height: 20),
+            const SizedBox(height: 20),
+            Container(height: 20, color: AppColors.pink_fffbec),
 
-              SizedBox(
-                height: 20,
-                child: Container(color: AppColors.pink_fffbec),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ProductSection(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Obx(
+                () => ProductSection(
                   firstText: "PURE LIKE DADI USED TO\nMAKE |",
                   firstTextColor: AppColors.black,
                   secondText: " GHEE SELECTION",
@@ -107,16 +95,18 @@ class _HomePageState extends State<HomePage> {
                   tagText: "Best Seller",
                   categoryText: "Ghee",
                   products: controller.gheeProducts,
+                  showShimmer: controller.isProductsLoading.value,
                 ),
               ),
-              SizedBox(
-                height: 20,
-                child: Container(color: AppColors.pink_fffbec),
-              ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ProductSection(
+            ),
+
+            Container(height: 20, color: AppColors.pink_fffbec),
+            const SizedBox(height: 20),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Obx(
+                () => ProductSection(
                   firstText: "TRADITIONAL PURITY ,\nSEALED IN EVERY DROP |",
                   firstTextColor: AppColors.black,
                   secondText: " OIL COLLECTION",
@@ -125,14 +115,19 @@ class _HomePageState extends State<HomePage> {
                   secondTextColor: AppColors.red_b12704,
                   categoryText: "Oil",
                   products: controller.oilProducts,
+                  showShimmer: controller.isProductsLoading.value,
                 ),
               ),
-              SizedBox(height: 20),
-              Divider(height: 2, color: AppColors.grey),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ProductSection(
+            ),
+
+            const SizedBox(height: 20),
+            Divider(height: 2, color: AppColors.grey),
+            const SizedBox(height: 20),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Obx(
+                () => ProductSection(
                   firstText: "TIMELESS GOODNESS,\nEVERYDAY READY |",
                   firstTextColor: AppColors.black,
                   secondText: " HEALTHY COMBOS",
@@ -141,20 +136,20 @@ class _HomePageState extends State<HomePage> {
                   secondTextColor: AppColors.red_b12704,
                   categoryText: "Combo",
                   products: controller.comboProducts,
+                  showShimmer: controller.isProductsLoading.value,
                 ),
               ),
-              SizedBox(height: 40),
-              CoreValuedSection(),
-              SizedBox(height: 40),
-              FeatureSlider(),
+            ),
 
-              BlogSection(),
-
-              CommonFooter(),
-            ],
-          ),
-        );
-      }),
+            const SizedBox(height: 40),
+            const CoreValuedSection(),
+            const SizedBox(height: 40),
+            const FeatureSlider(),
+            BlogSection(),
+            const CommonFooter(),
+          ],
+        ),
+      ),
     );
   }
 }

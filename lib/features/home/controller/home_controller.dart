@@ -17,7 +17,7 @@ class HomeController extends GetxController {
   var oilProducts = <UiProductModel>[].obs;
   var comboProducts = <UiProductModel>[].obs;
 
-  var isLoading = false.obs;
+  var isProductsLoading = false.obs;
   var error = "".obs;
 
   var isLoadingMore = false.obs;
@@ -25,15 +25,16 @@ class HomeController extends GetxController {
   var pageInfo = Rxn<PageInfo>();
   var hasError = false.obs;
   var errorMessage = ''.obs;
-  @override
-  void onInit() {
-    super.onInit();
-    fetchBlogs();
-  }
+  var isBlogsLoading = false.obs;
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   fetchBlogs();
+  // }
 
   Future<void> fetchHomeData() async {
     try {
-      isLoading.value = true;
+      isProductsLoading.value = true;
       error.value = "";
 
       // fetch in parallel for performance
@@ -53,14 +54,14 @@ class HomeController extends GetxController {
     } catch (e) {
       error.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isProductsLoading.value = false;
     }
   }
 
   Future<void> fetchBlogs() async {
     try {
       hasError.value = false;
-      isLoading.value = true;
+      isBlogsLoading.value = true;
 
       final result = await _homerepo.fetchBlogs();
 
@@ -74,7 +75,7 @@ class HomeController extends GetxController {
       errorMessage.value = e.toString();
       debugPrint("Error fetching blogs: $e");
     } finally {
-      isLoading.value = false;
+      isBlogsLoading.value = false;
     }
   }
 

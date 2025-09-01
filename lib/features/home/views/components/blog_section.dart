@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../constants/app_colors.dart';
 import '../../../../constants/app_images.dart';
-import '../../../../constants/app_mock_data.dart';
 import '../../../../utils/routes/app_route_path.dart';
 import '../../controller/home_controller.dart';
 import 'blog_card.dart';
@@ -16,7 +15,7 @@ class BlogSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (controller.isLoading.value) {
+      if (controller.isBlogsLoading.value) {
         return const Center(child: CircularProgressIndicator());
       }
 

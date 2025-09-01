@@ -15,6 +15,7 @@ class ProductSection extends StatefulWidget {
   final Color sectionBgColor;
   final String tagText;
   final String? categoryText;
+  final bool showShimmer;
   final List<UiProductModel> products; // 👈 only UI models passed
 
   const ProductSection({
@@ -27,6 +28,7 @@ class ProductSection extends StatefulWidget {
     required this.tagText,
     this.categoryText,
     required this.products,
+    this.showShimmer = false, // 👈 default false
   });
 
   @override
@@ -133,19 +135,21 @@ class _ProductSectionState extends State<ProductSection> {
             child: ListView.separated(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              // padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: widget.products.length,
+              itemCount:
+                  widget.showShimmer
+                      ? 4 // show 4 placeholders
+                      : widget.products.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final screenWidth = MediaQuery.of(context).size.width;
                 final cardWidth = screenWidth * 0.7;
-                // final product = AppMockData.mockProducts[index].copyWith(
-                //   tagText: widget.tagText,
-                // );
+
                 return SizedBox(
                   width: cardWidth,
-
-                  child: ProductCard(model: widget.products[index]),
+                  child:
+                      widget.showShimmer
+                          ? const ProductCardShimmer()
+                          : ProductCard(model: widget.products[index]),
                 );
               },
             ),
