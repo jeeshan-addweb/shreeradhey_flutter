@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:shree_radhey/features/shop/models/get_review_by_products_model.dart';
 
 import '../../../data/network/api_client.dart';
 import '../models/api_product_model.dart';
@@ -279,5 +280,55 @@ class ShopRepo {
     } else {
       throw Exception("No Data Found");
     }
+  }
+
+  Future<List<NodeElement>> getProductReviews({
+    String? productSlug,
+    int? first,
+    String? after,
+  }) async {
+    final variables = {
+      "productSlug": productSlug,
+      "first": first,
+      "after": after,
+    };
+    const query = r'''
+    query GetProductReviews($productSlug: ID!, $first: Int!, $after: String) {
+      product(id: $productSlug, idType: SLUG) {
+        reviews(first: $first, after: $after, where: { orderby: COMMENT_DATE, order: DESC }) {
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+          nodes {
+            id
+            content
+            date
+            rating
+            author {
+              node {
+                name
+                avatar {
+                  url
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ''';
+
+    final result = await _client.query(
+      QueryOptions(document: gql(query), variables: variables),
+    );
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final nodes = result.data?['product']?['reviews']?['nodes'] ?? [];
+    return (nodes as List)
+        .map((e) => NodeElement.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

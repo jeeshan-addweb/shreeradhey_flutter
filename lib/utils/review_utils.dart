@@ -16,7 +16,7 @@ Map<int, double> buildRatingDistribution(List<RatingBreakdown>? breakdown) {
   };
 }
 
-List<ReviewsNode> buildReviews(List<ReviewsNode>? reviews) {
-  if (reviews == null || reviews.isEmpty) return [];
-  return reviews;
-}
+// List<ReviewsNode> buildReviews(List<ReviewsNode>? reviews) {
+//   if (reviews == null || reviews.isEmpty) return [];
+//   return reviews;
+// }

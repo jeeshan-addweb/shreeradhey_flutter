@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/common/model/ui_product_model.dart';
+import 'package:shree_radhey/features/shop/models/get_review_by_products_model.dart';
 import 'package:shree_radhey/features/shop/models/product_mapper.dart';
 import '../../../common/components/custom_snackbar.dart';
 import '../models/api_product_model.dart';
@@ -16,6 +17,11 @@ class ShopController extends GetxController {
 
   var isDetailLoading = false.obs;
   var productDetail = Rxn<ProductDetailModel>();
+
+  var reviews = <NodeElement>[].obs;
+  var isReviewLoading = false.obs;
+  var hasMoreReviews = true.obs;
+  var reviewCursor = "".obs;
 
   Future<void> fetchProducts(String category) async {
     try {
@@ -64,6 +70,39 @@ class ShopController extends GetxController {
       debugPrint("eRROR IS $e");
     } finally {
       isDetailLoading.value = false;
+    }
+  }
+
+  Future<void> fetchProductReviews(String slug, {bool loadMore = false}) async {
+    try {
+      if (!loadMore) {
+        isReviewLoading.value = true;
+        reviews.clear();
+        reviewCursor.value = "";
+        hasMoreReviews.value = true;
+      }
+
+      final result = await _repo.getProductReviews(
+        productSlug: slug,
+        first: 5,
+        after: loadMore ? reviewCursor.value : null,
+      );
+
+      reviews.addAll(result);
+
+      // handle pagination
+      final pageInfo =
+          result.isNotEmpty
+              ? result
+                  .last // dummy hack, you should parse pageInfo from repo
+              : null;
+
+      // update cursor & hasMoreReviews based on response
+      // (you can also return pageInfo from repo for cleaner handling)
+    } catch (e) {
+      print("Review fetch error: $e");
+    } finally {
+      isReviewLoading.value = false;
     }
   }
 }

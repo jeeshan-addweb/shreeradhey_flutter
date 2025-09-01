@@ -3,13 +3,14 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../constants/app_colors.dart';
+import '../../models/get_review_by_products_model.dart';
 import '../../models/product_detail_model.dart';
 
 class ProductDetailReviewSection extends StatelessWidget {
   final double averageRating;
   final int totalReviews;
   final Map<int, double> ratingDistribution; // {5: 0.66, 4: 0.33, ...}
-  final List<ReviewsNode> reviews;
+  final List<NodeElement> reviews;
 
   const ProductDetailReviewSection({
     super.key,
@@ -98,7 +99,7 @@ class ProductDetailReviewSection extends StatelessWidget {
     );
   }
 
-  Widget _buildReviewCard(ReviewsNode review) {
+  Widget _buildReviewCard(NodeElement review) {
     final avatarUrl = review.author?.node?.avatar?.url;
 
     String formatReviewDate(DateTime? date) {

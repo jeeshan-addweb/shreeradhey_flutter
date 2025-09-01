@@ -84,6 +84,7 @@ class _DealsScreenState extends State<DealsScreen> {
                     setState(() {
                       selectedIndex = index;
                       _scrollToSelected();
+                      controller.fetchProducts(categories[index]['title']!);
                       // Trigger product list update here
                     });
                   },

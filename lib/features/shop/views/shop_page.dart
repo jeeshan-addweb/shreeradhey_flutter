@@ -165,10 +165,7 @@ class _ShopPageState extends State<ShopPage> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount:
-                    controller
-                        .products
-                        .length, // number of shimmer placeholders
+                itemCount: 5,
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final screenWidth = MediaQuery.of(context).size.width;

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shree_radhey/features/shop/views/components/add_review_section.dart';
-import 'package:shree_radhey/features/shop/views/widgets/related_product_section.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
 import '../controller/shop_controller.dart';
+import 'components/add_review_section.dart';
 import 'components/faq_section.dart';
 import 'components/product_detail_review_section.dart';
 import 'components/variant_card.dart';
 import 'widgets/additional_info_widget.dart';
 import 'widgets/description_widget.dart';
+import 'widgets/related_product_section.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String slug;
@@ -24,6 +24,7 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   final ShopController controller = Get.find<ShopController>();
+
   Widget _buildCircleIcon(IconData icon, {required VoidCallback onTap}) {
     return Container(
       height: 32,
@@ -67,19 +68,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   int selectedImageIndex = 0;
 
-  final List<String> productImages = [
-    AppImages.product_image,
-    AppImages.product_image_blog,
-    AppImages.core_value_three,
-    AppImages.core_value_one,
-  ];
-
   int quantity = 1;
   @override
   void initState() {
     super.initState();
     debugPrint("Slug is ${widget.slug}");
     controller.fetchProductDetail(context, widget.slug);
+    controller.fetchProductReviews(widget.slug);
   }
 
   @override
@@ -227,7 +222,38 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           detail.ratingBreakdown,
         );
 
-        final reviews = buildReviews(detail.reviews?.nodes);
+        // final reviews = buildReviews(detail.reviews?.nodes);
+        List<String> getAllImages() {
+          // Merge main image + gallery images
+          final List<String> images = [];
+          if (detail.image?.sourceUrl != null) {
+            images.add(detail.image!.sourceUrl!);
+          }
+          if (detail.galleryImages?.nodes != null) {
+            images.addAll(
+              detail.galleryImages!.nodes!
+                  .map((e) => e.sourceUrl ?? "")
+                  .where((url) => url.isNotEmpty),
+            );
+          }
+          return images;
+        }
+
+        final images = getAllImages();
+        final attributes =
+            (detail.attributes?["nodes"] as List<dynamic>?)
+                ?.map((e) => e as Map<String, dynamic>)
+                .toList() ??
+            [];
+
+        if (controller.isReviewLoading.value) {
+          return const CircularProgressIndicator();
+        }
+
+        if (controller.reviews.isEmpty) {
+          return const Text("No reviews yet");
+        }
+
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,7 +322,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                     child: ClipRRect(
                       child: Image.network(
-                        detail.image!.sourceUrl ?? "",
+                        images[selectedImageIndex],
                         width: double.infinity,
                         height: 350,
                         fit: BoxFit.cover,
@@ -331,7 +357,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: detail.galleryImages?.nodes?.length ?? 0,
+                    itemCount: images.length,
                     separatorBuilder: (_, __) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
                       final bool isSelected = selectedImageIndex == index;
@@ -355,8 +381,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.network(
-                              detail.galleryImages?.nodes?[index].sourceUrl ??
-                                  "",
+                              images[index],
                               width: 70,
                               height: 70,
                               fit: BoxFit.cover,
@@ -450,7 +475,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          "${detail.averageRating.toString()} ${detail.reviewCount.toString()}",
+                          "${detail.averageRating.toString()} | ${detail.reviewCount.toString()} Reviews",
                           style: TextStyle(fontSize: 14, color: AppColors.grey),
                         ),
                       ],
@@ -616,7 +641,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     descriptionWidget(detail.description ?? ""),
 
                     const SizedBox(height: 12),
-                    additionalInfoWidget(),
+                    AdditionalInfoWidget(attributes: attributes),
                     SizedBox(height: 20),
                     Text(
                       "Reviews ${(detail.reviewCount)}",
@@ -631,7 +656,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       averageRating: (detail.averageRating ?? 0).toDouble(),
                       totalReviews: detail.reviewCount ?? 0,
                       ratingDistribution: ratingDistribution,
-                      reviews: reviews,
+                      reviews: controller.reviews,
                     ),
                     SizedBox(height: 20),
                     AddReviewSection(),
@@ -671,6 +696,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       products: detail.related?.nodes ?? [],
                     ),
 
+                    // ProductSection(
+                    //   firstText: "",
+                    //   firstTextColor: AppColors.black,
+                    //   secondTextColor: AppColors.black,
+                    //   secondText: "Similar Products".toUpperCase(),
+                    //   sectionBgColor: AppColors.white,
+                    //   tagText: "Best Seller",
+
+                    //   products: detail.related?.nodes ?? [],
+                    // ),
                     SizedBox(height: 40),
                   ],
                 ),

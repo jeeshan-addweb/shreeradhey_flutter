@@ -88,6 +88,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
               secondText: "Similar Products".toUpperCase(),
               sectionBgColor: AppColors.white,
               tagText: "Best Seller",
+              products: [],
             ),
           ),
           SizedBox(height: 20),

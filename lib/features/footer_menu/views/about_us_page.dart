@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../common/components/awards_and_certification_section.dart';
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
+import '../controller/footer_controller.dart';
+import '../model/about_us_page_model.dart';
 import 'component/about_us_infolist_section.dart';
 
 class AboutUsPage extends StatefulWidget {
@@ -14,105 +17,206 @@ class AboutUsPage extends StatefulWidget {
 }
 
 class _AboutUsPageState extends State<AboutUsPage> {
+  final controller = Get.put(FooterController());
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchAboutUs();
+  }
+
+  // Helper method to get content by block type
+  String getBlockContent(List<Block>? blocks, String blockName) {
+    if (blocks == null) return '';
+
+    for (var block in blocks) {
+      if (block.name == Name.CORE_PARAGRAPH &&
+          blocks.indexOf(block) > 0 &&
+          blocks[blocks.indexOf(block) - 1].name == Name.CORE_HEADING) {
+        var headingIndex = blocks.indexOf(block) - 1;
+        var heading = blocks[headingIndex].content ?? '';
+
+        if (heading.toLowerCase().contains(blockName.toLowerCase())) {
+          return block.content ?? '';
+        }
+      }
+    }
+    return '';
+  }
+
+  // Helper method to get heading content
+  String getHeadingContent(List<Block>? blocks, String headingName) {
+    if (blocks == null) return '';
+
+    for (var block in blocks) {
+      if (block.name == Name.CORE_HEADING &&
+          (block.content ?? '').toLowerCase().contains(
+            headingName.toLowerCase(),
+          )) {
+        return block.content ?? '';
+      }
+    }
+    return headingName; // fallback
+  }
+
+  // Helper method to get the first paragraph (story content)
+  String getStoryContent(List<Block>? blocks) {
+    if (blocks == null) return '';
+
+    for (var block in blocks) {
+      if (block.name == Name.CORE_PARAGRAPH) {
+        return block.content ?? '';
+      }
+    }
+    return '';
+  }
+
+  // Helper method to get award items from blocks
+  List<AwardItem> getAwardItems(List<Block>? blocks) {
+    List<AwardItem> awards = [];
+    if (blocks == null) return awards;
+
+    bool inAwardsSection = false;
+    for (var block in blocks) {
+      if (block.name == Name.CORE_HEADING &&
+          (block.content ?? '').toLowerCase().contains('award')) {
+        inAwardsSection = true;
+        continue;
+      }
+
+      if (inAwardsSection && block.name == Name.CORE_PARAGRAPH) {
+        awards.add(
+          AwardItem(
+            imageUrl:
+                "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
+            title: block.content ?? '',
+          ),
+        );
+      }
+
+      // Stop when we hit another heading (not awards related)
+      if (inAwardsSection &&
+          block.name == Name.CORE_HEADING &&
+          !(block.content ?? '').toLowerCase().contains('award')) {
+        break;
+      }
+    }
+
+    // Fallback awards if none found
+    if (awards.isEmpty) {
+      awards = [
+        AwardItem(
+          imageUrl:
+              "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
+          title: "ISO 9001 Certification",
+        ),
+        AwardItem(
+          imageUrl:
+              "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800",
+          title: "Best Organic Brand 2024",
+        ),
+      ];
+    }
+
+    return awards;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "Home",
-                        style: TextStyle(color: AppColors.black),
-                      ),
-                      TextSpan(
-                        text: " / ",
-                        style: TextStyle(color: AppColors.red_CC0003),
-                      ),
-                      TextSpan(
-                        text: "About Us",
-                        style: TextStyle(color: AppColors.red_CC0003),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: AboutUsCard(
-                    imagePath: AppImages.gir_cow,
-                    title: "Our Story",
-                    description:
-                        " Shree Radhey is a well-known name in the organic farming industry. Started by Mr. Abhimanyu Singh Rathore and Mrs. Renu Nathawat, our products are sourced directly from our farm, processed under stringent quality measures to ensure you get the best of what nature has to offer. We have been at this for 6 years now and it’s just getting better as we innovate and bring more options on your plate.Whether you’re looking for pure ghee or indigenous spices, your search for healthy, natural, pure food ends here.",
-                  ),
-                ),
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-                AboutUsInfoListSection(
-                  items: [
-                    AboutUsInfoItem(
-                      iconPath: AppImages.cart,
-                      title: "Our Beliefs",
-                      description:
-                          '''We believe everyone deserves food with the ingredients they would choose, without any chemicals. We have a range of certified organic products to ensure purity and make your world healthy with organic products.
-                          ''',
+        if (controller.aboutUs.value == null) {
+          return const Center(child: Text("No data available"));
+        }
+
+        final aboutUs = controller.aboutUs.value?.data?.pageBy;
+        final blocks = aboutUs?.blocks;
+
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Breadcrumb
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "Home",
+                            style: TextStyle(color: AppColors.black),
+                          ),
+                          TextSpan(
+                            text: " / ",
+                            style: TextStyle(color: AppColors.red_CC0003),
+                          ),
+                          TextSpan(
+                            text: aboutUs?.title ?? "About Us",
+                            style: TextStyle(color: AppColors.red_CC0003),
+                          ),
+                        ],
+                      ),
                     ),
-                    AboutUsInfoItem(
-                      iconPath: AppImages.cart,
-                      title: "100% Natural and Certified",
-                      description:
-                          '''We believe everyone deserves food with the ingredients they would choose, without any chemicals. We have a range of certified organic products to ensure purity and make your world healthy with organic products.
-                          ''',
+
+                    // Main About Us Card
+                    Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: AboutUsCard(
+                        imagePath: AppImages.gir_cow,
+                        title: getHeadingContent(blocks, "Our Story"),
+                        description: getStoryContent(blocks),
+                      ),
                     ),
-                    AboutUsInfoItem(
-                      iconPath: AppImages.cart,
-                      title: "Our Promise to our customers",
-                      description:
-                          '''We believe everyone deserves food with the ingredients they would choose, without any chemicals. We have a range of certified organic products to ensure purity and make your world healthy with organic products.
-                          ''',
+
+                    // Dynamic Info List Section
+                    AboutUsInfoListSection(
+                      items: [
+                        AboutUsInfoItem(
+                          iconPath: AppImages.cart,
+                          title: getHeadingContent(blocks, "Our Beliefs"),
+                          description: getBlockContent(blocks, "Our Beliefs"),
+                        ),
+                        AboutUsInfoItem(
+                          iconPath: AppImages.cart,
+                          title: getHeadingContent(blocks, "100% Natural"),
+                          description: getBlockContent(blocks, "100% Natural"),
+                        ),
+                        AboutUsInfoItem(
+                          iconPath: AppImages.cart,
+                          title: getHeadingContent(blocks, "Our Promise"),
+                          description: getBlockContent(blocks, "Our Promise"),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 16),
+                    Image.asset(AppImages.hand_churned, fit: BoxFit.contain),
+                    SizedBox(height: 32),
+
+                    // Dynamic Awards Section
+                    AwardsAndCertificationsSection(
+                      awards: getAwardItems(blocks),
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
-                Image.asset(AppImages.hand_churned, fit: BoxFit.contain),
-                SizedBox(height: 32),
-                AwardsAndCertificationsSection(
-                  awards: [
-                    AwardItem(
-                      imageUrl:
-                          "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
-                      title: "ISO 9001 Certification",
-                    ),
-                    AwardItem(
-                      imageUrl:
-                          "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800",
-                      title: "Best Organic Brand 2024",
-                    ),
-                    AwardItem(
-                      imageUrl: "https://picsum.photos/800/400?random=3",
-                      title: "FSSAI Certified",
-                    ),
-                    AwardItem(
-                      imageUrl: "https://picsum.photos/800/400?random=4",
-                      title: "Environmental Excellence Award",
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              CommonFooter(),
+            ],
           ),
-          CommonFooter(),
-        ],
-      ),
+        );
+      }),
     );
   }
 }
