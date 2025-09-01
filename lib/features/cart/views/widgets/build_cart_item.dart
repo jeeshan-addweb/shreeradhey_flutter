@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/model/product_model.dart';
+import '../../../../common/model/ui_product_model.dart';
 import '../../../../constants/app_colors.dart';
 
-Widget buildCartItem(ProductModel item) {
+Widget buildCartItem(UiProductModel item) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: Padding(
@@ -99,7 +99,7 @@ Widget buildCartItem(ProductModel item) {
                 Row(
                   children: [
                     Text(
-                      'Best Price \$${item.couponPrice.toStringAsFixed(0)}',
+                      'Best Price \$${item.couponPrice}',
                       style: TextStyle(
                         color: AppColors.green_327801,
                         fontWeight: FontWeight.w600,

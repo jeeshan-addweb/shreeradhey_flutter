@@ -70,6 +70,7 @@ class _CartPageState extends State<CartPage> {
                   secondText: "You May Be Interested In ...",
                   sectionBgColor: AppColors.white,
                   tagText: "Newly Launch",
+                  products: [],
                 ),
 
                 // ProductOverviewCard(),

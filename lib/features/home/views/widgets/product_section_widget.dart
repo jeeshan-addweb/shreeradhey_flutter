@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../common/components/product_card.dart';
+import '../../../../common/components/product_shimmer.dart';
+import '../../../../common/model/ui_product_model.dart';
 import '../../../../constants/app_colors.dart';
-import '../../../../constants/app_mock_data.dart';
+import '../../../shop/controller/shop_controller.dart';
 
 class ProductSection extends StatefulWidget {
   final String firstText;
@@ -11,6 +14,9 @@ class ProductSection extends StatefulWidget {
   final Color secondTextColor;
   final Color sectionBgColor;
   final String tagText;
+  final String? categoryText;
+  final bool showShimmer;
+  final List<UiProductModel> products; // 👈 only UI models passed
 
   const ProductSection({
     super.key,
@@ -20,6 +26,9 @@ class ProductSection extends StatefulWidget {
     required this.secondText,
     required this.sectionBgColor,
     required this.tagText,
+    this.categoryText,
+    required this.products,
+    this.showShimmer = false, // 👈 default false
   });
 
   @override
@@ -28,6 +37,7 @@ class ProductSection extends StatefulWidget {
 
 class _ProductSectionState extends State<ProductSection> {
   final ScrollController _scrollController = ScrollController();
+  // late ShopController controller;
   bool isAtStart = true;
   bool isAtEnd = false;
 
@@ -61,6 +71,8 @@ class _ProductSectionState extends State<ProductSection> {
   @override
   void initState() {
     super.initState();
+    // controller = ShopController();
+    // controller.fetchProducts(widget.categoryText ?? "All");
     _scrollController.addListener(_scrollListener);
   }
 
@@ -73,7 +85,7 @@ class _ProductSectionState extends State<ProductSection> {
 
   @override
   Widget build(BuildContext context) {
-    final cardHeight = MediaQuery.of(context).size.width * 1.3;
+    final cardHeight = MediaQuery.of(context).size.width * 1.4;
     return Container(
       color: widget.sectionBgColor,
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -123,19 +135,21 @@ class _ProductSectionState extends State<ProductSection> {
             child: ListView.separated(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              // padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: AppMockData.mockProducts.length,
+              itemCount:
+                  widget.showShimmer
+                      ? 4 // show 4 placeholders
+                      : widget.products.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final screenWidth = MediaQuery.of(context).size.width;
                 final cardWidth = screenWidth * 0.7;
-                final product = AppMockData.mockProducts[index].copyWith(
-                  tagText: widget.tagText,
-                );
+
                 return SizedBox(
                   width: cardWidth,
-
-                  child: ProductCard(model: product),
+                  child:
+                      widget.showShimmer
+                          ? const ProductCardShimmer()
+                          : ProductCard(model: widget.products[index]),
                 );
               },
             ),

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../constants/app_colors.dart';
-import '../../../../constants/app_images.dart';
+import '../../models/get_review_by_products_model.dart';
+import '../../models/product_detail_model.dart';
 
 class ProductDetailReviewSection extends StatelessWidget {
   final double averageRating;
   final int totalReviews;
   final Map<int, double> ratingDistribution; // {5: 0.66, 4: 0.33, ...}
-  final List<ReviewModel> reviews;
+  final List<NodeElement> reviews;
 
   const ProductDetailReviewSection({
     super.key,
@@ -96,7 +99,14 @@ class ProductDetailReviewSection extends StatelessWidget {
     );
   }
 
-  Widget _buildReviewCard(ReviewModel review) {
+  Widget _buildReviewCard(NodeElement review) {
+    final avatarUrl = review.author?.node?.avatar?.url;
+
+    String formatReviewDate(DateTime? date) {
+      if (date == null) return '';
+      return DateFormat("MMMM dd, yyyy").format(date);
+    }
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.grey_94a3b8),
@@ -107,96 +117,100 @@ class ProductDetailReviewSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Avatar box
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: AppColors.grey_e2e8f0,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: AppColors.grey.withOpacity(0.1),
                 ),
-                child: Image.asset(AppImages.person, height: 50, width: 50),
+                child:
+                    avatarUrl != null && avatarUrl.isNotEmpty
+                        ? Image.network(avatarUrl, height: 50, width: 50)
+                        : const Icon(Icons.person, size: 50), // fallback
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
+
+            // Name + Date + Verified
             Row(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          review.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.red_CC0003,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          "-${review.date}",
-                          style: TextStyle(
-                            color: AppColors.grey_212121,
-                            fontSize: 16,
-                          ),
-                        ),
-                        if (review.verified) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.red_CC0003,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text(
-                              "VERIFIED",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
+                Flexible(
+                  child: Text(
+                    review.author?.node?.name ?? "",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.red_CC0003,
+                      fontSize: 18,
                     ),
-                  ],
+                    overflow: TextOverflow.ellipsis, // truncate if too long
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "- ${formatReviewDate(review.date)}",
+                  style: TextStyle(color: AppColors.grey_212121, fontSize: 16),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.red_CC0003,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    "VERIFIED",
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
                 ),
               ],
             ),
+
             const SizedBox(height: 8),
-            Text(
-              review.comment,
-              style: TextStyle(color: AppColors.grey_212121),
+
+            // Review text
+            Html(
+              data: review.content ?? "",
+              style: {
+                "body": Style(
+                  margin: Margins.zero,
+                  padding: HtmlPaddings.zero,
+                  color: AppColors.grey_212121,
+                  fontSize: FontSize(14),
+                ),
+              },
             ),
             const SizedBox(height: 4),
-            _buildStars(review.rating),
+
+            // Stars
+            _buildStars(double.tryParse(review.rating.toString()) ?? 0.0),
           ],
         ),
       ),
     );
   }
-}
 
-class ReviewModel {
-  final String name;
-  final String date;
-  final bool verified;
-  final String comment;
-  final double rating;
+  // class ReviewModel {
+  //   final String name;
+  //   final String date;
+  //   final bool verified;
+  //   final String comment;
+  //   final double rating;
 
-  ReviewModel({
-    required this.name,
-    required this.date,
-    required this.verified,
-    required this.comment,
-    required this.rating,
-  });
+  //   ReviewModel({
+  //     required this.name,
+  //     required this.date,
+  //     required this.verified,
+  //     required this.comment,
+  //     required this.rating,
+  //   });
+  // }
 }

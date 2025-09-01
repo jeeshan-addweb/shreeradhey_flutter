@@ -40,18 +40,18 @@ class RelatedBlogs extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Scroll inside card
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: relatedBlogs.length,
-                itemBuilder: (context, index) {
-                  return BlogCard(
-                    blogModel: relatedBlogs[index],
-                    showDescription: false,
-                  );
-                },
-              ),
-            ),
+            // Expanded(
+            //   child: ListView.builder(
+            //     padding: EdgeInsets.zero,
+            //     itemCount: relatedBlogs.length,
+            //     itemBuilder: (context, index) {
+            //       return BlogCard(
+            //         blogModel: relatedBlogs[index],
+            //         showDescription: false,
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

@@ -1,9 +1,8 @@
-import '../common/model/product_model.dart';
+import '../common/model/ui_product_model.dart';
 import '../features/accounts/model/order_model.dart';
 import '../features/home/model/blog_model.dart';
 import '../features/home/model/client_review.dart';
 import '../features/home/model/core_value_model.dart';
-import '../features/shop/views/components/product_detail_review_section.dart';
 import 'app_images.dart';
 
 class AppMockData {
@@ -26,28 +25,28 @@ class AppMockData {
     ),
   ];
 
-  static List<ProductModel> mockProducts = [
-    ProductModel(
+  static List<UiProductModel> mockProducts = [
+    UiProductModel(
       imageUrl: AppImages.product_image,
       title: 'SHREERADHEY A2 gir cow ghee(1L Pet Bottle Pack of 2)',
       subtitle: 'Combo, Ghee',
       rating: 4.7,
       reviewCount: 109,
-      price: 110,
-      oldPrice: 145,
-      couponPrice: 94,
+      price: "110",
+      oldPrice: "145",
+      couponPrice: "94",
       tagText: "Best Seller",
       discountPercent: 14,
     ),
-    ProductModel(
+    UiProductModel(
       imageUrl: AppImages.product_image,
       title: 'SHREERADHEY A2 gir cow ghee(1L Pet Bottle Pack of 2)',
       subtitle: 'Ghee',
       rating: 4.4,
       reviewCount: 82,
-      price: 68,
-      oldPrice: 70,
-      couponPrice: 55,
+      price: "110",
+      oldPrice: "145",
+      couponPrice: "94",
       tagText: "Best Seller",
       description:
           "Experience the richness of Shree Radhey Pure Desi Ghee in a convenient 500 ml PET bottle. Made with milk from…",
@@ -120,23 +119,23 @@ class AppMockData {
     ),
   ];
 
-  static List<ReviewModel> mockReviews = [
-    ReviewModel(
-      name: "Ananya Joshi",
-      date: "August 1, 2025",
-      verified: true,
-      comment:
-          "The PET bottle is travel-friendly and leak-proof. The ghee has a grainy texture and rich color that proves its authenticity.",
-      rating: 5,
-    ),
-    ReviewModel(
-      name: "Rahul Sharma",
-      date: "July 20, 2025",
-      verified: false,
-      comment: "Good product, but delivery took longer than expected.",
-      rating: 4,
-    ),
-  ];
+  // static List<ReviewModel> mockReviews = [
+  //   ReviewModel(
+  //     name: "Ananya Joshi",
+  //     date: "August 1, 2025",
+  //     verified: true,
+  //     comment:
+  //         "The PET bottle is travel-friendly and leak-proof. The ghee has a grainy texture and rich color that proves its authenticity.",
+  //     rating: 5,
+  //   ),
+  //   ReviewModel(
+  //     name: "Rahul Sharma",
+  //     date: "July 20, 2025",
+  //     verified: false,
+  //     comment: "Good product, but delivery took longer than expected.",
+  //     rating: 4,
+  //   ),
+  // ];
 
   static Map<int, double> mockRatingDistribution = {
     5: 0.66,

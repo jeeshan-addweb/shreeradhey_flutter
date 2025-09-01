@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/features/accounts/view/order_detail_screen.dart';
 
 import '../../constants/app_mock_data.dart';
+import '../../features/accounts/model/order_model.dart';
 import '../../features/accounts/view/account_page.dart';
 import '../../features/auth/view/login_screen.dart';
 import '../../features/auth/view/otp_screen.dart';
@@ -33,7 +35,7 @@ import 'app_route_path.dart';
 class AppRouter {
   static final GoRouter _router = GoRouter(
     // debugLogDiagnostics: true,
-    initialLocation: AppRoutePath.login,
+    initialLocation: AppRoutePath.homeScreen,
     routes: [
       GoRoute(
         name: 'login',
@@ -96,10 +98,19 @@ class AppRouter {
             name: 'productdetail',
             path: AppRoutePath.productDetail,
             builder: (BuildContext context, GoRouterState state) {
-              return ProductDetailPage();
+              final slug = (state.extra as Map)['slug'] as String;
+              return ProductDetailPage(slug: slug);
             },
           ),
 
+          // GoRoute(
+          //   name: 'productdetail',
+          //   path: AppRoutePath.productDetail,
+          //   builder: (BuildContext context, GoRouterState state) {
+          //     final slug = state.extra as String; // cast properly
+          //     return ProductDetailPage(slug: slug);
+          //   },
+          // ),
           GoRoute(
             name: 'wishlist',
             path: AppRoutePath.wishlistScreen,
@@ -224,6 +235,14 @@ class AppRouter {
             path: AppRoutePath.accountPage,
             builder: (BuildContext context, GoRouterState state) {
               return AccountPage();
+            },
+          ),
+          GoRoute(
+            name: 'orderDetailScreen',
+            path: AppRoutePath.orderDetailScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              final order = state.extra as OrderModel; // 👈 retrieve model
+              return OrderDetailScreen(order: order);
             },
           ),
         ],

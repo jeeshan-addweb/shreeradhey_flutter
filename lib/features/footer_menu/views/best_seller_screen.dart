@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
 
+import '../../../constants/app_colors.dart';
 import '../../../constants/app_mock_data.dart';
 
 class BestSellerScreen extends StatefulWidget {
@@ -30,12 +31,26 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
                   "Best Sellers",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                 ),
-                Text(
-                  "Home / Best Sellers",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red, // like your design's breadcrumb
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Home ",
+                        style: TextStyle(color: AppColors.black),
+                      ),
+                      TextSpan(
+                        text: "/ ",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                      TextSpan(
+                        text: "Best Sellers",
+                        style: TextStyle(color: AppColors.red_CC0003),
+                      ),
+                    ],
                   ),
                 ),
               ],

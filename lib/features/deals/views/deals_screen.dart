@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
+import '../../../common/components/product_shimmer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
-import '../../../constants/app_mock_data.dart';
+import '../../shop/controller/shop_controller.dart';
 
 class DealsScreen extends StatefulWidget {
   const DealsScreen({super.key});
@@ -14,6 +16,7 @@ class DealsScreen extends StatefulWidget {
 }
 
 class _DealsScreenState extends State<DealsScreen> {
+  final ShopController controller = Get.put(ShopController());
   int selectedIndex = 5;
   final ScrollController _categoryScrollController = ScrollController();
 
@@ -32,6 +35,7 @@ class _DealsScreenState extends State<DealsScreen> {
     // 👇 Auto-scroll to selected index after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelected();
+      controller.fetchProducts("On Sale");
     });
   }
 
@@ -80,6 +84,7 @@ class _DealsScreenState extends State<DealsScreen> {
                     setState(() {
                       selectedIndex = index;
                       _scrollToSelected();
+                      controller.fetchProducts(categories[index]['title']!);
                       // Trigger product list update here
                     });
                   },
@@ -140,12 +145,38 @@ class _DealsScreenState extends State<DealsScreen> {
                   "SHOP",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                 ),
-                Text(
-                  "Home / ${categories[selectedIndex]['title']!}",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red, // like your design's breadcrumb
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Home ",
+                        style: TextStyle(
+                          color: AppColors.grey_3C403D,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ), // Home in black
+                      ),
+                      TextSpan(
+                        text: "/ ",
+                        style: TextStyle(
+                          color: AppColors.red_CC0003,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ), // Slash in black
+                      ),
+                      TextSpan(
+                        text: categories[selectedIndex]['title']!,
+                        style: TextStyle(
+                          color: AppColors.red_CC0003,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ), // Selected category in red
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -153,23 +184,55 @@ class _DealsScreenState extends State<DealsScreen> {
           ),
 
           // SizedBox(height: 40),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: AppMockData.mockProducts.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final screenWidth = MediaQuery.of(context).size.width;
-              final cardWidth = screenWidth * 0.7;
-              final product = AppMockData.mockProducts[index].copyWith();
-              return SizedBox(
-                width: cardWidth,
-                child: ProductCard(model: product),
+          Obx(() {
+            if (controller.isLoading.value) {
+              // Show shimmer cards while loading
+              return ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount:
+                    controller
+                        .products
+                        .length, // number of shimmer placeholders
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final screenWidth = MediaQuery.of(context).size.width;
+                  final cardWidth = screenWidth * 0.7;
+                  return SizedBox(
+                    width: cardWidth,
+                    child:
+                        const ProductCardShimmer(), // 👈 use your shimmer widget here
+                  );
+                },
               );
-            },
-          ),
+            }
+            if (controller.error.isNotEmpty) {
+              return Center(child: Text("Error: ${controller.error}"));
+            }
+            if (controller.products.isEmpty) {
+              return const Center(child: Text("No Products Found"));
+            }
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              // itemCount: AppMockData.mockProducts.length,
+              itemCount: controller.products.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final screenWidth = MediaQuery.of(context).size.width;
+                final cardWidth = screenWidth * 0.7;
+                final product = controller.products[index];
+                // final pro = AppMockData.mockProducts[index].copyWith();
+                return SizedBox(
+                  width: cardWidth,
+                  child: ProductCard(model: product),
+                );
+              },
+            );
+          }),
           SizedBox(height: 40),
 
           CommonFooter(),

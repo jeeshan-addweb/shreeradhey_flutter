@@ -26,9 +26,14 @@ class GradientButton extends StatelessWidget {
           minimumSize: const Size.fromHeight(44),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        child: Text(
-          text,
-          style: TextStyle(color: AppColors.white, fontWeight: FontWeight.w700),
+        child: FittedBox(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: AppColors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
       ),
     );

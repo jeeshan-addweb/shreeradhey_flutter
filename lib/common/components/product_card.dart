@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/utils/routes/app_route_path.dart';
 
 import '../../constants/app_colors.dart';
-import '../../utils/routes/app_route_path.dart';
-import '../model/product_model.dart';
+import '../model/ui_product_model.dart';
 
 class ProductCard extends StatefulWidget {
-  final ProductModel model;
+  final UiProductModel model;
 
   const ProductCard({super.key, required this.model});
 
@@ -21,7 +21,15 @@ class _ProductCardState extends State<ProductCard> {
     double tagPadding = 12;
     return GestureDetector(
       onTap: () {
-        context.push(AppRoutePath.productDetail, extra: {'hideNav': true});
+        context.push(
+          AppRoutePath.productDetail,
+          // pathParameters: {'slug': widget.model.slug ?? ""},
+          extra: {'hideNav': true, 'slug': widget.model.slug},
+        );
+        // context.pushNamed(
+        //   AppRoutePath.productDetail,
+        //   extra: 'coconut-oil-5ltr',
+        // );
       },
       child: Card(
         color: AppColors.white,
@@ -42,8 +50,8 @@ class _ProductCardState extends State<ProductCard> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: AspectRatio(
-                      aspectRatio: 8 / 6,
-                      child: Image.asset(
+                      aspectRatio: 6 / 6,
+                      child: Image.network(
                         widget.model.imageUrl,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -70,7 +78,7 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
                             'SAVE',
                             style: TextStyle(
@@ -80,7 +88,7 @@ class _ProductCardState extends State<ProductCard> {
                             ),
                           ),
                           Text(
-                            '4%',
+                            widget.model.discountPercent.toString(),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -201,7 +209,7 @@ class _ProductCardState extends State<ProductCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '\$${widget.model.price.toStringAsFixed(2)}',
+                    '${widget.model.price}',
                     style: TextStyle(
                       color: AppColors.blue_2da5f3,
                       fontSize: 18,
@@ -210,7 +218,7 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '\$${widget.model.oldPrice.toStringAsFixed(2)}',
+                    '${widget.model.oldPrice}',
                     style: TextStyle(
                       fontSize: 12,
                       decoration: TextDecoration.lineThrough,
@@ -222,7 +230,7 @@ class _ProductCardState extends State<ProductCard> {
                     child: Row(
                       children: [
                         Text(
-                          'Best Price \$${widget.model.couponPrice.toStringAsFixed(0)}',
+                          'Best Price ${widget.model.couponPrice}',
                           style: TextStyle(
                             color: AppColors.green_327801,
                             fontWeight: FontWeight.w700,
