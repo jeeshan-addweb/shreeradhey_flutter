@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/features/home/model/blog_detail_model.dart';
 import 'package:shree_radhey/features/shop/models/product_mapper.dart';
 
+import '../../../common/components/custom_snackbar.dart';
 import '../../../common/model/ui_product_model.dart';
 import '../../shop/repo/shop_repo.dart';
 import '../model/get_blog_model.dart';
@@ -26,6 +28,9 @@ class HomeController extends GetxController {
   var hasError = false.obs;
   var errorMessage = ''.obs;
   var isBlogsLoading = false.obs;
+
+  var isDetailLoading = false.obs;
+  var blogDetail = Rxn<BlogDetailModel>();
   // @override
   // void onInit() {
   //   super.onInit();
@@ -107,5 +112,20 @@ class HomeController extends GetxController {
     blogs.clear();
     pageInfo.value = null;
     await fetchBlogs();
+  }
+
+  Future<void> fetchBlogDetail(BuildContext context, String slug) async {
+    try {
+      isDetailLoading.value = true;
+      blogDetail.value = await _homerepo.getBlogDetail(slug);
+      debugPrint("detail : ${blogDetail.value?.data?.toJson()}");
+      //  = detail;
+    } catch (e) {
+      debugPrint("haalo error");
+      CustomSnackbars.showError(context, "Something went wrong: $e");
+      debugPrint("eRROR IS $e");
+    } finally {
+      isDetailLoading.value = false;
+    }
   }
 }

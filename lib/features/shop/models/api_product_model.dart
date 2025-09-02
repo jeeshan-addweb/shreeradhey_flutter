@@ -70,6 +70,8 @@ class ProductsNode {
   String? uri;
   Image? image;
   ProductCategories? productCategories;
+  ProductLabels? productLabels;
+  String? currencySymbol;
   String? price;
   String? regularPrice;
   String? salePrice;
@@ -85,6 +87,8 @@ class ProductsNode {
     this.uri,
     this.image,
     this.productCategories,
+    this.productLabels,
+    this.currencySymbol,
     this.price,
     this.regularPrice,
     this.salePrice,
@@ -104,6 +108,11 @@ class ProductsNode {
         json["productCategories"] == null
             ? null
             : ProductCategories.fromJson(json["productCategories"]),
+    productLabels:
+        json["productLabels"] == null
+            ? null
+            : ProductLabels.fromJson(json["productLabels"]),
+    currencySymbol: json["currencySymbol"] as String?,
     price: json["price"],
     regularPrice: json["regularPrice"],
     salePrice: json["salePrice"],
@@ -120,6 +129,8 @@ class ProductsNode {
     "uri": uri,
     "image": image?.toJson(),
     "productCategories": productCategories?.toJson(),
+    "productLabels": productLabels?.toJson(),
+    "currencySymbol": currencySymbol,
     "price": price,
     "regularPrice": regularPrice,
     "salePrice": salePrice,
@@ -129,6 +140,10 @@ class ProductsNode {
     "reviewCount": reviewCount,
   };
 }
+
+enum CurrencySymbol { EMPTY }
+
+final currencySymbolValues = EnumValues({"₹": CurrencySymbol.EMPTY});
 
 class Image {
   String? sourceUrl;
@@ -195,6 +210,64 @@ final slugValues = EnumValues({
   "combo": Slug.COMBO,
   "ghee": Slug.GHEE,
   "oil": Slug.OIL,
+});
+
+class ProductLabels {
+  List<ProductLabelsNode>? nodes;
+
+  ProductLabels({this.nodes});
+
+  factory ProductLabels.fromJson(Map<String, dynamic> json) => ProductLabels(
+    nodes:
+        json["nodes"] == null
+            ? []
+            : List<ProductLabelsNode>.from(
+              json["nodes"]!.map((x) => ProductLabelsNode.fromJson(x)),
+            ),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "nodes":
+        nodes == null ? [] : List<dynamic>.from(nodes!.map((x) => x.toJson())),
+  };
+}
+
+class ProductLabelsNode {
+  String? id;
+  String? name;
+  String? slug;
+
+  ProductLabelsNode({this.id, this.name, this.slug});
+
+  factory ProductLabelsNode.fromJson(Map<String, dynamic> json) =>
+      ProductLabelsNode(
+        id: json["id"] as String?,
+        name: json["name"] as String?,
+        slug: json["slug"] as String?,
+      );
+
+  Map<String, dynamic> toJson() => {"id": id, "name": name, "slug": slug};
+}
+
+enum Id { D_G_VYB_TOX_O_DG, D_G_VYB_TOY_MJG }
+
+final idValues = EnumValues({
+  "dGVybToxODg=": Id.D_G_VYB_TOX_O_DG,
+  "dGVybToyMjg=": Id.D_G_VYB_TOY_MJG,
+});
+
+enum FluffyName { BEST_SELLER, NEWLY_LAUNCH }
+
+final fluffyNameValues = EnumValues({
+  "Best Seller": FluffyName.BEST_SELLER,
+  "Newly Launch": FluffyName.NEWLY_LAUNCH,
+});
+
+enum FluffySlug { BEST_SELLER, NEWLY_LAUNCH }
+
+final fluffySlugValues = EnumValues({
+  "best-seller": FluffySlug.BEST_SELLER,
+  "newly-launch": FluffySlug.NEWLY_LAUNCH,
 });
 
 class Extensions {

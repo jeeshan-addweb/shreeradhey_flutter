@@ -1,4 +1,5 @@
 import 'data/network/shared_pref/shared_preference_helper.dart';
+import 'features/auth/controller/auth_controller.dart';
 import 'utils/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferenceHelper().init();
+  Get.put(AuthController());
   runApp(MyApp());
 }
 

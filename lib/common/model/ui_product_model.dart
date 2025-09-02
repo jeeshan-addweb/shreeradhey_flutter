@@ -11,6 +11,8 @@ class UiProductModel {
   final String? description;
   final double? discountPercent;
   final String? slug;
+  final List<String> productLabels; // <-- Added
+  final String currencySymbol; // <-- Added
 
   UiProductModel({
     required this.imageUrl,
@@ -25,6 +27,8 @@ class UiProductModel {
     this.description,
     this.discountPercent,
     this.slug,
+    this.productLabels = const [], // <-- Default empty list
+    this.currencySymbol = "", // <-- Default empty string
   });
   UiProductModel copyWith({
     String? imageUrl,
@@ -39,6 +43,8 @@ class UiProductModel {
     String? description,
     double? discountPercent,
     String? slug,
+    List<String>? productLabels,
+    String? currencySymbol,
   }) {
     return UiProductModel(
       imageUrl: imageUrl ?? this.imageUrl,
@@ -53,6 +59,8 @@ class UiProductModel {
       description: description ?? this.description,
       discountPercent: discountPercent ?? this.discountPercent,
       slug: slug ?? this.slug,
+      productLabels: productLabels ?? this.productLabels, // ✅ added
+      currencySymbol: currencySymbol ?? this.currencySymbol, // ✅ added
     );
   }
 }

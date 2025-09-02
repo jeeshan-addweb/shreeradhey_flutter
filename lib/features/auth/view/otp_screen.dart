@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 
+import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/routes/app_route_path.dart';
 import '../controller/auth_controller.dart';
@@ -50,6 +51,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<AuthController>();
     return Scaffold(
       body: Stack(
         children: [
@@ -97,21 +99,31 @@ class _OtpScreenState extends State<OtpScreen> {
                         length: 6,
                         showCursor: true,
                         onCompleted: (pin) async {
-                          context.push(AppRoutePath.homeScreen);
-                          // final controller = Get.find<AuthController>();
-                          // await controller.verifyOtp(widget.contact, pin);
-                          // if (controller.token.isNotEmpty) {
-                          //   context.go(
-                          //     AppRoutePath.homeScreen,
-                          //   ); // navigate to home
-                          // } else {
-                          //   ScaffoldMessenger.of(context).showSnackBar(
-                          //     const SnackBar(content: Text("Invalid OTP")),
-                          //   );
-                          // }
+                          final controller = Get.find<AuthController>();
+                          final response = await controller.verifyOtp(
+                            widget.contact,
+                            pinController.text.trim(),
+                          );
+
+                          final success = response["success"] as bool? ?? false;
+                          final message =
+                              response["message"] as String? ?? "Invalid OTP";
+
+                          if (success) {
+                            CustomSnackbars.showSuccess(context, message);
+                            context.go(
+                              AppRoutePath.homeScreen,
+                            ); // ✅ only on success
+                          } else {
+                            CustomSnackbars.showError(
+                              context,
+                              message,
+                            ); // ❌ stay on same screen
+                          }
                         },
                       ),
                     ),
+
                     const SizedBox(height: 20),
 
                     // Resend OTP
@@ -161,6 +173,16 @@ class _OtpScreenState extends State<OtpScreen> {
               ),
             ),
           ),
+          Obx(() {
+            return controller.isLoading.value
+                ? Container(
+                  color: Colors.black45,
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
+                )
+                : const SizedBox.shrink();
+          }),
         ],
       ),
     );

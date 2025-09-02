@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../data/network/api_client.dart';
+import '../model/blog_detail_model.dart';
 import '../model/get_blog_model.dart';
 
 class HomeRepo {
@@ -17,6 +18,7 @@ class HomeRepo {
    nodes {
      id
      title
+    slug
      uri
      date
      excerpt
@@ -57,5 +59,69 @@ class HomeRepo {
     int first = 10,
   }) async {
     return fetchBlogs(first: first, after: cursor);
+  }
+
+  Future<BlogDetailModel> getBlogDetail(String slug) async {
+    String query = '''
+  query GetPostBySlug {
+      post(id: "$slug", idType: SLUG) {
+        id
+        databaseId
+        title
+        content
+        date
+        excerpt
+        uri
+        author {
+          node {
+            name
+            avatar {
+              url
+            }
+          }
+        }
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        categories {
+          nodes {
+            name
+            slug
+          }
+        }
+        tags {
+          nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(document: gql(query), variables: {'slug': slug}),
+    );
+
+    debugPrint("result.data : ${result.data}");
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    if (result.data != null) {
+      debugPrint("haalo blogetail");
+      BlogDetailModel productDetailModel = BlogDetailModel.fromJson({
+        "data": result.data,
+      });
+      debugPrint("blogDetailModel : ${productDetailModel.data}");
+      return productDetailModel;
+    } else {
+      throw Exception("No Data Found");
+    }
   }
 }

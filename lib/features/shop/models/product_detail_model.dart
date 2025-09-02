@@ -48,6 +48,7 @@ class Product {
   String? regularPrice;
   String? salePrice;
   String? bestPrice;
+  String? currencySymbol;
   String? stockStatus;
   double? discountPercentage;
   double? averageRating;
@@ -66,6 +67,7 @@ class Product {
   GalleryImages? galleryImages;
   dynamic attributes;
   ProductCategories? productCategories;
+  ProductLabels? productLabels;
   Reviews? reviews;
   Related? related;
 
@@ -82,6 +84,7 @@ class Product {
     this.regularPrice,
     this.salePrice,
     this.bestPrice,
+    this.currencySymbol,
     this.stockStatus,
     this.discountPercentage,
     this.averageRating,
@@ -100,6 +103,7 @@ class Product {
     this.galleryImages,
     this.attributes,
     this.productCategories,
+    this.productLabels,
     this.reviews,
     this.related,
   });
@@ -117,6 +121,7 @@ class Product {
     regularPrice: json["regularPrice"],
     salePrice: json["salePrice"],
     bestPrice: json["bestPrice"],
+    currencySymbol: json["currencySymbol"] as String?,
     stockStatus: json["stockStatus"],
     discountPercentage: json["discountPercentage"]?.toDouble(),
     averageRating: json["averageRating"]?.toDouble(),
@@ -151,6 +156,10 @@ class Product {
         json["productCategories"] == null
             ? null
             : ProductCategories.fromJson(json["productCategories"]),
+    productLabels:
+        json["productLabels"] == null
+            ? null
+            : ProductLabels.fromJson(json["productLabels"]),
     reviews: json["reviews"] == null ? null : Reviews.fromJson(json["reviews"]),
     related: json["related"] == null ? null : Related.fromJson(json["related"]),
   );
@@ -168,6 +177,7 @@ class Product {
     "regularPrice": regularPrice,
     "salePrice": salePrice,
     "bestPrice": bestPrice,
+    "currencySymbol": currencySymbol,
     "stockStatus": stockStatus,
     "discountPercentage": discountPercentage,
     "averageRating": averageRating,
@@ -192,6 +202,7 @@ class Product {
     "galleryImages": galleryImages?.toJson(),
     "attributes": attributes,
     "productCategories": productCategories?.toJson(),
+    "productLabels": productLabels?.toJson(),
     "reviews": reviews?.toJson(),
     "related": related?.toJson(),
   };
@@ -272,6 +283,39 @@ class ProductCategoriesNode {
       ProductCategoriesNode(name: json["name"], slug: json["slug"]);
 
   Map<String, dynamic> toJson() => {"name": name, "slug": slug};
+}
+
+class ProductLabels {
+  List<ProductLabelsNode>? nodes;
+
+  ProductLabels({this.nodes});
+
+  factory ProductLabels.fromJson(Map<String, dynamic> json) => ProductLabels(
+    nodes:
+        json["nodes"] == null
+            ? []
+            : List<ProductLabelsNode>.from(
+              json["nodes"]!.map((x) => ProductLabelsNode.fromJson(x)),
+            ),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "nodes":
+        nodes == null ? [] : List<dynamic>.from(nodes!.map((x) => x.toJson())),
+  };
+}
+
+class ProductLabelsNode {
+  String? id;
+  String? name;
+  String? slug;
+
+  ProductLabelsNode({this.id, this.name, this.slug});
+
+  factory ProductLabelsNode.fromJson(Map<String, dynamic> json) =>
+      ProductLabelsNode(id: json["id"], name: json["name"], slug: json["slug"]);
+
+  Map<String, dynamic> toJson() => {"id": id, "name": name, "slug": slug};
 }
 
 class RatingBreakdown {

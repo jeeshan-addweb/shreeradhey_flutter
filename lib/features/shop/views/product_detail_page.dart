@@ -486,7 +486,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     Row(
                       children: [
                         Text(
-                          detail.price.toString(),
+                          "${detail.currencySymbol}${detail.price}",
                           style: TextStyle(
                             color: AppColors.blue_2da5f3,
                             fontSize: 32,
@@ -496,7 +496,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                         const SizedBox(width: 8),
                         Text(
-                          detail.regularPrice.toString(),
+                          "${detail.currencySymbol}${detail.regularPrice}",
                           style: TextStyle(
                             fontSize: 22,
                             decoration: TextDecoration.lineThrough,

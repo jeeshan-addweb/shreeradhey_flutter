@@ -3,6 +3,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/routes/app_route_path.dart';
@@ -175,50 +176,91 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                          child: Obx(() {
+                            final controller = Get.find<AuthController>();
+                            return ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
                               ),
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
-                            ),
-                            onPressed: () async {
-                              String contact = "";
+                              onPressed:
+                                  controller.isLoading.value
+                                      ? null // disable button while loading
+                                      : () async {
+                                        String contact = "";
 
-                              if (phoneController.text.isNotEmpty) {
-                                contact = phoneController.text;
-                              } else if (emailController.text.isNotEmpty) {
-                                contact = emailController.text;
-                              }
+                                        if (phoneController.text.isNotEmpty) {
+                                          contact = phoneController.text;
+                                        } else if (emailController
+                                            .text
+                                            .isNotEmpty) {
+                                          contact = emailController.text;
+                                        }
 
-                              if (contact.isNotEmpty) {
-                                // final controller = Get.find<AuthController>();
-                                // await controller.requestOtp(contact);
-                                context.push(
-                                  AppRoutePath.otpScreen,
-                                  extra: contact,
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Please enter phone or email",
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
+                                        if (contact.isNotEmpty) {
+                                          final response = await controller
+                                              .requestOtp(contact);
 
-                            child: const Text(
-                              "SUBMIT",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                                          final success =
+                                              response["success"] as bool? ??
+                                              false;
+                                          final message =
+                                              response["message"] as String? ??
+                                              "Failed to send OTP";
+
+                                          if (success) {
+                                            CustomSnackbars.showSuccess(
+                                              context,
+                                              response['message'],
+                                            );
+                                            context.push(
+                                              AppRoutePath.otpScreen,
+                                              extra: contact,
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(content: Text(message)),
+                                            );
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                "Please enter phone or email",
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                              child:
+                                  controller.isLoading.value
+                                      ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                      : const Text(
+                                        "SUBMIT",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                            );
+                          }),
                         ),
                       ),
 
