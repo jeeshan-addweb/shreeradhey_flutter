@@ -1,4 +1,5 @@
 class UiProductModel {
+  final int productId;
   final String imageUrl;
   final String title;
   final String subtitle;
@@ -15,6 +16,7 @@ class UiProductModel {
   final String currencySymbol; // <-- Added
 
   UiProductModel({
+    required this.productId,
     required this.imageUrl,
     required this.title,
     required this.subtitle,
@@ -31,6 +33,7 @@ class UiProductModel {
     this.currencySymbol = "", // <-- Default empty string
   });
   UiProductModel copyWith({
+    int? productId,
     String? imageUrl,
     String? title,
     String? subtitle,
@@ -47,6 +50,7 @@ class UiProductModel {
     String? currencySymbol,
   }) {
     return UiProductModel(
+      productId: productId ?? this.productId,
       imageUrl: imageUrl ?? this.imageUrl,
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,

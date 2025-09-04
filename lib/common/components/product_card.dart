@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shree_radhey/utils/routes/app_route_path.dart';
 
 import '../../constants/app_colors.dart';
+import '../../features/home/controller/wishlist_controller.dart';
 import '../model/ui_product_model.dart';
+import 'custom_snackbar.dart';
 
 class ProductCard extends StatefulWidget {
   final UiProductModel model;
@@ -15,8 +18,10 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
+  bool isWishlisted = false; // local toggle
   @override
   Widget build(BuildContext context) {
+    final WishlistController wishlistController = Get.put(WishlistController());
     double tagSize = MediaQuery.of(context).size.width * 0.12; // ~12% of screen
     double tagPadding = 12;
     return GestureDetector(
@@ -88,7 +93,7 @@ class _ProductCardState extends State<ProductCard> {
                             ),
                           ),
                           Text(
-                            widget.model.discountPercent.toString(),
+                            "${widget.model.discountPercent.toString()}%",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -143,10 +148,47 @@ class _ProductCardState extends State<ProductCard> {
                         const SizedBox(width: 4),
                         Container(width: 1, height: 14, color: Colors.white),
                         const SizedBox(width: 4),
-                        const Icon(
-                          Icons.favorite_border,
-                          size: 18,
-                          color: Colors.white,
+                        GestureDetector(
+                          onTap: () async {
+                            if (isWishlisted) {
+                              final response = await wishlistController
+                                  .removeFromWishlist((widget.model.productId));
+                              if (response["success"] == true) {
+                                setState(() => isWishlisted = false);
+                                CustomSnackbars.showSuccess(
+                                  context,
+                                  response["message"],
+                                );
+                              } else {
+                                CustomSnackbars.showError(
+                                  context,
+                                  response["message"],
+                                );
+                              }
+                            } else {
+                              final response = await wishlistController
+                                  .addToWishlist((widget.model.productId));
+                              if (response["success"] == true) {
+                                setState(() => isWishlisted = true);
+                                CustomSnackbars.showSuccess(
+                                  context,
+                                  response["message"],
+                                );
+                              } else {
+                                CustomSnackbars.showError(
+                                  context,
+                                  response["message"],
+                                );
+                              }
+                            }
+                          },
+                          child: Icon(
+                            isWishlisted
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 18,
+                            color: isWishlisted ? Colors.red : Colors.white,
+                          ),
                         ),
                       ],
                     ),

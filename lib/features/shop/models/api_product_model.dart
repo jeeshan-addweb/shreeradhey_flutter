@@ -67,6 +67,7 @@ class ProductsNode {
   String? id;
   String? name;
   String? slug;
+  int? databaseId;
   String? uri;
   Image? image;
   ProductCategories? productCategories;
@@ -84,6 +85,7 @@ class ProductsNode {
     this.id,
     this.name,
     this.slug,
+    this.databaseId,
     this.uri,
     this.image,
     this.productCategories,
@@ -102,6 +104,7 @@ class ProductsNode {
     id: json["id"],
     name: json["name"],
     slug: json["slug"],
+    databaseId: json["databaseId"],
     uri: json["uri"],
     image: json["image"] == null ? null : Image.fromJson(json["image"]),
     productCategories:
@@ -126,6 +129,7 @@ class ProductsNode {
     "id": id,
     "name": name,
     "slug": slug,
+    "databaseId": databaseId,
     "uri": uri,
     "image": image?.toJson(),
     "productCategories": productCategories?.toJson(),

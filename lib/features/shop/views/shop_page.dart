@@ -31,7 +31,9 @@ class _ShopPageState extends State<ShopPage> {
   @override
   void initState() {
     super.initState();
-    controller.fetchProducts("All");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchProducts("All");
+    });
   }
 
   @override

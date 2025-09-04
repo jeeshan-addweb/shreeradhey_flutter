@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/features/auth/controller/auth_controller.dart';
 import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
 import '../../../common/components/common_footer.dart';
@@ -22,12 +23,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final HomeController controller = Get.put(HomeController(), permanent: true);
+  final AuthController authcontroller = Get.put(
+    AuthController(),
+    permanent: true,
+  );
 
   @override
   void initState() {
     super.initState();
-    controller.fetchHomeData();
-    controller.fetchBlogs();
+    debugPrint("Token is : ${authcontroller.token}");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchHomeData();
+      controller.fetchBlogs();
+    });
   }
 
   @override

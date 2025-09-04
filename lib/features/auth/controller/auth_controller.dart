@@ -1,13 +1,15 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../repo/auth_repo.dart';
 
 class AuthController extends GetxController {
   final AuthRepo _repo = AuthRepo();
+  final box = GetStorage(); // local storage
 
   var isLoading = false.obs;
   var userData = {}.obs;
-  // var token = "".obs;
+  var token = "".obs;
   Future<Map<String, dynamic>> requestOtp(String phone) async {
     try {
       isLoading.value = true;
@@ -37,6 +39,12 @@ class AuthController extends GetxController {
       final result = await _repo.verifyOtp(phone, otp);
 
       final success = result['success'] == true;
+      if (success && result['token'] != null) {
+        // Save token in memory & storage
+        token.value = result['token'];
+        box.write("auth_token", result['token']);
+        userData.value = result['user'] ?? {};
+      }
 
       return {
         "success": success,
@@ -50,5 +58,9 @@ class AuthController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  String? getSavedToken() {
+    return box.read("auth_token");
   }
 }

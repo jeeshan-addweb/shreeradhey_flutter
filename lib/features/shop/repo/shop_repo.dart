@@ -19,6 +19,7 @@ class ShopRepo {
        id
        name
        slug
+       databaseId
        uri
        image {
            sourceUrl
