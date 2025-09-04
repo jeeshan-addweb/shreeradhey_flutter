@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import '../repo/auth_repo.dart';
 
 class AuthController extends GetxController {
@@ -6,43 +7,46 @@ class AuthController extends GetxController {
 
   var isLoading = false.obs;
   var userData = {}.obs;
-
-  Future<void> login(String email, String password) async {
+  // var token = "".obs;
+  Future<Map<String, dynamic>> requestOtp(String phone) async {
     try {
       isLoading.value = true;
-      final data = await _repo.login(email, password);
-      userData.value = data ?? {};
+      final result = await _repo.requestOtp(phone);
+
+      if (result['success'] == true) {
+        return {
+          "success": true,
+          "message": result['message'] ?? "OTP sent successfully",
+        };
+      } else {
+        return {
+          "success": false,
+          "message": result['message'] ?? "Something went wrong",
+        };
+      }
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      return {"success": false, "message": "Error: ${e.toString()}"};
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> requestOtp(String contact) async {
+  Future<Map<String, dynamic>> verifyOtp(String phone, String otp) async {
     try {
       isLoading.value = true;
-      final success = await _repo.requestOtp(contact);
-      if (!success) {
-        Get.snackbar("Error", "Failed to send OTP");
-      }
-    } catch (e) {
-      Get.snackbar("Error", e.toString());
-    } finally {
-      isLoading.value = false;
-    }
-  }
+      final result = await _repo.verifyOtp(phone, otp);
 
-  Future<void> verifyOtp(String contact, String otp) async {
-    try {
-      isLoading.value = true;
-      final data = await _repo.verifyOtp(contact, otp);
-      if (data != null) {
-        // token.value = data['token'];
-        // user.value = data['user'];
-      }
+      final success = result['success'] == true;
+
+      return {
+        "success": success,
+        "message":
+            result['message'] ?? (success ? "OTP verified" : "Invalid OTP"),
+        "token": result['token'],
+        "user": result['user'],
+      };
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      return {"success": false, "message": "Error: ${e.toString()}"};
     } finally {
       isLoading.value = false;
     }

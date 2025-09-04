@@ -35,7 +35,7 @@ import 'app_route_path.dart';
 class AppRouter {
   static final GoRouter _router = GoRouter(
     // debugLogDiagnostics: true,
-    initialLocation: AppRoutePath.homeScreen,
+    initialLocation: AppRoutePath.login,
     routes: [
       GoRoute(
         name: 'login',
@@ -223,9 +223,10 @@ class AppRouter {
           GoRoute(
             path: AppRoutePath.blogdetailScreen,
             builder: (context, state) {
-              final blog = state.extra as BlogModel;
+              final extra = state.extra as Map<String, dynamic>?;
+              final slug = extra?['slug']?.toString() ?? "";
 
-              return BlogDetailScreen(model: blog);
+              return BlogDetailScreen(slug: slug);
             },
           ),
 

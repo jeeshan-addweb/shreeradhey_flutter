@@ -11,14 +11,22 @@ String getBlogModelToJson(GetBlogModel data) => json.encode(data.toJson());
 
 class GetBlogModel {
   Data? data;
+  Extensions? extensions;
 
-  GetBlogModel({this.data});
+  GetBlogModel({this.data, this.extensions});
 
   factory GetBlogModel.fromJson(Map<String, dynamic> json) => GetBlogModel(
     data: json["data"] == null ? null : Data.fromJson(json["data"]),
+    extensions:
+        json["extensions"] == null
+            ? null
+            : Extensions.fromJson(json["extensions"]),
   );
 
-  Map<String, dynamic> toJson() => {"data": data?.toJson()};
+  Map<String, dynamic> toJson() => {
+    "data": data?.toJson(),
+    "extensions": extensions?.toJson(),
+  };
 }
 
 class Data {
@@ -59,6 +67,7 @@ class Posts {
 class NodeElement {
   String? id;
   String? title;
+  String? slug;
   String? uri;
   DateTime? date;
   String? excerpt;
@@ -67,6 +76,7 @@ class NodeElement {
   NodeElement({
     this.id,
     this.title,
+    this.slug,
     this.uri,
     this.date,
     this.excerpt,
@@ -76,6 +86,7 @@ class NodeElement {
   factory NodeElement.fromJson(Map<String, dynamic> json) => NodeElement(
     id: json["id"],
     title: json["title"],
+    slug: json["slug"],
     uri: json["uri"],
     date: json["date"] == null ? null : DateTime.parse(json["date"]),
     excerpt: json["excerpt"],
@@ -88,6 +99,7 @@ class NodeElement {
   Map<String, dynamic> toJson() => {
     "id": id,
     "title": title,
+    "slug": slug,
     "uri": uri,
     "date": date?.toIso8601String(),
     "excerpt": excerpt,

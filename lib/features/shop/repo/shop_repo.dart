@@ -13,26 +13,43 @@ class ShopRepo {
   Future<List<ProductsNode>> getAllProducts() async {
     const query = r'''
       query GetShopProducts {
-        products(first: 16, where: {orderby: {field: DATE, order: DESC}}) {
-          nodes {
-            ... on SimpleProduct {
-              id
-              name
-              slug
-              uri
-              image { sourceUrl altText }
-              productCategories { nodes { name slug } }
-              price
-              regularPrice
-              salePrice
-              bestPrice
-              discountPercentage
-              averageRating
-              reviewCount 
-            }
-          }
-        }
-      }
+   products(first: 16, where: {orderby: {field: DATE, order: DESC}}) {
+   nodes {
+       ... on SimpleProduct {
+       id
+       name
+       slug
+       uri
+       image {
+           sourceUrl
+           altText
+       }
+       productCategories {
+           nodes {
+           name
+           slug
+           }
+       }
+	productLabels {
+       nodes {
+         id
+         name
+         slug
+       }
+     }
+	currencySymbol
+       price
+       regularPrice
+       salePrice
+       bestPrice
+       discountPercentage
+       averageRating
+       reviewCount 
+       }
+   }
+   }
+}
+
     ''';
     return _fetchProducts(query);
   }
@@ -60,12 +77,20 @@ class ShopRepo {
            slug
          }
        }
+       productLabels {
+       nodes {
+         id
+         name
+         slug
+       }
+}
        ... on SimpleProduct {
          price
          regularPrice
          salePrice
          bestPrice
          discountPercentage
+         currencySymbol
          averageRating
          reviewCount 
        }
@@ -98,6 +123,15 @@ class ShopRepo {
               uri
               image { sourceUrl altText }
               productCategories { nodes { name slug } }
+              productLabels {
+       nodes {
+         id
+         name
+         slug
+       }
+}
+currencySymbol
+
               productSubtitle
               price
               regularPrice
@@ -137,6 +171,15 @@ class ShopRepo {
               uri
               image { sourceUrl altText }
               productCategories { nodes { name slug } }
+              productLabels {
+       nodes {
+         id
+         name
+         slug
+       }
+}
+currencySymbol
+
               price
               regularPrice
               salePrice
@@ -178,6 +221,7 @@ class ShopRepo {
       regularPrice
       salePrice
       bestPrice
+      currencySymbol
       stockStatus
       discountPercentage
       averageRating
@@ -225,6 +269,13 @@ class ShopRepo {
         slug
       }
     }
+     productLabels {
+       nodes {
+         id
+         name
+         slug
+       }
+ }
     reviews(first: 10) {
       nodes {
         id

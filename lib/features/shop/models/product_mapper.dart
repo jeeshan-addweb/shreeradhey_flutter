@@ -18,6 +18,14 @@ extension ApiProductMapper on ProductsNode {
       tagText: discountPercentage != null ? "Best Seller" : "Newly Launch",
       discountPercent: discountPercentage,
       slug: slug,
+      productLabels:
+          productLabels?.nodes
+              ?.map<String>((label) => label.name ?? "")
+              .where((name) => name.isNotEmpty)
+              .toList() ??
+          [],
+
+      currencySymbol: currencySymbol.toString(),
     );
   }
 }

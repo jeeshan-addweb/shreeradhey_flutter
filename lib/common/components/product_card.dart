@@ -112,9 +112,12 @@ class _ProductCardState extends State<ProductCard> {
                     height: 30,
                     decoration: BoxDecoration(
                       color:
-                          widget.model.tagText == "Newly Launch"
+                          widget.model.productLabels.isNotEmpty &&
+                                  widget.model.productLabels.first ==
+                                      "Newly Launch"
                               ? AppColors.blue_2da5f3
                               : AppColors.green_327801,
+
                       borderRadius: const BorderRadius.only(
                         topRight: Radius.circular(12),
                         bottomLeft: Radius.circular(12),
@@ -127,7 +130,10 @@ class _ProductCardState extends State<ProductCard> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          widget.model.tagText,
+                          // widget.model.tagText,
+                          widget.model.productLabels.isNotEmpty
+                              ? widget.model.productLabels.first
+                              : "No Label", // fallback empty
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -163,7 +169,9 @@ class _ProductCardState extends State<ProductCard> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
-                widget.model.subtitle,
+                (widget.model.subtitle.isNotEmpty
+                    ? widget.model.subtitle
+                    : " "),
                 style: TextStyle(
                   color: AppColors.grey_65758b,
                   fontSize: 12,
@@ -209,7 +217,7 @@ class _ProductCardState extends State<ProductCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${widget.model.price}',
+                    '${widget.model.currencySymbol}${widget.model.price}',
                     style: TextStyle(
                       color: AppColors.blue_2da5f3,
                       fontSize: 18,
@@ -218,7 +226,7 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '${widget.model.oldPrice}',
+                    '${widget.model.currencySymbol}${widget.model.oldPrice}',
                     style: TextStyle(
                       fontSize: 12,
                       decoration: TextDecoration.lineThrough,
@@ -230,7 +238,7 @@ class _ProductCardState extends State<ProductCard> {
                     child: Row(
                       children: [
                         Text(
-                          'Best Price ${widget.model.couponPrice}',
+                          'Best Price ${widget.model.currencySymbol}${widget.model.couponPrice}',
                           style: TextStyle(
                             color: AppColors.green_327801,
                             fontWeight: FontWeight.w700,
