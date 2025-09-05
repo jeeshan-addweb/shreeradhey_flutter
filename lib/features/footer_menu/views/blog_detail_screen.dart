@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:intl/intl.dart';
 import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
 import '../../../common/components/common_footer.dart';
@@ -155,9 +156,12 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
 
                   /// Published On
                   Text(
-                    "Published on - ${detail.date}",
+                    detail.date != null
+                        ? "Published on - ${DateFormat("MMMM dd, yyyy").format(detail.date!)}"
+                        : "",
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
+
                   const SizedBox(height: 6),
 
                   // Minutes Read

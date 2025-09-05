@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_mock_data.dart';
 import '../../../utils/routes/app_route_path.dart';
-import '../../home/model/blog_model.dart';
+import '../../home/controller/home_controller.dart';
+import '../../home/model/get_blog_model.dart';
 import 'component/blog_carousel.dart';
 
 class BlogListingScreen extends StatefulWidget {
@@ -15,6 +19,8 @@ class BlogListingScreen extends StatefulWidget {
 }
 
 class _BlogListingScreenState extends State<BlogListingScreen> {
+  final HomeController controller = Get.find<HomeController>();
+
   String selectedFilter = "All";
   String searchQuery = "";
   final _hCtrl = ScrollController();
@@ -39,6 +45,18 @@ class _BlogListingScreenState extends State<BlogListingScreen> {
               );
           return matchesFilter && matchesSearch;
         }).toList();
+
+    if (controller.isBlogsLoading.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (controller.hasError.value) {
+      return Center(child: Text("Error: ${controller.errorMessage}"));
+    }
+
+    if (controller.blogs.isEmpty) {
+      return const Center(child: Text("No blogs available"));
+    }
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -74,7 +92,7 @@ class _BlogListingScreenState extends State<BlogListingScreen> {
               ),
 
               const SizedBox(height: 16),
-              BlogCarousel(blogs: AppMockData.blogItems),
+              BlogCarousel(blogs: controller.blogs),
 
               const SizedBox(height: 16),
 
@@ -127,10 +145,11 @@ class _BlogListingScreenState extends State<BlogListingScreen> {
               ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: filteredBlogs.length,
+                itemCount: controller.blogs.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 20),
                 itemBuilder: (context, index) {
-                  final blog = filteredBlogs[index];
+                  // final blog = filteredBlogs[index];
+                  final blog = controller.blogs[index];
                   return _VerticalBlogCard(blog: blog);
                 },
               ),
@@ -143,7 +162,7 @@ class _BlogListingScreenState extends State<BlogListingScreen> {
 }
 
 class _VerticalBlogCard extends StatefulWidget {
-  final BlogModel blog;
+  final NodeElement blog;
   const _VerticalBlogCard({required this.blog});
 
   @override
@@ -161,7 +180,7 @@ class _VerticalBlogCardState extends State<_VerticalBlogCard> {
         onTap: () {
           context.push(
             AppRoutePath.blogdetailScreen,
-            extra: widget.blog, // 👈 pass whole model
+            extra: {'slug': widget.blog.slug},
           );
         },
         child: Container(
@@ -185,8 +204,8 @@ class _VerticalBlogCardState extends State<_VerticalBlogCard> {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(12),
                 ),
-                child: Image.asset(
-                  widget.blog.imagePath,
+                child: Image.network(
+                  widget.blog.featuredImage?.node?.sourceUrl ?? "",
                   height: 250,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -202,7 +221,7 @@ class _VerticalBlogCardState extends State<_VerticalBlogCard> {
                     Row(
                       children: [
                         Text(
-                          widget.blog.writerName ?? "",
+                          widget.blog.author?.node?.name ?? "",
                           style: TextStyle(
                             fontSize: 13.5,
                             color: AppColors.grey_3C403D,
@@ -210,7 +229,12 @@ class _VerticalBlogCardState extends State<_VerticalBlogCard> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          widget.blog.date ?? "",
+                          widget.blog.date != null
+                              ? DateFormat(
+                                "MMMM dd, yyyy",
+                              ).format(widget.blog.date!)
+                              : "",
+
                           style: TextStyle(
                             fontSize: 13.5,
                             color: AppColors.black,
@@ -220,7 +244,7 @@ class _VerticalBlogCardState extends State<_VerticalBlogCard> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      widget.blog.title,
+                      widget.blog.title ?? "",
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
@@ -229,19 +253,26 @@ class _VerticalBlogCardState extends State<_VerticalBlogCard> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      widget.blog.description,
-                      maxLines: _expanded ? null : 2,
-                      overflow:
-                          _expanded
-                              ? TextOverflow.visible
-                              : TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.grey_3C403D,
-                      ),
+                    Html(
+                      data: widget.blog.excerpt ?? "",
+                      style: {
+                        "body": Style(
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                          fontSize: FontSize(14),
+                          color: AppColors.grey_3C403D,
+                          maxLines:
+                              _expanded
+                                  ? null
+                                  : 2, // won't work directly, so read below
+                          textOverflow:
+                              _expanded
+                                  ? TextOverflow.visible
+                                  : TextOverflow.ellipsis,
+                        ),
+                      },
                     ),
-                    if (widget.blog.description.length > 80)
+                    if ((widget.blog.excerpt ?? "").length > 80)
                       GestureDetector(
                         onTap: () => setState(() => _expanded = !_expanded),
                         child: Text(

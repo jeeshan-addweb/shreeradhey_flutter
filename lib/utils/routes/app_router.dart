@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shree_radhey/features/accounts/view/order_detail_screen.dart';
 
 import '../../constants/app_mock_data.dart';
 import '../../features/accounts/model/order_model.dart';
 import '../../features/accounts/view/account_page.dart';
+import '../../features/auth/controller/auth_controller.dart';
 import '../../features/auth/view/login_screen.dart';
 import '../../features/auth/view/otp_screen.dart';
 import '../../features/cart/views/cart_page.dart';
@@ -33,9 +35,13 @@ import '../../features/wishlist/views/wishlist_screen.dart';
 import 'app_route_path.dart';
 
 class AppRouter {
+  static final authController = Get.find<AuthController>();
   static final GoRouter _router = GoRouter(
     // debugLogDiagnostics: true,
-    initialLocation: AppRoutePath.login,
+    initialLocation:
+        authController.isLoggedIn
+            ? AppRoutePath.homeScreen
+            : AppRoutePath.login,
     routes: [
       GoRoute(
         name: 'login',

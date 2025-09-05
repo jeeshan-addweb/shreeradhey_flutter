@@ -26,10 +26,7 @@ class _BlogCardState extends State<BlogCard> {
     return GestureDetector(
       onTap: () {
         debugPrint("blog detail slug is ${widget.blogModel.slug}");
-        context.push(
-          AppRoutePath.blogdetailScreen,
-          extra: {'slug': widget.blogModel.slug},
-        );
+        context.push(AppRoutePath.blogdetailScreen);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -82,7 +79,7 @@ class _BlogCardState extends State<BlogCard> {
                           data: widget.blogModel.excerpt ?? "",
                           style: {
                             "body": Style(
-                              margin: Margins.zero, // removes default margins
+                              margin: Margins.zero,
                               padding: HtmlPaddings.zero,
                               fontSize: FontSize(12),
                               color: AppColors.grey_212121,

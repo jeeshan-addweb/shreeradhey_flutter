@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shree_radhey/utils/routes/app_route_path.dart';
 
 import '../../constants/app_colors.dart';
+import '../../features/cart/controller/cart_controller.dart';
+import '../../features/home/controller/wishlist_controller.dart';
 import '../model/ui_product_model.dart';
+import 'custom_snackbar.dart';
 
 class ProductCard extends StatefulWidget {
   final UiProductModel model;
@@ -15,8 +19,10 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
+  final cartController = Get.put(CartController());
   @override
   Widget build(BuildContext context) {
+    final WishlistController wishlistController = Get.put(WishlistController());
     double tagSize = MediaQuery.of(context).size.width * 0.12; // ~12% of screen
     double tagPadding = 12;
     return GestureDetector(
@@ -88,7 +94,7 @@ class _ProductCardState extends State<ProductCard> {
                             ),
                           ),
                           Text(
-                            widget.model.discountPercent.toString(),
+                            "${widget.model.discountPercent.toString()}%",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -143,10 +149,57 @@ class _ProductCardState extends State<ProductCard> {
                         const SizedBox(width: 4),
                         Container(width: 1, height: 14, color: Colors.white),
                         const SizedBox(width: 4),
-                        const Icon(
-                          Icons.favorite_border,
-                          size: 18,
-                          color: Colors.white,
+                        GestureDetector(
+                          onTap: () async {
+                            if (widget.model.isWishlisted == true) {
+                              final response = await wishlistController
+                                  .removeFromWishlist(widget.model.productId);
+
+                              if (response["success"] == true) {
+                                setState(() {
+                                  widget.model.isWishlisted = false;
+                                });
+                                CustomSnackbars.showSuccess(
+                                  context,
+                                  response["message"],
+                                );
+                              } else {
+                                CustomSnackbars.showError(
+                                  context,
+                                  response["message"],
+                                );
+                              }
+                            } else {
+                              final response = await wishlistController
+                                  .addToWishlist(widget.model.productId);
+
+                              if (response["success"] == true) {
+                                setState(() {
+                                  widget.model.isWishlisted =
+                                      true; // ✅ update model
+                                });
+                                CustomSnackbars.showSuccess(
+                                  context,
+                                  response["message"],
+                                );
+                              } else {
+                                CustomSnackbars.showError(
+                                  context,
+                                  response["message"],
+                                );
+                              }
+                            }
+                          },
+                          child: Icon(
+                            widget.model.isWishlisted == true
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 18,
+                            color:
+                                widget.model.isWishlisted == true
+                                    ? Colors.red
+                                    : Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -268,18 +321,22 @@ class _ProductCardState extends State<ProductCard> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    cartController.addProductToCart(
+                      widget.model.productId,
+                      2,
+                      context,
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero, // 👈 remove default padding
+                    padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                     minimumSize: const Size.fromHeight(40),
                     shadowColor: Colors.transparent,
-                    backgroundColor:
-                        Colors.transparent, // gradient will go inside
+                    backgroundColor: Colors.transparent,
                   ).copyWith(
-                    // 👇 add gradient background directly in button
                     backgroundColor: WidgetStateProperty.all<Color>(
                       Colors.transparent,
                     ),
@@ -302,25 +359,38 @@ class _ProductCardState extends State<ProductCard> {
                     child: Container(
                       alignment: Alignment.center,
                       constraints: const BoxConstraints(minHeight: 40),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Add to cart',
-                            style: TextStyle(
-                              color: AppColors.white,
-                              fontSize: 16,
+                      child: Obx(() {
+                        if (cartController.isLoading.value) {
+                          return const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
                             ),
-                          ),
-                          const SizedBox(width: 5),
-                          Icon(
-                            Icons.shopping_cart,
-                            color: AppColors.white,
-                            size: 20,
-                          ),
-                        ],
-                      ),
+                          );
+                        } else {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Add to cart',
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              Icon(
+                                Icons.shopping_cart,
+                                color: AppColors.white,
+                                size: 20,
+                              ),
+                            ],
+                          );
+                        }
+                      }),
                     ),
                   ),
                 ),

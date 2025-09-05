@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
 
 import '../../../common/components/common_footer.dart';
+import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
@@ -23,9 +25,13 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  final ShopController controller = Get.find<ShopController>();
-
-  Widget _buildCircleIcon(IconData icon, {required VoidCallback onTap}) {
+  final ShopController controller = Get.put(ShopController());
+  final WishlistController wishlistController = Get.put(WishlistController());
+  Widget _buildCircleIcon(
+    IconData icon, {
+    Color? color,
+    required VoidCallback onTap,
+  }) {
     return Container(
       height: 32,
       width: 32,
@@ -41,7 +47,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ],
       ),
       child: IconButton(
-        icon: Icon(icon, size: 24),
+        icon: Icon(icon, size: 24, color: color ?? AppColors.red_CC0003),
         onPressed: onTap,
         padding: EdgeInsets.zero,
       ),
@@ -73,8 +79,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void initState() {
     super.initState();
     debugPrint("Slug is ${widget.slug}");
-    controller.fetchProductDetail(context, widget.slug);
-    controller.fetchProductReviews(widget.slug);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchProductDetail(context, widget.slug);
+      controller.fetchProductReviews(widget.slug);
+    });
   }
 
   @override
@@ -250,10 +258,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           return const CircularProgressIndicator();
         }
 
-        if (controller.reviews.isEmpty) {
-          return const Text("No reviews yet");
-        }
-
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,7 +339,48 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     right: 30,
                     child: Column(
                       children: [
-                        _buildCircleIcon(Icons.favorite_border, onTap: () {}),
+                        _buildCircleIcon(
+                          detail.isInWishlist == true
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          // detail.isInWishlist == true
+                          //     ? Colors.red
+                          //     : Colors.grey,
+                          onTap: () async {
+                            if (detail.isInWishlist == true) {
+                              final response = await wishlistController
+                                  .removeFromWishlist(detail.databaseId ?? 0);
+                              if (response["success"] == true) {
+                                setState(() => detail.isInWishlist = false);
+                                CustomSnackbars.showSuccess(
+                                  context,
+                                  response["message"],
+                                );
+                              } else {
+                                CustomSnackbars.showError(
+                                  context,
+                                  response["message"],
+                                );
+                              }
+                            } else {
+                              final response = await wishlistController
+                                  .addToWishlist(detail.databaseId ?? 0);
+                              if (response["success"] == true) {
+                                setState(() => detail.isInWishlist = true);
+                                CustomSnackbars.showSuccess(
+                                  context,
+                                  response["message"],
+                                );
+                              } else {
+                                CustomSnackbars.showError(
+                                  context,
+                                  response["message"],
+                                );
+                              }
+                            }
+                          },
+                        ),
+
                         const SizedBox(height: 12),
                         _buildCircleIcon(Icons.search, onTap: () {}),
                         const SizedBox(height: 12),
@@ -643,21 +688,34 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     const SizedBox(height: 12),
                     AdditionalInfoWidget(attributes: attributes),
                     SizedBox(height: 20),
-                    Text(
-                      "Reviews ${(detail.reviewCount)}",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.black,
+                    // Reviews Section
+                    if (controller.reviews.isEmpty) ...[
+                      const Text(
+                        "No reviews found",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    ProductDetailReviewSection(
-                      averageRating: (detail.averageRating ?? 0).toDouble(),
-                      totalReviews: detail.reviewCount ?? 0,
-                      ratingDistribution: ratingDistribution,
-                      reviews: controller.reviews,
-                    ),
+                    ] else ...[
+                      Text(
+                        "Reviews ${(detail.reviewCount)}",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ProductDetailReviewSection(
+                        averageRating: (detail.averageRating ?? 0).toDouble(),
+                        totalReviews: detail.reviewCount ?? 0,
+                        ratingDistribution: ratingDistribution,
+                        reviews: controller.reviews,
+                      ),
+                    ],
+
                     SizedBox(height: 20),
                     AddReviewSection(),
                     SizedBox(height: 20),
