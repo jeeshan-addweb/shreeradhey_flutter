@@ -32,6 +32,7 @@ extension ApiProductMapper on ProductsNode {
           [],
 
       currencySymbol: currencySymbol.toString(),
+      isWishlisted: isInWishlist ?? false,
     );
   }
 

@@ -1,5 +1,6 @@
 class UiProductModel {
   final int productId;
+  bool isWishlisted;
   final String imageUrl;
   final String title;
   final String subtitle;
@@ -25,6 +26,7 @@ class UiProductModel {
     required this.price,
     required this.oldPrice,
     required this.couponPrice,
+    this.isWishlisted = false,
     this.tagText = "Best Seller",
     this.description,
     this.discountPercent,
@@ -48,6 +50,7 @@ class UiProductModel {
     String? slug,
     List<String>? productLabels,
     String? currencySymbol,
+    bool? isWishlisted,
   }) {
     return UiProductModel(
       productId: productId ?? this.productId,
@@ -65,6 +68,7 @@ class UiProductModel {
       slug: slug ?? this.slug,
       productLabels: productLabels ?? this.productLabels, // ✅ added
       currencySymbol: currencySymbol ?? this.currencySymbol, // ✅ added
+      isWishlisted: isWishlisted ?? this.isWishlisted,
     );
   }
 }

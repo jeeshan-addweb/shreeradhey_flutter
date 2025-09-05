@@ -9,27 +9,40 @@ class HomeRepo {
   final _client = ApiClient().graphQLClient;
 
   final String query = r'''
-   query GetLatestPosts($first: Int, $after: String) {
- posts(first: $first, after: $after, where: { orderby: { field: DATE, order: DESC } }) {
-   pageInfo {
-     hasNextPage
-     endCursor
-   }
-   nodes {
-     id
-     title
+  query GetLatestPosts($first: Int, $after: String) {
+posts(first: $first, after: $after, where: { orderby: { field: DATE, order: DESC } }) {
+  pageInfo {
+    hasNextPage
+    endCursor
+  }
+  nodes {
+    id
+    title
     slug
-     uri
-     date
-     excerpt
-     featuredImage {
-       node {
-         sourceUrl
-         altText
-       }
-     }
-   }
- }
+    uri
+    date
+    excerpt
+    featuredImage {
+      node {
+        sourceUrl
+        altText
+      }
+    }
+    author {
+        node {
+          id
+          name
+          firstName
+          lastName
+          slug
+          uri
+          avatar {
+            url
+          }
+        }
+      }
+  }
+}
 }
   ''';
 

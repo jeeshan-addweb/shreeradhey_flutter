@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../constants/app_colors.dart';
+import '../../../utils/routes/app_route_path.dart';
+import '../../auth/controller/auth_controller.dart';
 import 'accounts_detail_page.dart';
 import 'address_screen.dart';
 import 'dashboard_page.dart';
@@ -60,10 +64,52 @@ class _AccountPageState extends State<AccountPage> {
                 final bool isSelected = selectedIndex == index;
 
                 return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = index;
-                    });
+                  onTap: () async {
+                    if (tab["title"] == "Log out") {
+                      final shouldLogout = await showDialog<bool>(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: const Text("Confirm Logout"),
+                              content: const Text(
+                                "Are you sure you want to log out?",
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.of(context).pop(false),
+                                  child: const Text("Cancel"),
+                                ),
+                                ElevatedButton(
+                                  onPressed:
+                                      () => Navigator.of(context).pop(true),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  child: const Text("Yes, Logout"),
+                                ),
+                              ],
+                            ),
+                      );
+
+                      if (shouldLogout == true) {
+                        // clear storage & go to login
+                        final authController = Get.find<AuthController>();
+                        await authController.logout();
+
+                        if (mounted) {
+                          // if you use GoRouter
+                          context.go(AppRoutePath.login);
+
+                          // if you use GetX navigation
+                          // Get.offAllNamed(AppRoutePath.login);
+                        }
+                      }
+                    } else {
+                      setState(() {
+                        selectedIndex = index;
+                      });
+                    }
                   },
                   child: Column(
                     children: [

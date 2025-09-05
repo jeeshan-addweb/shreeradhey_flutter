@@ -10,6 +10,22 @@ class AuthController extends GetxController {
   var isLoading = false.obs;
   var userData = {}.obs;
   var token = "".obs;
+
+  void loadToken() {
+    final savedToken = box.read("auth_token");
+    if (savedToken != null && savedToken.toString().isNotEmpty) {
+      token.value = savedToken;
+    }
+  }
+
+  bool get isLoggedIn => token.isNotEmpty;
+
+  Future<void> logout() async {
+    token.value = "";
+    userData.clear();
+    await box.remove("auth_token");
+  }
+
   Future<Map<String, dynamic>> requestOtp(String phone) async {
     try {
       isLoading.value = true;

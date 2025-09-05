@@ -72,6 +72,7 @@ class NodeElement {
   DateTime? date;
   String? excerpt;
   FeaturedImage? featuredImage;
+  Author? author;
 
   NodeElement({
     this.id,
@@ -81,6 +82,7 @@ class NodeElement {
     this.date,
     this.excerpt,
     this.featuredImage,
+    this.author,
   });
 
   factory NodeElement.fromJson(Map<String, dynamic> json) => NodeElement(
@@ -94,6 +96,7 @@ class NodeElement {
         json["featuredImage"] == null
             ? null
             : FeaturedImage.fromJson(json["featuredImage"]),
+    author: json["author"] == null ? null : Author.fromJson(json["author"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -104,7 +107,71 @@ class NodeElement {
     "date": date?.toIso8601String(),
     "excerpt": excerpt,
     "featuredImage": featuredImage?.toJson(),
+    "author": author?.toJson(),
   };
+}
+
+class Author {
+  AuthorNode? node;
+
+  Author({this.node});
+
+  factory Author.fromJson(Map<String, dynamic> json) => Author(
+    node: json["node"] == null ? null : AuthorNode.fromJson(json["node"]),
+  );
+
+  Map<String, dynamic> toJson() => {"node": node?.toJson()};
+}
+
+class AuthorNode {
+  String? id;
+  String? name;
+  String? firstName;
+  String? lastName;
+  String? slug;
+  String? uri;
+  Avatar? avatar;
+
+  AuthorNode({
+    this.id,
+    this.name,
+    this.firstName,
+    this.lastName,
+    this.slug,
+    this.uri,
+    this.avatar,
+  });
+
+  factory AuthorNode.fromJson(Map<String, dynamic> json) => AuthorNode(
+    id: json["id"],
+    name: json["name"],
+    firstName: json["firstName"],
+    lastName: json["lastName"],
+    slug: json["slug"],
+    uri: json["uri"],
+    avatar: json["avatar"] == null ? null : Avatar.fromJson(json["avatar"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "firstName": firstName,
+    "lastName": lastName,
+    "slug": slug,
+    "uri": uri,
+    "avatar": avatar?.toJson(),
+  };
+}
+
+class Avatar {
+  String? url;
+
+  Avatar({this.url});
+
+  factory Avatar.fromJson(Map<String, dynamic> json) =>
+      Avatar(url: json["url"]);
+
+  Map<String, dynamic> toJson() => {"url": url};
 }
 
 class FeaturedImage {
