@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
@@ -46,6 +48,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   Widget buildNavItem(BuildContext context, int index) {
     final bool isSelected = index == currentIndex;
+    final cartController = Get.find<CartController>();
 
     return Expanded(
       child: GestureDetector(
@@ -96,8 +99,17 @@ class CustomBottomNavigationBar extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 8,
                         backgroundColor: AppColors.green_5b9d0b,
-                        child: const Text(
+                        child: Text(
                           "2",
+                          // cartController
+                          //         .cart
+                          //         .value!
+                          //         .data!
+                          //         .cart!
+                          //         .contents!
+                          //         .itemCount
+                          //         .toString() ??
+                          //     "",
                           style: TextStyle(fontSize: 10, color: Colors.white),
                         ),
                       ),

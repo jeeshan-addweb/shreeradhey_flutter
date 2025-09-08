@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../models/api_product_model.dart';
 import '../../../common/model/ui_product_model.dart';
 
@@ -33,6 +31,10 @@ extension ApiProductMapper on ProductsNode {
 
       currencySymbol: currencySymbol.toString(),
       isWishlisted: isInWishlist ?? false,
+      category:
+          (productCategories?.nodes?.isNotEmpty ?? false)
+              ? slugValues.reverse[productCategories!.nodes!.first.slug] ?? ""
+              : "",
     );
   }
 

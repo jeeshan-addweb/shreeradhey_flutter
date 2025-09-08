@@ -30,7 +30,11 @@ class _ProductCardState extends State<ProductCard> {
         context.push(
           AppRoutePath.productDetail,
           // pathParameters: {'slug': widget.model.slug ?? ""},
-          extra: {'hideNav': true, 'slug': widget.model.slug},
+          extra: {
+            'hideNav': true,
+            'slug': widget.model.slug,
+            'category': widget.model.category,
+          },
         );
         // context.pushNamed(
         //   AppRoutePath.productDetail,
@@ -324,7 +328,7 @@ class _ProductCardState extends State<ProductCard> {
                   onPressed: () {
                     cartController.addProductToCart(
                       widget.model.productId,
-                      2,
+                      1,
                       context,
                     );
                   },

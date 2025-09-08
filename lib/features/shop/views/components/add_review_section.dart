@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shree_radhey/features/shop/controller/shop_controller.dart';
 
+import '../../../../common/components/custom_snackbar.dart';
 import '../../../../constants/app_colors.dart';
 
 class AddReviewSection extends StatefulWidget {
-  const AddReviewSection({super.key});
+  final int productId; // Pass productId from detail page
+
+  const AddReviewSection({super.key, required this.productId});
 
   @override
   State<AddReviewSection> createState() => _AddReviewSectionState();
@@ -51,66 +56,125 @@ class _AddReviewSectionState extends State<AddReviewSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Add a review",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.red_CC0003,
+    final shopController = Get.find<ShopController>();
+
+    return Obx(() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Add a review",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.red_CC0003,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-        /// Overall rating
-        buildRatingRow("Overall rating *", overallRating, (val) {
-          setState(() => overallRating = val);
-        }),
-        const SizedBox(height: 12),
+          /// Overall rating
+          buildRatingRow("Overall rating *", overallRating, (val) {
+            setState(() => overallRating = val);
+          }),
+          const SizedBox(height: 12),
 
-        /// Product rating
-        buildRatingRow("Give us rating our products *", productRating, (val) {
-          setState(() => productRating = val);
-        }),
-        const SizedBox(height: 16),
+          /// Product rating
+          buildRatingRow("Give us rating our products *", productRating, (val) {
+            setState(() => productRating = val);
+          }),
+          const SizedBox(height: 16),
 
-        /// Review text field
-        const Text(
-          "Your review *",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: reviewController,
-          maxLines: 4,
-          decoration: InputDecoration(
-            hintText: "Write your review here...",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          /// Review text field
+          const Text(
+            "Your review *",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-        ),
-        const SizedBox(height: 20),
-
-        /// Submit button
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey[700], // Grey background
-              foregroundColor: Colors.white, // White text
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              textStyle: const TextStyle(fontSize: 14),
-              minimumSize: const Size(80, 36), // Small size
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
+          const SizedBox(height: 6),
+          TextField(
+            controller: reviewController,
+            maxLines: 4,
+            decoration: InputDecoration(
+              hintText: "Write your review here...",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text("Submit"),
           ),
-        ),
-      ],
-    );
+          const SizedBox(height: 20),
+
+          /// Submit button
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ElevatedButton(
+              onPressed:
+                  shopController.isLoading.value
+                      ? null
+                      : () {
+                        if (overallRating == 0) {
+                          CustomSnackbars.showError(
+                            context,
+                            "Please give an overall rating",
+                          );
+                          return;
+                        }
+                        if (reviewController.text.trim().isEmpty) {
+                          CustomSnackbars.showError(
+                            context,
+                            "Please write your review",
+                          );
+                          return;
+                        }
+
+                        final userName = "John Doe";
+                        final userEmail = "john@example.com";
+                        debugPrint(
+                          "Product Id is ${widget.productId} and content is ${reviewController.text.trim()} and rating is ${overallRating.toInt()}",
+                        );
+
+                        shopController.submitReview(
+                          context: context,
+                          productId: widget.productId.toString(),
+                          author: userName,
+                          email: userEmail,
+                          content: reviewController.text.trim(),
+                          rating: overallRating.toInt(),
+                        );
+
+                        // Clear inputs after submit
+                        reviewController.clear();
+                        setState(() {
+                          overallRating = 0;
+                          productRating = 0;
+                        });
+                      },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey[700],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                textStyle: const TextStyle(fontSize: 14),
+                minimumSize: const Size(80, 36),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              child:
+                  shopController.isLoading.value
+                      ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                      : const Text("Submit"),
+            ),
+          ),
+        ],
+      );
+    });
   }
 }

@@ -23,6 +23,8 @@ class ShopController extends GetxController {
   var hasMoreReviews = true.obs;
   var reviewCursor = "".obs;
 
+  var isSubmitting = false.obs;
+
   Future<void> fetchProducts(String category) async {
     try {
       isLoading.value = true;
@@ -103,6 +105,39 @@ class ShopController extends GetxController {
       print("Review fetch error: $e");
     } finally {
       isReviewLoading.value = false;
+    }
+  }
+
+  Future<void> submitReview({
+    required BuildContext context,
+    required String productId,
+    required String author,
+    required String email,
+    required String content,
+    required int rating,
+  }) async {
+    try {
+      isSubmitting.value = true;
+      final res = await _repo.addReview(
+        productId: productId,
+        author: author,
+        email: email,
+        content: content,
+        rating: rating,
+      );
+
+      if (res['success'] == true) {
+        CustomSnackbars.showSuccess(context, "Review submitted successfully!");
+      } else {
+        CustomSnackbars.showError(
+          context,
+          "Failed to submit review. Try again!",
+        );
+      }
+    } catch (e) {
+      debugPrint("Error $e");
+    } finally {
+      isSubmitting.value = false;
     }
   }
 }

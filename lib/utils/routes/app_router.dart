@@ -105,7 +105,8 @@ class AppRouter {
             path: AppRoutePath.productDetail,
             builder: (BuildContext context, GoRouterState state) {
               final slug = (state.extra as Map)['slug'] as String;
-              return ProductDetailPage(slug: slug);
+              final category = (state.extra as Map)['category'] as String;
+              return ProductDetailPage(slug: slug, category: category);
             },
           ),
 

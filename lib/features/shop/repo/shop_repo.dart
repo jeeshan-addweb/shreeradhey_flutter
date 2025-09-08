@@ -390,4 +390,54 @@ currencySymbol
         .map((e) => NodeElement.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  Future<Map<String, dynamic>> addReview({
+    required String productId,
+    required String author,
+    required String email,
+    required String content,
+    required int rating,
+  }) async {
+    const String mutation = r'''
+      mutation AddReview(
+        $productId: ID!,
+        $author: String!,
+        $email: String!,
+        $content: String!,
+        $rating: Int!
+      ) {
+        createProductReview(
+          input: {
+            productId: $productId,
+            author: $author,
+            email: $email,
+            content: $content,
+            rating: $rating
+          }
+        ) {
+          success
+          commentId
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(mutation),
+        variables: {
+          "productId": productId,
+          "author": author,
+          "email": email,
+          "content": content,
+          "rating": rating,
+        },
+      ),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['createProductReview'] ?? {};
+  }
 }

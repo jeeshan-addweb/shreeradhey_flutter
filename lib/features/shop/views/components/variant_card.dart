@@ -4,11 +4,12 @@ import '../../../../constants/app_colors.dart';
 
 class VariantCard extends StatelessWidget {
   final String variantName;
-  final double originalPrice;
-  final double discountedPrice;
-  final int discountPercent;
+  final String originalPrice;
+  final String discountedPrice;
+  final double discountPercent;
   final bool isSelected;
   final VoidCallback onTap;
+  final String currencySymbol;
 
   const VariantCard({
     Key? key,
@@ -18,6 +19,7 @@ class VariantCard extends StatelessWidget {
     required this.discountPercent,
     required this.isSelected,
     required this.onTap,
+    required this.currencySymbol,
   }) : super(key: key);
 
   @override
@@ -89,7 +91,7 @@ class VariantCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\$${discountedPrice.toStringAsFixed(0)}",
+                          "$currencySymbol${discountedPrice}",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -98,7 +100,7 @@ class VariantCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          "\$${originalPrice.toStringAsFixed(0)}",
+                          "$currencySymbol${originalPrice}",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,

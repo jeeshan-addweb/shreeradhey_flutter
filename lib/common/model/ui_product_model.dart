@@ -15,6 +15,7 @@ class UiProductModel {
   final String? slug;
   final List<String> productLabels; // <-- Added
   final String currencySymbol; // <-- Added
+  final String category;
 
   UiProductModel({
     required this.productId,
@@ -33,6 +34,7 @@ class UiProductModel {
     this.slug,
     this.productLabels = const [], // <-- Default empty list
     this.currencySymbol = "", // <-- Default empty string
+    required this.category,
   });
   UiProductModel copyWith({
     int? productId,
@@ -51,6 +53,7 @@ class UiProductModel {
     List<String>? productLabels,
     String? currencySymbol,
     bool? isWishlisted,
+    String? category,
   }) {
     return UiProductModel(
       productId: productId ?? this.productId,
@@ -69,6 +72,7 @@ class UiProductModel {
       productLabels: productLabels ?? this.productLabels, // ✅ added
       currencySymbol: currencySymbol ?? this.currencySymbol, // ✅ added
       isWishlisted: isWishlisted ?? this.isWishlisted,
+      category: category ?? this.category,
     );
   }
 }
