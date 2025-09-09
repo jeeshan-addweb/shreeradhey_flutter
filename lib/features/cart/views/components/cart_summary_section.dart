@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 
 import '../../../../constants/app_colors.dart';
 import '../../../../utils/routes/app_route_path.dart';
@@ -12,6 +13,8 @@ class CartSummarySection extends StatelessWidget {
 
   CartSummarySection({super.key, required this.subtotal, required this.total});
   final couponController = Get.put(CouponController());
+  final cartController = Get.find<CartController>();
+  final TextEditingController couponControllerText = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -45,46 +48,83 @@ class CartSummarySection extends StatelessWidget {
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(6),
           ),
-          child: Row(
-            children: [
-              const Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Coupon code",
-                      border: InputBorder.none,
+          child: Obx(() {
+            if (cartController.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: TextField(
+                      controller: couponControllerText,
+                      decoration: InputDecoration(
+                        hintText: "Coupon code",
+                        border: InputBorder.none,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.green_6cad10, AppColors.green_327801],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.green_6cad10, AppColors.green_327801],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(4),
+                      bottomRight: Radius.circular(4),
+                    ),
                   ),
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(4),
-                    bottomRight: Radius.circular(4),
+                  child: TextButton(
+                    onPressed: () {
+                      final code = couponControllerText.text.trim();
+                      if (code.isNotEmpty) {
+                        cartController.applyCoupon(code);
+                      }
+                    },
+                    child: const Text(
+                      "Apply",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
-                child: TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Apply",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            );
+          }),
         ),
 
         const SizedBox(height: 12),
 
+        // Obx(() {
+        //   final appliedCoupons =
+        //       cartController.cart.value?.data?.cart?.appliedCoupons;
+        //   if (appliedCoupons == null || appliedCoupons.isEmpty) {
+        //     return const SizedBox.shrink();
+        //   }
+
+        //   return Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children:
+        //         appliedCoupons.map((c) {
+        //           return Row(
+        //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //             children: [
+        //               Text(
+        //                 "Applied Coupon: ${c['code']} - ₹${c['discountAmount']}",
+        //               ),
+        //               TextButton(
+        //                 onPressed: () => cartController.removeCoupon(c['code']),
+        //                 child: const Text("Remove"),
+        //               ),
+        //             ],
+        //           );
+        //         }).toList(),
+        //   );
+        // }),
         Obx(() {
           if (couponController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());

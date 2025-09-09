@@ -19,7 +19,7 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  final cartController = Get.put(CartController());
+  final cartController = Get.find<CartController>();
   @override
   Widget build(BuildContext context) {
     final WishlistController wishlistController = Get.put(WishlistController());
@@ -364,7 +364,17 @@ class _ProductCardState extends State<ProductCard> {
                       alignment: Alignment.center,
                       constraints: const BoxConstraints(minHeight: 40),
                       child: Obx(() {
-                        if (cartController.isLoading.value) {
+                        final isAdding =
+                            cartController.addingItems[widget
+                                .model
+                                .productId] ??
+                            false;
+
+                        final alreadyInCart = cartController.isInCart(
+                          widget.model.productId,
+                        );
+
+                        if (isAdding) {
                           return const SizedBox(
                             height: 20,
                             width: 20,

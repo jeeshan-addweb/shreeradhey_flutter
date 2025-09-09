@@ -14,6 +14,7 @@ class ProductOverviewCard extends StatefulWidget {
 
   final String cartSubtotal;
   final String cartTotal;
+  final bool isLoading;
 
   const ProductOverviewCard({
     super.key,
@@ -26,6 +27,7 @@ class ProductOverviewCard extends StatefulWidget {
     required this.cartSubtotal,
     required this.cartTotal,
     this.imageUrl,
+    this.isLoading = false,
   });
 
   @override
@@ -41,7 +43,18 @@ class _ProductOverviewCardState extends State<ProductOverviewCard> {
     quantity = widget.quantity;
   }
 
+  @override
+  void didUpdateWidget(covariant ProductOverviewCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.quantity != widget.quantity) {
+      setState(() {
+        quantity = widget.quantity;
+      });
+    }
+  }
+
   void _incrementQuantity() {
+    if (widget.isLoading) return;
     setState(() {
       quantity++;
       widget.onQuantityChanged(quantity);
@@ -49,11 +62,15 @@ class _ProductOverviewCardState extends State<ProductOverviewCard> {
   }
 
   void _decrementQuantity() {
+    if (widget.isLoading) return;
     if (quantity > 1) {
       setState(() {
         quantity--;
         widget.onQuantityChanged(quantity);
       });
+    } else {
+      // 👇 instead of going to 0, remove from cart
+      widget.onRemove();
     }
   }
 
@@ -110,11 +127,20 @@ class _ProductOverviewCardState extends State<ProductOverviewCard> {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      QuantitySelector(
-                        quantity: quantity,
-                        onIncrement: _incrementQuantity,
-                        onDecrement: _decrementQuantity,
-                      ),
+                      widget.isLoading
+                          ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : QuantitySelector(
+                            quantity: quantity,
+                            onIncrement: _incrementQuantity,
+                            onDecrement: _decrementQuantity,
+                          ),
+                      const SizedBox(width: 8),
+
+                      // show small spinner when this item is updating
                       const SizedBox(height: 6),
                       Text(
                         "₹${widget.price}",
@@ -339,29 +365,29 @@ class _ProductOverviewCardState extends State<ProductOverviewCard> {
   }
 }
 
-// Dashed Line Painter
-class _DashedLinePainter extends CustomPainter {
-  final Color color;
-  _DashedLinePainter({required this.color});
+// // Dashed Line Painter
+// class _DashedLinePainter extends CustomPainter {
+//   final Color color;
+//   _DashedLinePainter({required this.color});
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    const dashWidth = 5.0;
-    const dashSpace = 3.0;
-    double startX = 0;
-    final paint =
-        Paint()
-          ..color = color
-          ..strokeWidth = 1;
-    while (startX < size.width) {
-      canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
-      startX += dashWidth + dashSpace;
-    }
-  }
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     const dashWidth = 5.0;
+//     const dashSpace = 3.0;
+//     double startX = 0;
+//     final paint =
+//         Paint()
+//           ..color = color
+//           ..strokeWidth = 1;
+//     while (startX < size.width) {
+//       canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
+//       startX += dashWidth + dashSpace;
+//     }
+//   }
 
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
+//   @override
+//   bool shouldRepaint(CustomPainter oldDelegate) => false;
+// }
 
 // Quantity Selector Widget
 class QuantitySelector extends StatelessWidget {
@@ -427,27 +453,27 @@ class _QuantityBox extends StatelessWidget {
   }
 }
 
-// Price Row Widget
-class _PriceRow extends StatelessWidget {
-  final String title;
-  final String amount;
+// // Price Row Widget
+// class _PriceRow extends StatelessWidget {
+//   final String title;
+//   final String amount;
 
-  const _PriceRow({required this.title, required this.amount});
+//   const _PriceRow({required this.title, required this.amount});
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-        ),
-        Text(
-          amount,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//       children: [
+//         Text(
+//           title,
+//           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+//         ),
+//         Text(
+//           amount,
+//           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+//         ),
+//       ],
+//     );
+//   }
+// }

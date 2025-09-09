@@ -1,7 +1,9 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../data/network/api_client.dart';
-import '../model/add_to_cart_model.dart';
 import '../model/get_cart_model.dart';
 
 class CartRepo {
@@ -54,18 +56,44 @@ class CartRepo {
         }
       }
     ''';
+    try {
+      debugPrint('[CartRepo] getCartItems - starting query...');
+      final stopwatch = Stopwatch()..start();
 
-    final result = await client.query(
-      QueryOptions(document: gql(query), fetchPolicy: FetchPolicy.networkOnly),
-    );
+      // give it a longer timeout than default (5s)
+      final result = await client
+          .query(
+            QueryOptions(
+              document: gql(query),
+              fetchPolicy: FetchPolicy.networkOnly,
+            ),
+          )
+          .timeout(const Duration(seconds: 20));
 
-    if (result.hasException) {
-      print("Error fetching cart: ${result.exception.toString()}");
-      throw Exception(result.exception.toString());
+      stopwatch.stop();
+      debugPrint(
+        '[CartRepo] getCartItems - completed in ${stopwatch.elapsedMilliseconds} ms',
+      );
+
+      if (result.hasException) {
+        debugPrint(
+          '[CartRepo] getCartItems - GraphQL Exception: ${result.exception}',
+        );
+        throw Exception(result.exception.toString());
+      }
+
+      final wrapped = {"data": result.data};
+      debugPrint(
+        '[CartRepo] getCartItems - data present: ${result.data != null}',
+      );
+      return GetCartModel.fromJson(wrapped);
+    } on TimeoutException catch (e) {
+      debugPrint('[CartRepo] getCartItems - TimeoutException: $e');
+      rethrow;
+    } catch (e, st) {
+      debugPrint('[CartRepo] getCartItems - Unexpected error: $e\n$st');
+      rethrow;
     }
-
-    final wrapped = {"data": result.data};
-    return GetCartModel.fromJson(wrapped);
   }
 
   // Update Quantity
@@ -117,13 +145,41 @@ class CartRepo {
       ),
     );
 
-    if (result.hasException) {
-      throw Exception(result.exception.toString());
-    }
+    try {
+      debugPrint(
+        '[CartRepo] updateCartItem - key:$key quantity:$quantity - starting',
+      );
+      final result = await client
+          .mutate(
+            MutationOptions(
+              document: gql(mutation),
+              variables: {"key": key, "quantity": quantity},
+            ),
+          )
+          .timeout(const Duration(seconds: 20));
 
-    return GetCartModel.fromJson({
-      "data": result.data?["updateItemQuantities"],
-    });
+      debugPrint(
+        '[CartRepo] updateCartItem - completed in mutation; hasException=${result.hasException}',
+      );
+
+      if (result.hasException) {
+        debugPrint(
+          '[CartRepo] updateCartItem - GraphQL Exception: ${result.exception}',
+        );
+        throw Exception(result.exception.toString());
+      }
+
+      // mutation returns updateItemQuantities -> contains cart
+      return GetCartModel.fromJson({
+        "data": result.data?["updateItemQuantities"],
+      });
+    } on TimeoutException catch (e) {
+      debugPrint('[CartRepo] updateCartItem - TimeoutException: $e');
+      rethrow;
+    } catch (e, st) {
+      debugPrint('[CartRepo] updateCartItem - Unexpected error: $e\n$st');
+      rethrow;
+    }
   }
 
   // Remove Item
@@ -247,5 +303,110 @@ class CartRepo {
     //   throw Exception("No data returned from addToCart mutation");
     // }
     return GetCartModel.fromJson(wrapped);
+  }
+
+  Future<GetCartModel?> applyCoupon(String code) async {
+    const String mutation = r'''
+      mutation ApplyCoupon($code: String!) {
+        applyCoupon(input: {code: $code}) {
+          cart {
+            subtotal
+            total
+            discountTotal
+            appliedCoupons {
+              code
+              discountAmount
+            }
+            contents {
+              itemCount
+              nodes {
+                key
+                quantity
+                product {
+                  node {
+                    name
+                    ... on SimpleProduct {
+                      price
+                    }
+                  }
+                }
+              }
+            }
+          }
+          applied {
+            code
+          }
+        }
+      }
+    ''';
+
+    final result = await client.mutate(
+      MutationOptions(document: gql(mutation), variables: {"code": code}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final cartData = result.data?['applyCoupon']?['cart'];
+    if (cartData == null) return null;
+
+    return GetCartModel.fromJson({
+      "data": {"cart": cartData},
+    });
+  }
+
+  // Remove coupon
+  Future<GetCartModel?> removeCoupon(String code) async {
+    const String mutation = r'''
+      mutation RemoveCoupon($codes: [String!]!) {
+        removeCoupons(input: {codes: $codes}) {
+          cart {
+            subtotal
+            total
+            discountTotal
+            appliedCoupons {
+              code
+              discountAmount
+            }
+            contents {
+              itemCount
+              nodes {
+                key
+                quantity
+                product {
+                  node {
+                    name
+                    ... on SimpleProduct {
+                      price
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ''';
+
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(mutation),
+        variables: {
+          "codes": [code],
+        },
+      ),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final cartData = result.data?['removeCoupons']?['cart'];
+    if (cartData == null) return null;
+
+    return GetCartModel.fromJson({
+      "data": {"cart": cartData},
+    });
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:html/parser.dart' as html_parser;
+import '../../../../common/model/amazon_review_model.dart';
 import '../../../../constants/app_colors.dart';
-import '../../model/client_review.dart';
 
 class ReviewCard extends StatefulWidget {
-  final ClientReview review;
+  final AmazonReview review;
 
   const ReviewCard({super.key, required this.review});
 
@@ -13,43 +15,18 @@ class ReviewCard extends StatefulWidget {
 
 class _ReviewCardState extends State<ReviewCard> with TickerProviderStateMixin {
   bool isExpanded = false;
-  bool showReadMore = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Delay to allow layout completion before measuring text
-    WidgetsBinding.instance.addPostFrameCallback((_) => checkTextOverflow());
-  }
-
-  void checkTextOverflow() {
-    final textSpan = TextSpan(
-      text: widget.review.comment,
-      style: const TextStyle(fontSize: 14),
-    );
-
-    final textPainter = TextPainter(
-      text: textSpan,
-      maxLines: 1,
-      textDirection: TextDirection.ltr,
-    );
-
-    textPainter.layout(maxWidth: 300); // same width as container
-    if (textPainter.didExceedMaxLines) {
-      setState(() {
-        showReadMore = true;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final reviewText = widget.review.text ?? "";
+
+    // ✅ Strip HTML tags just to calculate plain length
+    final plainText = html_parser.parse(reviewText).body?.text ?? "";
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Container(
         width: 300,
-
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
@@ -60,67 +37,69 @@ class _ReviewCardState extends State<ReviewCard> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // User Info Row
+            // User Info
             Row(
               children: [
                 CircleAvatar(
                   backgroundColor: AppColors.grey.withOpacity(0.4),
-                  backgroundImage: AssetImage(widget.review.profileImage ?? ""),
+                  backgroundImage:
+                      widget.review.userPhoto != null
+                          ? NetworkImage(widget.review.userPhoto!)
+                          : null,
                   radius: 20,
                 ),
                 const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.review.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      widget.review.date,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            // Stars and Verified
-            Row(
-              children: [
-                Row(
-                  children: List.generate(
-                    5,
-                    (index) =>
-                        const Icon(Icons.star, color: Colors.amber, size: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.review.user ?? "Anonymous",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      if (widget.review.date != null)
+                        Text(
+                          "${widget.review.date!.day}/${widget.review.date!.month}/${widget.review.date!.year}",
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 6),
-                const Icon(Icons.verified, color: Colors.blue, size: 18),
               ],
             ),
+            const SizedBox(height: 12),
 
+            // Rating
+            Row(
+              children: List.generate(
+                widget.review.rating ?? 0,
+                (index) =>
+                    const Icon(Icons.star, color: Colors.amber, size: 20),
+              ),
+            ),
             const SizedBox(height: 8),
 
-            // Comment Text
-            Text(
-              widget.review.comment,
-              maxLines: isExpanded ? null : 3,
-              overflow:
-                  isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 14),
+            // Review Text
+            Html(
+              data: reviewText,
+              style: {
+                "body": Style(
+                  margin: Margins.zero,
+                  padding: HtmlPaddings.zero,
+                  fontSize: FontSize(14),
+                  maxLines: isExpanded ? null : 3,
+                  textOverflow:
+                      isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                ),
+              },
             ),
 
-            // Read more / Show less
-            if (showReadMore)
+            if (plainText.length > 120)
               GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isExpanded = !isExpanded;
-                  });
-                },
+                onTap: () => setState(() => isExpanded = !isExpanded),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4.0),
                   child: Text(

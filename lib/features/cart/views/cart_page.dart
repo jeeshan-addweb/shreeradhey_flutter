@@ -28,8 +28,10 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => SingleChildScrollView(
+    return Obx(() {
+      final nodes =
+          cartController.cart.value?.data?.cart?.contents?.nodes ?? [];
+      return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -74,31 +76,31 @@ class _CartPageState extends State<CartPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // ✅ Product List
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ✅ Product List
-                      if (cartController
-                              .cart
-                              .value
-                              ?.data
-                              ?.cart
-                              ?.contents
-                              ?.nodes
-                              ?.isNotEmpty ??
-                          false)
-                        ...cartController
-                            .cart
-                            .value!
-                            .data!
-                            .cart!
-                            .contents!
-                            .nodes!
+                      if (cartController.isFetchingCart.value) ...[
+                        // show loader while fetching (keeps existing layout; visually consistent)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: SizedBox(
+                              height: 36,
+                              width: 36,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        ),
+                      ] else if (nodes.isNotEmpty) ...[
+                        ...nodes
                             .map(
                               (item) => Column(
                                 children: [
                                   ProductOverviewCard(
+                                    isLoading:
+                                        cartController.updatingItems[item
+                                            .key!] ??
+                                        false,
                                     cartTotal:
                                         cartController
                                             .cart
@@ -135,15 +137,15 @@ class _CartPageState extends State<CartPage> {
                                 ],
                               ),
                             )
-                            .toList()
-                      else
+                            .toList(),
+                      ] else ...[
                         const Center(
                           child: Padding(
                             padding: EdgeInsets.all(20),
                             child: Text("Your cart is empty."),
                           ),
                         ),
-
+                      ],
                       // ✅ Cart Summary (only once, not per product)
                       if (cartController.cart.value?.data?.cart != null)
                         CartSummarySection(
@@ -174,7 +176,7 @@ class _CartPageState extends State<CartPage> {
             CommonFooter(isShow: false),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 }

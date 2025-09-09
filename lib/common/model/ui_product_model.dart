@@ -13,8 +13,8 @@ class UiProductModel {
   final String? description;
   final double? discountPercent;
   final String? slug;
-  final List<String> productLabels; // <-- Added
-  final String currencySymbol; // <-- Added
+  final List<String> productLabels;
+  final String currencySymbol;
   final String category;
 
   UiProductModel({
