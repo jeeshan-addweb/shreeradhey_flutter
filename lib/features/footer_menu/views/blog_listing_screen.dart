@@ -34,17 +34,17 @@ class _BlogListingScreenState extends State<BlogListingScreen> {
   @override
   Widget build(BuildContext context) {
     // Filtered blogs
-    final filteredBlogs =
-        AppMockData.blogItems.where((blog) {
-          final matchesFilter =
-              selectedFilter == "All" || blog.title.contains(selectedFilter);
-          final matchesSearch =
-              blog.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-              blog.description.toLowerCase().contains(
-                searchQuery.toLowerCase(),
-              );
-          return matchesFilter && matchesSearch;
-        }).toList();
+    // final filteredBlogs =
+    //     AppMockData.blogItems.where((blog) {
+    //       final matchesFilter =
+    //           selectedFilter == "All" || blog.title.contains(selectedFilter);
+    //       final matchesSearch =
+    //           blog.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+    //           blog.description.toLowerCase().contains(
+    //             searchQuery.toLowerCase(),
+    //           );
+    //       return matchesFilter && matchesSearch;
+    //     }).toList();
 
     if (controller.isBlogsLoading.value) {
       return const Center(child: CircularProgressIndicator());

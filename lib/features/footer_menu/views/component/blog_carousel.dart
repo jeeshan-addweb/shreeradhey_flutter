@@ -54,7 +54,10 @@ class _BlogCarouselState extends State<BlogCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: MediaQuery.sizeOf(context).height * 0.55,
+          height:
+              _expanded
+                  ? MediaQuery.sizeOf(context).height * 0.56
+                  : MediaQuery.sizeOf(context).height * 0.5,
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -121,17 +124,17 @@ class _BlogCarouselState extends State<BlogCarousel> {
                           ),
                         ),
 
-                        // if ((blog.excerpt ?? "").length > 80)
-                        //   GestureDetector(
-                        //     onTap: () => setState(() => _expanded = !_expanded),
-                        //     child: Text(
-                        //       _expanded ? "Read less" : "Read more",
-                        //       style: TextStyle(
-                        //         color: AppColors.black,
-                        //         fontSize: 15,
-                        //       ),
-                        //     ),
-                        //   ),
+                        if ((blog.excerpt ?? "").length > 80)
+                          GestureDetector(
+                            onTap: () => setState(() => _expanded = !_expanded),
+                            child: Text(
+                              _expanded ? "Read less" : "Read more",
+                              style: TextStyle(
+                                color: AppColors.black,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
                         const SizedBox(height: 6),
 
                         // Writer + Date + Time

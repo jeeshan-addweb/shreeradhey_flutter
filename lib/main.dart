@@ -13,7 +13,9 @@ void main() async {
   final authController = Get.put(AuthController());
   authController.loadToken();
   final cartController = Get.put(CartController());
+  // if (authController.isLoggedIn) {
   cartController.fetchCartItems();
+  // }
   runApp(MyApp(authController: authController));
 }
 

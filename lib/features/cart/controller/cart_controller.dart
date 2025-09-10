@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/components/custom_snackbar.dart';
+import '../../auth/controller/auth_controller.dart';
+import '../model/cart_shipping_method_model.dart';
 import '../model/get_cart_model.dart';
 import '../repo/cart_repo.dart';
 
 class CartController extends GetxController {
   final CartRepo _repo = CartRepo();
+  final TextEditingController couponControllerText = TextEditingController();
 
   var isLoading = false.obs;
   var cart = Rxn<GetCartModel>();
@@ -19,11 +22,48 @@ class CartController extends GetxController {
   // Coupon
   var errorMessage = "".obs;
   var coupons = <Coupon>[].obs;
+  final appliedCoupon = RxnString();
 
+  var cartCount = 0.obs;
+
+  // Shipping Method
+  var shippingMethod = <AvailableShippingMethodCart>[].obs;
   @override
   void onInit() {
     super.onInit();
-    fetchCartItems();
+
+    final authController = Get.find<AuthController>();
+
+    // Only fetch when token is available
+    ever(authController.token, (tok) {
+      if (tok != null && tok.toString().isNotEmpty) {
+        fetchCartItems();
+      }
+    });
+
+    // If token is already present at startup
+    if (authController.token.isNotEmpty) {
+      // Schedule after build completes to ensure UI can react
+      Future.delayed(Duration.zero, () {
+        fetchCartItems();
+      });
+    }
+  }
+
+  void updateCartCount() {
+    final count = cart.value?.data?.cart?.contents?.itemCount ?? 0;
+
+    debugPrint(
+      "[CartController] itemCount from API → "
+      "${cart.value?.data?.cart?.contents?.itemCount}",
+    );
+    debugPrint(
+      "[CartController] nodes length → "
+      "${cart.value?.data?.cart?.contents?.nodes?.length}",
+    );
+
+    cartCount.value = count;
+    debugPrint("[CartController] cartCount updated → $count");
   }
 
   bool isInCart(int productId) {
@@ -41,6 +81,7 @@ class CartController extends GetxController {
       debugPrint('[CartController] fetchCartItems - starting');
       final response = await _repo.getCartItems();
       cart.value = response;
+      updateCartCount();
       debugPrint(
         '[CartController] fetchCartItems - success: items = ${response.data?.cart?.contents?.itemCount ?? 0}',
       );
@@ -63,7 +104,13 @@ class CartController extends GetxController {
         '[CartController] updateQuantity - start key:$key qty:$quantity',
       );
       final response = await _repo.updateCartItem(key, quantity);
-      cart.value = response;
+      if (response != null) {
+        cart.value = response;
+        updateCartCount();
+        // force sync from backend
+        await fetchCartItems();
+      }
+
       debugPrint('[CartController] updateQuantity - success key:$key');
     } catch (e, st) {
       debugPrint('[CartController] updateQuantity - error: $e\n$st');
@@ -78,6 +125,7 @@ class CartController extends GetxController {
     try {
       isLoading.value = true;
       cart.value = await _repo.removeCartItem(key);
+      updateCartCount();
     } catch (e) {
       print("Error removing item: $e");
     } finally {
@@ -97,6 +145,7 @@ class CartController extends GetxController {
       final result = await _repo.addToCart(productId, quantity);
       if (result != null) {
         cart.value = result; // refresh cart
+        updateCartCount();
         debugPrint("[CartController] Added product $productId ✅");
         await fetchCartItems();
       }
@@ -121,6 +170,8 @@ class CartController extends GetxController {
       final updatedCart = await _repo.applyCoupon(code);
       if (updatedCart != null) {
         cart.value = updatedCart;
+        appliedCoupon.value = code;
+        couponControllerText.text = code;
       }
     } catch (e) {
       errorMessage.value = e.toString();
@@ -137,7 +188,22 @@ class CartController extends GetxController {
       final updatedCart = await _repo.removeCoupon(code);
       if (updatedCart != null) {
         cart.value = updatedCart;
+        appliedCoupon.value = null;
+        couponControllerText.clear();
       }
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchAvailableShippingMethod() async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+      final result = await _repo.getAvailableShippingMethod();
+      shippingMethod.assignAll(result);
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {

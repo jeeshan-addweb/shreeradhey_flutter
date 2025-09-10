@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../../../common/components/product_card.dart';
 import '../../../../common/components/product_shimmer.dart';
 import '../../../../common/model/ui_product_model.dart';
 import '../../../../constants/app_colors.dart';
-import '../../../shop/controller/shop_controller.dart';
 
 class ProductSection extends StatefulWidget {
   final String firstText;

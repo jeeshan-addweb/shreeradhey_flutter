@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/common/components/banner_shimmer.dart';
 import 'package:shree_radhey/common/components/product_shimmer.dart';
 
 import '../../../../constants/app_colors.dart';
@@ -59,7 +60,7 @@ class _BannerComponentState extends State<BannerComponent> {
       final images = controller.bannerImages;
 
       if (images.isEmpty) {
-        return const SizedBox(height: 200, child: ProductCardShimmer());
+        return const SizedBox(height: 170, child: BannerShimmer());
       }
       return SizedBox(
         height: 200,

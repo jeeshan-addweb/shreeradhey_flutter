@@ -31,6 +31,7 @@ extension ApiProductMapper on ProductsNode {
 
       currencySymbol: currencySymbol.toString(),
       isWishlisted: isInWishlist ?? false,
+      isInCart: isInCart ?? false,
       category:
           (productCategories?.nodes?.isNotEmpty ?? false)
               ? slugValues.reverse[productCategories!.nodes!.first.slug] ?? ""

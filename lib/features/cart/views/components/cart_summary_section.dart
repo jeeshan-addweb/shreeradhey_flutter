@@ -7,14 +7,27 @@ import '../../../../constants/app_colors.dart';
 import '../../../../utils/routes/app_route_path.dart';
 import '../../controller/coupon_controller.dart';
 
-class CartSummarySection extends StatelessWidget {
+class CartSummarySection extends StatefulWidget {
   final String subtotal;
   final String total;
 
   CartSummarySection({super.key, required this.subtotal, required this.total});
+
+  @override
+  State<CartSummarySection> createState() => _CartSummarySectionState();
+}
+
+class _CartSummarySectionState extends State<CartSummarySection> {
   final couponController = Get.put(CouponController());
+
   final cartController = Get.find<CartController>();
-  final TextEditingController couponControllerText = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    cartController.fetchAvailableShippingMethod();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -27,7 +40,7 @@ class CartSummarySection extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        _PriceRow(title: "Subtotal", amount: "₹$subtotal"),
+        _PriceRow(title: "Subtotal", amount: "₹${widget.subtotal}"),
 
         const SizedBox(height: 12),
         Divider(height: 24),
@@ -58,7 +71,7 @@ class CartSummarySection extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: TextField(
-                      controller: couponControllerText,
+                      controller: cartController.couponControllerText,
                       decoration: InputDecoration(
                         hintText: "Coupon code",
                         border: InputBorder.none,
@@ -79,18 +92,29 @@ class CartSummarySection extends StatelessWidget {
                       bottomRight: Radius.circular(4),
                     ),
                   ),
-                  child: TextButton(
-                    onPressed: () {
-                      final code = couponControllerText.text.trim();
-                      if (code.isNotEmpty) {
-                        cartController.applyCoupon(code);
-                      }
-                    },
-                    child: const Text(
-                      "Apply",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
+                  child: Obx(() {
+                    final applied = cartController.appliedCoupon.value;
+                    return TextButton(
+                      onPressed: () {
+                        if (applied != null) {
+                          // remove coupon
+                          cartController.removeCoupon(applied);
+                          cartController.couponControllerText.clear();
+                        } else {
+                          // apply coupon
+                          final code =
+                              cartController.couponControllerText.text.trim();
+                          if (code.isNotEmpty) {
+                            cartController.applyCoupon(code);
+                          }
+                        }
+                      },
+                      child: Text(
+                        applied != null ? "Remove" : "Apply",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }),
                 ),
               ],
             );
@@ -176,28 +200,60 @@ class CartSummarySection extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: const [
-                  Text(
-                    "Free shipping",
+              child: Obx(() {
+                if (cartController.isLoading.value) {
+                  return const Text(
+                    "Loading shipping options...",
                     style: TextStyle(fontSize: 12, color: Colors.black54),
-                  ),
-                  Text(
-                    "Shipping options will be\nupdated during checkout.",
-                    textAlign: TextAlign.right,
+                  );
+                }
+
+                if (cartController.errorMessage.isNotEmpty) {
+                  return Text(
+                    cartController.errorMessage.value,
+                    style: const TextStyle(fontSize: 12, color: Colors.red),
+                  );
+                }
+
+                if (cartController.shippingMethod.isEmpty ||
+                    cartController.shippingMethod.first.rates == null ||
+                    cartController.shippingMethod.first.rates!.isEmpty) {
+                  return const Text(
+                    "No shipping methods available",
                     style: TextStyle(fontSize: 12, color: Colors.black54),
-                  ),
-                  Text(
-                    "Calculate shipping",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFFE51900),
-                      fontWeight: FontWeight.w500,
+                  );
+                }
+
+                final rate = cartController.shippingMethod.first.rates!.first;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      rate.label ?? "Unknown",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    // Text(
+                    //   rate.cost != null
+                    //       ? "₹${rate.cost}" // if cost present
+                    //       : "Shipping options will be\nupdated during checkout.",
+                    //   textAlign: TextAlign.right,
+                    //   style: const TextStyle(fontSize: 12, color: Colors.black54),
+                    // ),
+                    const Text(
+                      "Calculate shipping",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFFE51900),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                );
+              }),
             ),
           ],
         ),
@@ -209,7 +265,7 @@ class CartSummarySection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        _PriceRow(title: "Total", amount: "₹$total"),
+        _PriceRow(title: "Total", amount: "₹${widget.total}"),
 
         const SizedBox(height: 12),
 

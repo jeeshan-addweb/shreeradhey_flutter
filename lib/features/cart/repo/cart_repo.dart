@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../data/network/api_client.dart';
+import '../model/cart_shipping_method_model.dart';
 import '../model/get_cart_model.dart';
 
 class CartRepo {
@@ -408,5 +409,47 @@ class CartRepo {
     return GetCartModel.fromJson({
       "data": {"cart": cartData},
     });
+  }
+
+  // Shipping method
+
+  Future<List<AvailableShippingMethodCart>> getAvailableShippingMethod() async {
+    const String query = r'''
+ query GetCartShippingMethods {
+ cart {
+   availableShippingMethods {
+     rates {
+       id
+       label
+       cost
+     }
+   }
+ }
+}
+
+  ''';
+    try {
+      final result = await client.query(
+        QueryOptions(
+          document: gql(query),
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
+      );
+
+      if (result.hasException) {
+        throw result.exception!;
+      }
+
+      final data =
+          result.data?['cart']?['availableShippingMethods'] as List<dynamic>?;
+
+      if (data == null) return [];
+
+      return data
+          .map((json) => AvailableShippingMethodCart.fromJson(json))
+          .toList();
+    } catch (e) {
+      rethrow;
+    }
   }
 }

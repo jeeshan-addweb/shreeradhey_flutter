@@ -48,7 +48,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   Widget buildNavItem(BuildContext context, int index) {
     final bool isSelected = index == currentIndex;
-    final cartController = Get.find<CartController>();
 
     return Expanded(
       child: GestureDetector(
@@ -93,27 +92,25 @@ class CustomBottomNavigationBar extends StatelessWidget {
                       height: 25,
                       color: isSelected ? Colors.white : Colors.grey[700],
                     ),
-                    Positioned(
-                      right: -2,
-                      top: -2,
-                      child: CircleAvatar(
-                        radius: 8,
-                        backgroundColor: AppColors.green_5b9d0b,
-                        child: Text(
-                          "2",
-                          // cartController
-                          //         .cart
-                          //         .value!
-                          //         .data!
-                          //         .cart!
-                          //         .contents!
-                          //         .itemCount
-                          //         .toString() ??
-                          //     "",
-                          style: TextStyle(fontSize: 10, color: Colors.white),
+                    Obx(() {
+                      final count = Get.find<CartController>().cartCount.value;
+
+                      return Positioned(
+                        right: -2,
+                        top: -2,
+                        child: CircleAvatar(
+                          radius: 8,
+                          backgroundColor: AppColors.green_5b9d0b,
+                          child: Text(
+                            count.toString(),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                   ],
                 )
               else

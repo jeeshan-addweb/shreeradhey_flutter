@@ -179,8 +179,7 @@ class _ProductCardState extends State<ProductCard> {
 
                               if (response["success"] == true) {
                                 setState(() {
-                                  widget.model.isWishlisted =
-                                      true; // ✅ update model
+                                  widget.model.isWishlisted = true;
                                 });
                                 CustomSnackbars.showSuccess(
                                   context,
@@ -326,11 +325,20 @@ class _ProductCardState extends State<ProductCard> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    cartController.addProductToCart(
-                      widget.model.productId,
-                      1,
-                      context,
-                    );
+                    if (widget.model.isInCart) {
+                      // Navigate to cart page
+                      context.go(AppRoutePath.cartPage);
+                    } else {
+                      // Add to cart
+                      cartController.addProductToCart(
+                        widget.model.productId,
+                        1,
+                        context,
+                      );
+                      setState(() {
+                        widget.model.isInCart = true;
+                      });
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero,
@@ -370,10 +378,6 @@ class _ProductCardState extends State<ProductCard> {
                                 .productId] ??
                             false;
 
-                        final alreadyInCart = cartController.isInCart(
-                          widget.model.productId,
-                        );
-
                         if (isAdding) {
                           return const SizedBox(
                             height: 20,
@@ -389,7 +393,9 @@ class _ProductCardState extends State<ProductCard> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Add to cart',
+                                widget.model.isInCart
+                                    ? 'View My Cart'
+                                    : 'Add to Cart',
                                 style: TextStyle(
                                   color: AppColors.white,
                                   fontSize: 16,

@@ -68,6 +68,7 @@ class ProductsNode {
   String? name;
   String? slug;
   bool? isInWishlist;
+  bool? isInCart;
   int? databaseId;
   String? uri;
   Image? image;
@@ -87,6 +88,7 @@ class ProductsNode {
     this.name,
     this.slug,
     this.isInWishlist,
+    this.isInCart,
     this.databaseId,
     this.uri,
     this.image,
@@ -108,6 +110,7 @@ class ProductsNode {
     slug: json["slug"],
     databaseId: json["databaseId"],
     isInWishlist: json["isInWishlist"],
+    isInCart: json["isInCart"],
     uri: json["uri"],
     image: json["image"] == null ? null : Image.fromJson(json["image"]),
     productCategories:
@@ -133,6 +136,7 @@ class ProductsNode {
     "name": name,
     "slug": slug,
     "isInWishlist": isInWishlist,
+    "isInCart": isInCart,
     "databaseId": databaseId,
     "uri": uri,
     "image": image?.toJson(),

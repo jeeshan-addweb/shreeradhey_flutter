@@ -20,6 +20,8 @@ class ShopRepo {
        name
        slug
        databaseId
+       isInWishlist
+       isInCart
        uri
        image {
            sourceUrl
@@ -88,6 +90,7 @@ class ShopRepo {
        ... on SimpleProduct {
        databaseId
 isInWishlist
+isInCart
          price
          regularPrice
          salePrice
@@ -125,6 +128,7 @@ isInWishlist
               slug
               databaseId
               isInWishlist
+              isInCart
               uri
               image { sourceUrl altText }
               productCategories { nodes { name slug } }
@@ -175,6 +179,7 @@ currencySymbol
               slug
               databaseId
               isInWishlist
+              isInCart
               uri
               image { sourceUrl altText }
               productCategories { nodes { name slug } }
@@ -225,6 +230,7 @@ currencySymbol
     ... on SimpleProduct {
       productSubtitle
       isInWishlist
+      isInCart
       price
       regularPrice
       salePrice

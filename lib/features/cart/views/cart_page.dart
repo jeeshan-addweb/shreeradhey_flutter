@@ -146,7 +146,7 @@ class _CartPageState extends State<CartPage> {
                           ),
                         ),
                       ],
-                      // ✅ Cart Summary (only once, not per product)
+
                       if (cartController.cart.value?.data?.cart != null)
                         CartSummarySection(
                           subtotal:

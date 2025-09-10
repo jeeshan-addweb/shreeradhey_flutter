@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
+import 'package:shree_radhey/features/home/views/widgets/product_section_widget.dart';
 import 'package:shree_radhey/features/shop/controller/product_variant_controller.dart';
 
 import '../../../common/components/common_footer.dart';
@@ -266,10 +267,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             [];
 
         if (controller.isReviewLoading.value) {
-          return const CircularProgressIndicator();
+          return Center(child: const CircularProgressIndicator());
         }
         if (productVariantController.isLoading.value) {
-          return const CircularProgressIndicator();
+          return Center(child: const CircularProgressIndicator());
         }
 
         final variants = productVariantController.productVariants;
@@ -783,6 +784,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                       products: detail.related?.nodes ?? [],
                     ),
+                    // ProductSection(firstText: "", firstTextColor: AppColors.black, secondTextColor: AppColors.black, secondText: "Similar Products".toUpperCase(), sectionBgColor: AppColors.white, tagText: "", products: detail)
 
                     // ProductSection(
                     //   firstText: "",
