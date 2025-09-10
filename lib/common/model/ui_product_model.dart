@@ -1,6 +1,7 @@
 class UiProductModel {
   final int productId;
   bool isWishlisted;
+  bool isInCart;
   final String imageUrl;
   final String title;
   final String subtitle;
@@ -13,8 +14,9 @@ class UiProductModel {
   final String? description;
   final double? discountPercent;
   final String? slug;
-  final List<String> productLabels; // <-- Added
-  final String currencySymbol; // <-- Added
+  final List<String> productLabels;
+  final String currencySymbol;
+  final String category;
 
   UiProductModel({
     required this.productId,
@@ -27,12 +29,14 @@ class UiProductModel {
     required this.oldPrice,
     required this.couponPrice,
     this.isWishlisted = false,
+    this.isInCart = false,
     this.tagText = "Best Seller",
     this.description,
     this.discountPercent,
     this.slug,
     this.productLabels = const [], // <-- Default empty list
     this.currencySymbol = "", // <-- Default empty string
+    required this.category,
   });
   UiProductModel copyWith({
     int? productId,
@@ -51,6 +55,8 @@ class UiProductModel {
     List<String>? productLabels,
     String? currencySymbol,
     bool? isWishlisted,
+    bool? isInCart,
+    String? category,
   }) {
     return UiProductModel(
       productId: productId ?? this.productId,
@@ -69,6 +75,8 @@ class UiProductModel {
       productLabels: productLabels ?? this.productLabels, // ✅ added
       currencySymbol: currencySymbol ?? this.currencySymbol, // ✅ added
       isWishlisted: isWishlisted ?? this.isWishlisted,
+      isInCart: isInCart ?? this.isInCart,
+      category: category ?? this.category,
     );
   }
 }

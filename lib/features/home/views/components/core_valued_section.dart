@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../constants/app_colors.dart';
-import '../../../../constants/app_mock_data.dart';
+import '../../controller/home_controller.dart';
 import 'core_valued_component.dart';
 
 class CoreValuedSection extends StatefulWidget {
@@ -12,6 +13,7 @@ class CoreValuedSection extends StatefulWidget {
 }
 
 class _CoreValuedSectionState extends State<CoreValuedSection> {
+  final controller = Get.find<HomeController>();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -50,21 +52,35 @@ class _CoreValuedSectionState extends State<CoreValuedSection> {
         const SizedBox(height: 16),
 
         // Carousel with scroll buttons
-        ListView.separated(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
+        Obx(() {
+          final commitments = controller.commitments;
 
-          itemCount: AppMockData.coreValueItems.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 6),
-          itemBuilder: (context, index) {
-            final coreValueItem = AppMockData.coreValueItems[index];
-            return SizedBox(
-              width: 270,
-              child: CoreValueCard(coreValueModel: coreValueItem),
+          if (controller.isProductsLoading.value && commitments.isEmpty) {
+            return const Padding(
+              padding: EdgeInsets.all(24.0),
+              child: CircularProgressIndicator(),
             );
-          },
-        ),
+          }
+
+          if (commitments.isEmpty) {
+            return const Text("No commitments available");
+          }
+          return ListView.separated(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+
+            itemCount: commitments.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 6),
+            itemBuilder: (context, index) {
+              final coreValueItem = commitments[index];
+              return SizedBox(
+                width: 270,
+                child: CoreValueCard(coreValueModel: coreValueItem),
+              );
+            },
+          );
+        }),
       ],
     );
   }

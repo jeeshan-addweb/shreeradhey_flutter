@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:shree_radhey/features/home/model/home_data_model.dart';
 
 import '../../../data/network/api_client.dart';
 import '../model/blog_detail_model.dart';
@@ -133,6 +134,54 @@ posts(first: $first, after: $after, where: { orderby: { field: DATE, order: DESC
       });
       debugPrint("blogDetailModel : ${productDetailModel.data}");
       return productDetailModel;
+    } else {
+      throw Exception("No Data Found");
+    }
+  }
+
+  Future<HomeDataModel> getHomeData() async {
+    String query = '''
+  query HomePageData {
+ bannerImages {
+   image
+ }
+ commitment {
+   title
+   text
+   image
+ }
+ psaOptions {
+   title
+   text
+   image
+ }
+ specialOffer {
+   title
+   subtitle
+   product_name
+   product_url
+   image
+ }
+ blogCtaTitle
+}
+
+    ''';
+
+    final result = await _client.query(QueryOptions(document: gql(query)));
+
+    debugPrint("result.data : ${result.data}");
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    if (result.data != null) {
+      debugPrint("haalo homedata");
+      HomeDataModel homeDataModel = HomeDataModel.fromJson({
+        "data": result.data,
+      });
+      debugPrint("homeDataModel : ${homeDataModel.data}");
+      return homeDataModel;
     } else {
       throw Exception("No Data Found");
     }

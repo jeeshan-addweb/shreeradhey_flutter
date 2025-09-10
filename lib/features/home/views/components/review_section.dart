@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../../../common/components/common_footer_controller.dart';
 import '../../../../constants/app_colors.dart';
 import '../../../../constants/app_mock_data.dart';
 import 'review_card.dart';
@@ -12,6 +14,7 @@ class ReviewSection extends StatefulWidget {
 }
 
 class _ReviewSectionState extends State<ReviewSection> {
+  final controller = Get.put(CommonFooterController());
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -79,27 +82,40 @@ class _ReviewSectionState extends State<ReviewSection> {
                     const Icon(Icons.star, color: Colors.amber, size: 35),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Based on ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
-                    fontSize: 16,
+            Obx(() {
+              if (controller.isAmazonReviewLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (controller.amazonReviews.isEmpty) {
+                return const Text("No reviews available");
+              }
+              return Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Based on ",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        "${controller.amazonReviews.length} Reviews",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  "510 Reviews",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
             Text(
               "amazon",
               style: TextStyle(
@@ -116,7 +132,7 @@ class _ReviewSectionState extends State<ReviewSection> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children:
-                      AppMockData.reviews
+                      controller.amazonReviews
                           .map(
                             (review) => Padding(
                               padding: const EdgeInsets.symmetric(

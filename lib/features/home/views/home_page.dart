@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchHomeData();
       controller.fetchBlogs();
+      controller.fetchHomePageData(context);
     });
   }
 

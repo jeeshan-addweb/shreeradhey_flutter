@@ -20,6 +20,8 @@ class ShopRepo {
        name
        slug
        databaseId
+       isInWishlist
+       isInCart
        uri
        image {
            sourceUrl
@@ -88,6 +90,7 @@ class ShopRepo {
        ... on SimpleProduct {
        databaseId
 isInWishlist
+isInCart
          price
          regularPrice
          salePrice
@@ -125,6 +128,7 @@ isInWishlist
               slug
               databaseId
               isInWishlist
+              isInCart
               uri
               image { sourceUrl altText }
               productCategories { nodes { name slug } }
@@ -175,6 +179,7 @@ currencySymbol
               slug
               databaseId
               isInWishlist
+              isInCart
               uri
               image { sourceUrl altText }
               productCategories { nodes { name slug } }
@@ -225,6 +230,7 @@ currencySymbol
     ... on SimpleProduct {
       productSubtitle
       isInWishlist
+      isInCart
       price
       regularPrice
       salePrice
@@ -389,5 +395,55 @@ currencySymbol
     return (nodes as List)
         .map((e) => NodeElement.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  Future<Map<String, dynamic>> addReview({
+    required String productId,
+    required String author,
+    required String email,
+    required String content,
+    required int rating,
+  }) async {
+    const String mutation = r'''
+      mutation AddReview(
+        $productId: ID!,
+        $author: String!,
+        $email: String!,
+        $content: String!,
+        $rating: Int!
+      ) {
+        createProductReview(
+          input: {
+            productId: $productId,
+            author: $author,
+            email: $email,
+            content: $content,
+            rating: $rating
+          }
+        ) {
+          success
+          commentId
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(mutation),
+        variables: {
+          "productId": productId,
+          "author": author,
+          "email": email,
+          "content": content,
+          "rating": rating,
+        },
+      ),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['createProductReview'] ?? {};
   }
 }

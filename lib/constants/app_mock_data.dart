@@ -27,6 +27,7 @@ class AppMockData {
 
   static List<UiProductModel> mockProducts = [
     UiProductModel(
+      category: "",
       productId: 1,
       imageUrl: AppImages.product_image,
       title: 'SHREERADHEY A2 gir cow ghee(1L Pet Bottle Pack of 2)',
@@ -40,6 +41,7 @@ class AppMockData {
       discountPercent: 14,
     ),
     UiProductModel(
+      category: "",
       productId: 2,
       imageUrl: AppImages.product_image,
       title: 'SHREERADHEY A2 gir cow ghee(1L Pet Bottle Pack of 2)',

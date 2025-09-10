@@ -33,11 +33,26 @@ class BlogSection extends StatelessWidget {
           children: [
             SizedBox(height: 20),
             SpecialOfferCard(
-              imagePath: AppImages.product_image,
-              offerLabel: 'Special Offer',
-              title: 'BEYOND PRODUCTS, INTO THE KITCHEN.',
-              productName: 'SHREERADHEY A2 Gir Cow Ghee 300 Ml (274gm)',
-              onShopNow: () {},
+              imagePath:
+                  controller.homePageData.value?.data?.specialOffer?.image ??
+                  "Image not found",
+              offerLabel:
+                  controller.homePageData.value?.data?.specialOffer?.title ??
+                  "No title",
+              title:
+                  controller.homePageData.value?.data?.specialOffer?.subtitle ??
+                  "No subtitle",
+              productName:
+                  controller
+                      .homePageData
+                      .value
+                      ?.data
+                      ?.specialOffer
+                      ?.productName ??
+                  "Product name not found",
+              onShopNow: () {
+                // controller.homePageData.value?.data?.specialOffer?.productUrl;
+              },
             ),
             SizedBox(height: 40),
             // Section title

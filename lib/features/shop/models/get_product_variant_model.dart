@@ -1,33 +1,26 @@
 // To parse this JSON data, do
 //
-//     final productModel = productModelFromJson(jsonString);
+//     final getProductVariantModel = getProductVariantModelFromJson(jsonString);
 
 import 'dart:convert';
 
-ApiProductModel productModelFromJson(String str) =>
-    ApiProductModel.fromJson(json.decode(str));
+GetProductVariantModel getProductVariantModelFromJson(String str) =>
+    GetProductVariantModel.fromJson(json.decode(str));
 
-String productModelToJson(ApiProductModel data) => json.encode(data.toJson());
+String getProductVariantModelToJson(GetProductVariantModel data) =>
+    json.encode(data.toJson());
 
-class ApiProductModel {
+class GetProductVariantModel {
   Data? data;
-  Extensions? extensions;
 
-  ApiProductModel({this.data, this.extensions});
+  GetProductVariantModel({this.data});
 
-  factory ApiProductModel.fromJson(Map<String, dynamic> json) =>
-      ApiProductModel(
+  factory GetProductVariantModel.fromJson(Map<String, dynamic> json) =>
+      GetProductVariantModel(
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
-        extensions:
-            json["extensions"] == null
-                ? null
-                : Extensions.fromJson(json["extensions"]),
       );
 
-  Map<String, dynamic> toJson() => {
-    "data": data?.toJson(),
-    "extensions": extensions?.toJson(),
-  };
+  Map<String, dynamic> toJson() => {"data": data?.toJson()};
 }
 
 class Data {
@@ -67,14 +60,12 @@ class ProductsNode {
   String? id;
   String? name;
   String? slug;
-  bool? isInWishlist;
-  bool? isInCart;
-  int? databaseId;
   String? uri;
   Image? image;
   ProductCategories? productCategories;
   ProductLabels? productLabels;
   String? currencySymbol;
+  String? productSubtitle;
   String? price;
   String? regularPrice;
   String? salePrice;
@@ -87,14 +78,12 @@ class ProductsNode {
     this.id,
     this.name,
     this.slug,
-    this.isInWishlist,
-    this.isInCart,
-    this.databaseId,
     this.uri,
     this.image,
     this.productCategories,
     this.productLabels,
     this.currencySymbol,
+    this.productSubtitle,
     this.price,
     this.regularPrice,
     this.salePrice,
@@ -108,9 +97,6 @@ class ProductsNode {
     id: json["id"],
     name: json["name"],
     slug: json["slug"],
-    databaseId: json["databaseId"],
-    isInWishlist: json["isInWishlist"],
-    isInCart: json["isInCart"],
     uri: json["uri"],
     image: json["image"] == null ? null : Image.fromJson(json["image"]),
     productCategories:
@@ -121,7 +107,8 @@ class ProductsNode {
         json["productLabels"] == null
             ? null
             : ProductLabels.fromJson(json["productLabels"]),
-    currencySymbol: json["currencySymbol"] as String?,
+    currencySymbol: json["currencySymbol"],
+    productSubtitle: json["productSubtitle"],
     price: json["price"],
     regularPrice: json["regularPrice"],
     salePrice: json["salePrice"],
@@ -135,14 +122,12 @@ class ProductsNode {
     "id": id,
     "name": name,
     "slug": slug,
-    "isInWishlist": isInWishlist,
-    "isInCart": isInCart,
-    "databaseId": databaseId,
     "uri": uri,
     "image": image?.toJson(),
     "productCategories": productCategories?.toJson(),
     "productLabels": productLabels?.toJson(),
     "currencySymbol": currencySymbol,
+    "productSubtitle": productSubtitle,
     "price": price,
     "regularPrice": regularPrice,
     "salePrice": salePrice,
@@ -152,10 +137,6 @@ class ProductsNode {
     "reviewCount": reviewCount,
   };
 }
-
-enum CurrencySymbol { EMPTY }
-
-final currencySymbolValues = EnumValues({"₹": CurrencySymbol.EMPTY});
 
 class Image {
   String? sourceUrl;
@@ -198,8 +179,8 @@ class ProductCategoriesNode {
 
   factory ProductCategoriesNode.fromJson(Map<String, dynamic> json) =>
       ProductCategoriesNode(
-        name: nameValues.map[json["name"]]!,
-        slug: slugValues.map[json["slug"]]!,
+        name: nameValues.map[json["name"]],
+        slug: slugValues.map[json["slug"]],
       );
 
   Map<String, dynamic> toJson() => {
@@ -208,21 +189,13 @@ class ProductCategoriesNode {
   };
 }
 
-enum Name { COMBO, GHEE, OIL }
+enum Name { COMBO, GHEE }
 
-final nameValues = EnumValues({
-  "Combo": Name.COMBO,
-  "Ghee": Name.GHEE,
-  "Oil": Name.OIL,
-});
+final nameValues = EnumValues({"Combo": Name.COMBO, "Ghee": Name.GHEE});
 
-enum Slug { COMBO, GHEE, OIL }
+enum Slug { COMBO, GHEE }
 
-final slugValues = EnumValues({
-  "combo": Slug.COMBO,
-  "ghee": Slug.GHEE,
-  "oil": Slug.OIL,
-});
+final slugValues = EnumValues({"combo": Slug.COMBO, "ghee": Slug.GHEE});
 
 class ProductLabels {
   List<ProductLabelsNode>? nodes;
@@ -252,35 +225,10 @@ class ProductLabelsNode {
   ProductLabelsNode({this.id, this.name, this.slug});
 
   factory ProductLabelsNode.fromJson(Map<String, dynamic> json) =>
-      ProductLabelsNode(
-        id: json["id"] as String?,
-        name: json["name"] as String?,
-        slug: json["slug"] as String?,
-      );
+      ProductLabelsNode(id: json["id"], name: json["name"], slug: json["slug"]);
 
   Map<String, dynamic> toJson() => {"id": id, "name": name, "slug": slug};
 }
-
-enum Id { D_G_VYB_TOX_O_DG, D_G_VYB_TOY_MJG }
-
-final idValues = EnumValues({
-  "dGVybToxODg=": Id.D_G_VYB_TOX_O_DG,
-  "dGVybToyMjg=": Id.D_G_VYB_TOY_MJG,
-});
-
-enum FluffyName { BEST_SELLER, NEWLY_LAUNCH }
-
-final fluffyNameValues = EnumValues({
-  "Best Seller": FluffyName.BEST_SELLER,
-  "Newly Launch": FluffyName.NEWLY_LAUNCH,
-});
-
-enum FluffySlug { BEST_SELLER, NEWLY_LAUNCH }
-
-final fluffySlugValues = EnumValues({
-  "best-seller": FluffySlug.BEST_SELLER,
-  "newly-launch": FluffySlug.NEWLY_LAUNCH,
-});
 
 class Extensions {
   List<Debug>? debug;

@@ -19,7 +19,7 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  final cartController = Get.put(CartController());
+  final cartController = Get.find<CartController>();
   @override
   Widget build(BuildContext context) {
     final WishlistController wishlistController = Get.put(WishlistController());
@@ -30,7 +30,11 @@ class _ProductCardState extends State<ProductCard> {
         context.push(
           AppRoutePath.productDetail,
           // pathParameters: {'slug': widget.model.slug ?? ""},
-          extra: {'hideNav': true, 'slug': widget.model.slug},
+          extra: {
+            'hideNav': true,
+            'slug': widget.model.slug,
+            'category': widget.model.category,
+          },
         );
         // context.pushNamed(
         //   AppRoutePath.productDetail,
@@ -175,8 +179,7 @@ class _ProductCardState extends State<ProductCard> {
 
                               if (response["success"] == true) {
                                 setState(() {
-                                  widget.model.isWishlisted =
-                                      true; // ✅ update model
+                                  widget.model.isWishlisted = true;
                                 });
                                 CustomSnackbars.showSuccess(
                                   context,
@@ -322,11 +325,20 @@ class _ProductCardState extends State<ProductCard> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    cartController.addProductToCart(
-                      widget.model.productId,
-                      2,
-                      context,
-                    );
+                    if (widget.model.isInCart) {
+                      // Navigate to cart page
+                      context.go(AppRoutePath.cartPage);
+                    } else {
+                      // Add to cart
+                      cartController.addProductToCart(
+                        widget.model.productId,
+                        1,
+                        context,
+                      );
+                      setState(() {
+                        widget.model.isInCart = true;
+                      });
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero,
@@ -360,7 +372,13 @@ class _ProductCardState extends State<ProductCard> {
                       alignment: Alignment.center,
                       constraints: const BoxConstraints(minHeight: 40),
                       child: Obx(() {
-                        if (cartController.isLoading.value) {
+                        final isAdding =
+                            cartController.addingItems[widget
+                                .model
+                                .productId] ??
+                            false;
+
+                        if (isAdding) {
                           return const SizedBox(
                             height: 20,
                             width: 20,
@@ -375,7 +393,9 @@ class _ProductCardState extends State<ProductCard> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Add to cart',
+                                widget.model.isInCart
+                                    ? 'View My Cart'
+                                    : 'Add to Cart',
                                 style: TextStyle(
                                   color: AppColors.white,
                                   fontSize: 16,

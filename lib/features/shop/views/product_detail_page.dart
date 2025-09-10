@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
+import 'package:shree_radhey/features/home/views/widgets/product_section_widget.dart';
+import 'package:shree_radhey/features/shop/controller/product_variant_controller.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/custom_snackbar.dart';
@@ -18,7 +20,12 @@ import 'widgets/related_product_section.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String slug;
-  const ProductDetailPage({super.key, required this.slug});
+  final String category;
+  const ProductDetailPage({
+    super.key,
+    required this.slug,
+    required this.category,
+  });
 
   @override
   State<ProductDetailPage> createState() => _ProductDetailPageState();
@@ -26,6 +33,9 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   final ShopController controller = Get.put(ShopController());
+  final ProductVariantController productVariantController = Get.put(
+    ProductVariantController(),
+  );
   final WishlistController wishlistController = Get.put(WishlistController());
   Widget _buildCircleIcon(
     IconData icon, {
@@ -54,23 +64,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  int selectedVariantIndex = 0;
+  int selectedVariantIndex = -1;
 
-  final variants = [
-    {
-      "name": "1L Pet Bottle (Pack of 2) skxsxszxjszxbhjjhbjjhbcjbjb",
-      "original": 120.0,
-      "discounted": 110.0,
-      "percent": 8,
-    },
-    {
-      "name": "500ml Bottle",
-      "original": 65.0,
-      "discounted": 60.0,
-      "percent": 8,
-    },
-    {"name": "2L Bottle", "original": 220.0, "discounted": 200.0, "percent": 9},
-  ];
+  // final variants = [
+  //   {
+  //     "name": "1L Pet Bottle (Pack of 2) skxsxszxjszxbhjjhbjjhbcjbjb",
+  //     "original": 120.0,
+  //     "discounted": 110.0,
+  //     "percent": 8,
+  //   },
+  //   {
+  //     "name": "500ml Bottle",
+  //     "original": 65.0,
+  //     "discounted": 60.0,
+  //     "percent": 8,
+  //   },
+  //   {"name": "2L Bottle", "original": 220.0, "discounted": 200.0, "percent": 9},
+  // ];
 
   int selectedImageIndex = 0;
 
@@ -79,9 +89,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void initState() {
     super.initState();
     debugPrint("Slug is ${widget.slug}");
+    debugPrint("category is ${widget.category}");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchProductDetail(context, widget.slug);
       controller.fetchProductReviews(widget.slug);
+      productVariantController.fetchProductVariants(widget.category);
     });
   }
 
@@ -255,8 +267,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             [];
 
         if (controller.isReviewLoading.value) {
-          return const CircularProgressIndicator();
+          return Center(child: const CircularProgressIndicator());
         }
+        if (productVariantController.isLoading.value) {
+          return Center(child: const CircularProgressIndicator());
+        }
+
+        final variants = productVariantController.productVariants;
 
         return SingleChildScrollView(
           child: Column(
@@ -557,43 +574,57 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     const SizedBox(height: 16),
 
                     // Select Variant section
-                    Text(
-                      "Select Variant",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.grey_212121,
+                    if (productVariantController.productVariants.isEmpty) ...[
+                      const Text(
+                        "No variants found",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 12),
-                    GridView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: variants.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 1.3, // adjust height/width ratio
-                          ),
-                      itemBuilder: (context, index) {
-                        final v = variants[index];
-                        return VariantCard(
-                          variantName: v["name"] as String,
-                          originalPrice: v["original"] as double,
-                          discountedPrice: v["discounted"] as double,
-                          discountPercent: v["percent"] as int,
-                          isSelected: selectedVariantIndex == index,
-                          onTap: () {
-                            setState(() {
-                              selectedVariantIndex = index;
-                            });
-                          },
-                        );
-                      },
-                    ),
+                    ] else ...[
+                      Text(
+                        "Select Variant",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.grey_212121,
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      GridView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: variants.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio:
+                                  1.3, // adjust height/width ratio
+                            ),
+                        itemBuilder: (context, index) {
+                          final v = variants[index];
+
+                          return VariantCard(
+                            variantName: v.productSubtitle ?? "",
+                            originalPrice: v.regularPrice ?? "",
+                            discountedPrice: v.salePrice ?? "",
+                            discountPercent: v.discountPercentage ?? 0,
+                            currencySymbol: v.currencySymbol ?? "",
+                            isSelected: selectedVariantIndex == index,
+                            onTap: () {
+                              setState(() {
+                                selectedVariantIndex = index;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ],
                     SizedBox(height: 12),
                     Center(
                       child: Text(
@@ -717,7 +748,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
 
                     SizedBox(height: 20),
-                    AddReviewSection(),
+                    AddReviewSection(productId: detail.databaseId!),
                     SizedBox(height: 20),
 
                     if (detail.faqContent != null &&
@@ -753,6 +784,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                       products: detail.related?.nodes ?? [],
                     ),
+                    // ProductSection(firstText: "", firstTextColor: AppColors.black, secondTextColor: AppColors.black, secondText: "Similar Products".toUpperCase(), sectionBgColor: AppColors.white, tagText: "", products: detail)
 
                     // ProductSection(
                     //   firstText: "",

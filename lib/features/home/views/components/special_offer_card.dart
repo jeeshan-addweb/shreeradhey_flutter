@@ -23,7 +23,10 @@ class SpecialOfferCard extends StatelessWidget {
       width: double.infinity,
       height: MediaQuery.sizeOf(context).height * 0.58,
       decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage(imagePath), fit: BoxFit.cover),
+        image: DecorationImage(
+          image: NetworkImage(imagePath),
+          fit: BoxFit.cover,
+        ),
       ),
       child: Container(
         decoration: BoxDecoration(

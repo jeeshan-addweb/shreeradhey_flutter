@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/features/home/model/blog_detail_model.dart';
+import 'package:shree_radhey/features/home/model/home_data_model.dart';
 import 'package:shree_radhey/features/shop/models/product_mapper.dart';
 
 import '../../../common/components/custom_snackbar.dart';
@@ -31,6 +32,8 @@ class HomeController extends GetxController {
 
   var isDetailLoading = false.obs;
   var blogDetail = Rxn<BlogDetailModel>();
+  var homePageData = Rxn<HomeDataModel>();
+  var isHomeLoading = false.obs;
   // @override
   // void onInit() {
   //   super.onInit();
@@ -127,5 +130,36 @@ class HomeController extends GetxController {
     } finally {
       isDetailLoading.value = false;
     }
+  }
+
+  Future<void> fetchHomePageData(BuildContext context) async {
+    try {
+      isHomeLoading.value = true;
+      homePageData.value = await _homerepo.getHomeData();
+      debugPrint("home data : ${homePageData.value?.data?.toJson()}");
+      //  = detail;
+    } catch (e) {
+      debugPrint("home data error");
+      CustomSnackbars.showError(context, "Something went wrong: $e");
+      debugPrint("eRROR IS $e");
+    } finally {
+      isHomeLoading.value = false;
+    }
+  }
+
+  List<String> get bannerImages {
+    return homePageData.value?.data?.bannerImages
+            ?.map((b) => b.image ?? "")
+            .where((img) => img.isNotEmpty)
+            .toList() ??
+        [];
+  }
+
+  List<Commitment> get commitments {
+    return homePageData.value?.data?.commitment ?? [];
+  }
+
+  List<Commitment> get psaOptions {
+    return homePageData.value?.data?.psaOptions ?? [];
   }
 }

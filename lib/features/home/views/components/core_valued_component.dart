@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../../../../constants/app_colors.dart';
-import '../../model/core_value_model.dart';
+
+import '../../model/home_data_model.dart';
 
 class CoreValueCard extends StatefulWidget {
-  final CoreValueModel coreValueModel;
+  final Commitment coreValueModel;
   const CoreValueCard({super.key, required this.coreValueModel});
 
   @override
@@ -69,7 +71,7 @@ class _CoreValueCardState extends State<CoreValueCard> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                widget.coreValueModel.title.toUpperCase(),
+                                widget.coreValueModel.title!.toUpperCase(),
                                 style: TextStyle(
                                   color: AppColors.black,
                                   fontSize: 16,
@@ -87,7 +89,7 @@ class _CoreValueCardState extends State<CoreValueCard> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Text(
-                        widget.coreValueModel.description,
+                        widget.coreValueModel.text ?? "",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.black,
@@ -116,8 +118,8 @@ class _CoreValueCardState extends State<CoreValueCard> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    widget.coreValueModel.imagePath,
+                  child: SvgPicture.network(
+                    widget.coreValueModel.image ?? "",
                     fit: BoxFit.cover,
                   ),
                 ),

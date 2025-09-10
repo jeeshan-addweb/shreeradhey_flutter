@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
@@ -90,18 +92,25 @@ class CustomBottomNavigationBar extends StatelessWidget {
                       height: 25,
                       color: isSelected ? Colors.white : Colors.grey[700],
                     ),
-                    Positioned(
-                      right: -2,
-                      top: -2,
-                      child: CircleAvatar(
-                        radius: 8,
-                        backgroundColor: AppColors.green_5b9d0b,
-                        child: const Text(
-                          "2",
-                          style: TextStyle(fontSize: 10, color: Colors.white),
+                    Obx(() {
+                      final count = Get.find<CartController>().cartCount.value;
+
+                      return Positioned(
+                        right: -2,
+                        top: -2,
+                        child: CircleAvatar(
+                          radius: 8,
+                          backgroundColor: AppColors.green_5b9d0b,
+                          child: Text(
+                            count.toString(),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                   ],
                 )
               else

@@ -1,4 +1,5 @@
 import 'package:get_storage/get_storage.dart';
+import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 
 import 'data/network/shared_pref/shared_preference_helper.dart';
 import 'features/auth/controller/auth_controller.dart';
@@ -8,9 +9,13 @@ import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init(); // important
+  await GetStorage.init();
   final authController = Get.put(AuthController());
-  authController.loadToken(); // ✅ load saved token into memory
+  authController.loadToken();
+  final cartController = Get.put(CartController());
+  // if (authController.isLoggedIn) {
+  cartController.fetchCartItems();
+  // }
   runApp(MyApp(authController: authController));
 }
 

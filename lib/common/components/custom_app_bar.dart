@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
+import '../../features/cart/controller/cart_controller.dart';
 import '../../utils/routes/app_route_path.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -93,18 +95,26 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         height: 30,
                       ),
                     ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: CircleAvatar(
-                        radius: 8,
-                        backgroundColor: AppColors.green_327801,
-                        child: Text(
-                          "0",
-                          style: TextStyle(fontSize: 10, color: Colors.white),
+                    Obx(() {
+                      final count = Get.find<CartController>().cartCount.value;
+                      if (count == 0) return const SizedBox.shrink();
+
+                      return Positioned(
+                        right: -2,
+                        top: -2,
+                        child: CircleAvatar(
+                          radius: 8,
+                          backgroundColor: AppColors.green_5b9d0b,
+                          child: Text(
+                            count.toString(),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                   ],
                 ),
               ),
