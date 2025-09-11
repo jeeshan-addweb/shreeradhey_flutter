@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-
-import '../../../../common/model/ui_product_model.dart';
+import 'package:shree_radhey/features/home/model/get_wishlist_model.dart';
 import '../../../../constants/app_colors.dart';
 
 class WishlistProductCard extends StatelessWidget {
-  final UiProductModel model;
+  final WishlistProduct model;
   final VoidCallback onRemove;
   final VoidCallback onAddToCart;
 
@@ -17,6 +16,15 @@ class WishlistProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final categories = model.productCategories?.nodes ?? [];
+
+    String subtitle = "";
+    if (categories.isNotEmpty) {
+      subtitle = categories.first.name ?? "";
+      if (categories.length > 1) {
+        subtitle += ", ${categories[1].name}";
+      }
+    }
     return Card(
       color: AppColors.white,
       margin: const EdgeInsets.all(8),
@@ -27,7 +35,6 @@ class WishlistProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image with Best Seller Tag
             Stack(
               children: [
                 Padding(
@@ -38,9 +45,9 @@ class WishlistProductCard extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: AspectRatio(
-                      aspectRatio: 4 / 3, // keeps image proportional
-                      child: Image.asset(
-                        model.imageUrl,
+                      aspectRatio: 4 / 3,
+                      child: Image.network(
+                        model.image?.sourceUrl ?? "",
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
@@ -62,12 +69,11 @@ class WishlistProductCard extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     child: Row(
-                      mainAxisSize:
-                          MainAxisSize.min, // <— lets Row shrink to content
+                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Best Seller",
+                          model.productLabels!.nodes!.first.name ?? "",
                           style: TextStyle(
                             color: AppColors.black,
                             fontSize: 12,
@@ -85,7 +91,6 @@ class WishlistProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // On Sale Tag
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 6,
@@ -106,9 +111,8 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
 
-                  // Product Name
                   Text(
-                    model.title,
+                    model.name ?? "",
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -116,9 +120,8 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
 
-                  // Subtitle
                   Text(
-                    model.subtitle,
+                    subtitle,
                     style: TextStyle(
                       color: AppColors.grey,
                       fontSize: 12,
@@ -127,21 +130,8 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
 
-                  // Rating
                   Row(
                     children: [
-                      // ...List.generate(5, (index) {
-                      //   return Icon(
-                      //     index < model.rating.floor()
-                      //         ? Icons.star
-                      //         : index < model.rating
-                      //         ? Icons.star_half
-                      //         : Icons.star_border,
-                      //     color: AppColors.orange_f29102,
-                      //     size: 13,
-                      //   );
-                      // }),
-                      const SizedBox(width: 6),
                       Text(
                         "(${model.reviewCount})",
                         style: TextStyle(color: AppColors.grey, fontSize: 13),
@@ -150,16 +140,15 @@ class WishlistProductCard extends StatelessWidget {
                   ),
 
                   // Description
-                  Text(
-                    model.description ?? "No Description",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.grey_212121,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
+                  // Text(
+                  //   model.description ?? "No Description",
+                  //   style: TextStyle(
+                  //     fontSize: 14,
+                  //     color: AppColors.grey_212121,
+                  //   ),
+                  //   maxLines: 3,
+                  //   overflow: TextOverflow.ellipsis,
+                  // ),
                   Text(
                     "FREE Delivery on prepaid Orders.",
                     style: TextStyle(
@@ -169,11 +158,10 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
 
-                  // Price
                   Row(
                     children: [
                       Text(
-                        "₹${model.price}",
+                        "${model.currencySymbol}${model.price}",
                         style: TextStyle(
                           color: AppColors.blue_2da5f3,
                           fontSize: 18,
@@ -182,7 +170,7 @@ class WishlistProductCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        "₹${model.oldPrice}",
+                        "${model.currencySymbol}${model.regularPrice}",
                         style: TextStyle(
                           fontSize: 12,
                           decoration: TextDecoration.lineThrough,
@@ -191,7 +179,7 @@ class WishlistProductCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        "(${model.discountPercent}%)",
+                        "(${model.discountPercentage}%)",
                         style: TextStyle(
                           color: AppColors.grey,
                           fontSize: 12,
@@ -202,7 +190,6 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  // Add to cart
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -241,7 +228,6 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  // Remove
                   GestureDetector(
                     onTap: onRemove,
                     child: Row(

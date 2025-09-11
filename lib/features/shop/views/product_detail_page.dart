@@ -351,60 +351,60 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                   ),
                   // Vertical Icons
-                  Positioned(
-                    top: 30,
-                    right: 30,
-                    child: Column(
-                      children: [
-                        _buildCircleIcon(
-                          detail.isInWishlist == true
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          // detail.isInWishlist == true
-                          //     ? Colors.red
-                          //     : Colors.grey,
-                          onTap: () async {
-                            if (detail.isInWishlist == true) {
-                              final response = await wishlistController
-                                  .removeFromWishlist(detail.databaseId ?? 0);
-                              if (response["success"] == true) {
-                                setState(() => detail.isInWishlist = false);
-                                CustomSnackbars.showSuccess(
-                                  context,
-                                  response["message"],
-                                );
-                              } else {
-                                CustomSnackbars.showError(
-                                  context,
-                                  response["message"],
-                                );
-                              }
-                            } else {
-                              final response = await wishlistController
-                                  .addToWishlist(detail.databaseId ?? 0);
-                              if (response["success"] == true) {
-                                setState(() => detail.isInWishlist = true);
-                                CustomSnackbars.showSuccess(
-                                  context,
-                                  response["message"],
-                                );
-                              } else {
-                                CustomSnackbars.showError(
-                                  context,
-                                  response["message"],
-                                );
-                              }
-                            }
-                          },
-                        ),
+                  // Positioned(
+                  //   top: 30,
+                  //   right: 30,
+                  //   child: Column(
+                  //     children: [
+                  //       _buildCircleIcon(
+                  //         detail.isInWishlist == true
+                  //             ? Icons.favorite
+                  //             : Icons.favorite_border,
+                  //         // detail.isInWishlist == true
+                  //         //     ? Colors.red
+                  //         //     : Colors.grey,
+                  //         onTap: () async {
+                  //           if (detail.isInWishlist == true) {
+                  //             final response = await wishlistController
+                  //                 .removeFromWishlist(detail.databaseId ?? 0);
+                  //             if (response["success"] == true) {
+                  //               setState(() => detail.isInWishlist = false);
+                  //               CustomSnackbars.showSuccess(
+                  //                 context,
+                  //                 response["message"],
+                  //               );
+                  //             } else {
+                  //               CustomSnackbars.showError(
+                  //                 context,
+                  //                 response["message"],
+                  //               );
+                  //             }
+                  //           } else {
+                  //             final response = await wishlistController
+                  //                 .addToWishlist(detail.databaseId ?? 0);
+                  //             if (response["success"] == true) {
+                  //               setState(() => detail.isInWishlist = true);
+                  //               CustomSnackbars.showSuccess(
+                  //                 context,
+                  //                 response["message"],
+                  //               );
+                  //             } else {
+                  //               CustomSnackbars.showError(
+                  //                 context,
+                  //                 response["message"],
+                  //               );
+                  //             }
+                  //           }
+                  //         },
+                  //       ),
 
-                        const SizedBox(height: 12),
-                        _buildCircleIcon(Icons.search, onTap: () {}),
-                        const SizedBox(height: 12),
-                        _buildCircleIcon(Icons.download, onTap: () {}),
-                      ],
-                    ),
-                  ),
+                  //       const SizedBox(height: 12),
+                  //       _buildCircleIcon(Icons.search, onTap: () {}),
+                  //       const SizedBox(height: 12),
+                  //       _buildCircleIcon(Icons.download, onTap: () {}),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
 

@@ -9,7 +9,7 @@ class CommonFooterController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchAmazonReviews(); // auto load once
+    fetchAmazonReviews();
   }
 
   Future<void> fetchAmazonReviews() async {

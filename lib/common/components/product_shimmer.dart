@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductCardShimmer extends StatelessWidget {
-  const ProductCardShimmer({super.key});
+  final double height;
+  const ProductCardShimmer({super.key, this.height = 300});
 
   @override
   Widget build(BuildContext context) {

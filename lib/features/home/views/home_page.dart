@@ -6,6 +6,7 @@ import 'package:shree_radhey/features/home/controller/home_controller.dart';
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 
+import '../controller/wishlist_controller.dart';
 import 'components/banner_component.dart';
 
 import 'components/blog_section.dart';
@@ -36,6 +37,8 @@ class _HomePageState extends State<HomePage> {
       controller.fetchHomeData();
       controller.fetchBlogs();
       controller.fetchHomePageData(context);
+      final wishlistController = Get.find<WishlistController>();
+      wishlistController.fetchWishlist();
     });
   }
 

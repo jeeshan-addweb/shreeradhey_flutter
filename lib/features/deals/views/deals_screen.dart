@@ -32,7 +32,6 @@ class _DealsScreenState extends State<DealsScreen> {
   void initState() {
     super.initState();
 
-    // 👇 Auto-scroll to selected index after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelected();
       controller.fetchProducts("On Sale");

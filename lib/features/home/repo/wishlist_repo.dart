@@ -1,9 +1,70 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../data/network/api_client.dart';
+import '../model/get_wishlist_model.dart';
 
 class WishlistRepo {
   final GraphQLClient client = ApiClient().graphQLClient;
+
+  Future<List<WishlistProduct>> getWishlist() async {
+    const String query = r'''
+ query GetWishlistProducts {
+ wishlistProducts {
+   id
+   databaseId
+   name
+   slug
+   uri
+   image {
+     sourceUrl
+     altText
+   }
+   productCategories {
+     nodes {
+       name
+       slug
+     }
+   }
+   productLabels {
+     nodes {
+       id
+       name
+       slug
+     }
+   }
+   currencySymbol
+   price
+   regularPrice
+   salePrice
+   bestPrice
+   discountPercentage
+   averageRating
+   reviewCount
+ }
+}
+
+  ''';
+    try {
+      final result = await client.query(
+        QueryOptions(
+          document: gql(query),
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
+      );
+
+      if (result.hasException) {
+        throw result.exception!;
+      }
+
+      final data = result.data?['wishlistProducts'] as List<dynamic>?;
+
+      if (data == null) return [];
+
+      return data.map((json) => WishlistProduct.fromJson(json)).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<Map<String, dynamic>> addToWishlist(int productId) async {
     const String mutation = r'''

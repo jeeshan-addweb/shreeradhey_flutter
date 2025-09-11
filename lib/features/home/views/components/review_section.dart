@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 
 import '../../../../common/components/common_footer_controller.dart';
 import '../../../../constants/app_colors.dart';
-import '../../../../constants/app_mock_data.dart';
 import 'review_card.dart';
 
 class ReviewSection extends StatefulWidget {
@@ -126,25 +125,34 @@ class _ReviewSectionState extends State<ReviewSection> {
             ),
             SizedBox(height: 20),
 
-            SizedBox(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children:
-                      controller.amazonReviews
-                          .map(
-                            (review) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
+            Obx(() {
+              if (controller.isAmazonReviewLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (controller.amazonReviews.isEmpty) {
+                return const Text("No reviews available");
+              }
+              return SizedBox(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children:
+                        controller.amazonReviews
+                            .map(
+                              (review) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                ),
+                                child: ReviewCard(review: review),
                               ),
-                              child: ReviewCard(review: review),
-                            ),
-                          )
-                          .toList(),
+                            )
+                            .toList(),
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),
