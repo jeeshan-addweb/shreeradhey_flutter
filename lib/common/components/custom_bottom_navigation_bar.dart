@@ -94,6 +94,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     ),
                     Obx(() {
                       final count = Get.find<CartController>().cartCount.value;
+                      if (count == 0) return const SizedBox.shrink();
 
                       return Positioned(
                         right: -2,

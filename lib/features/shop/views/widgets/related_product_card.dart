@@ -12,9 +12,9 @@ class RelatedProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.push(AppRoutePath.productDetail, extra: {'hideNav': true});
-      },
+      // onTap: () {
+      //   context.push(AppRoutePath.productDetail, extra: {'hideNav': true});
+      // },
       child: Card(
         color: AppColors.white,
         margin: const EdgeInsets.all(8),

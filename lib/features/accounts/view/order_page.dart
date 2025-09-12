@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/common/components/product_shimmer.dart';
 
 import '../../../common/components/common_footer.dart';
-import '../../../constants/app_mock_data.dart';
 import '../../../utils/routes/app_route_path.dart';
 import '../controller/account_controller.dart';
 import 'components/order_card.dart';
@@ -21,7 +21,7 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
-    accountController.fetchOrders(); // 🔥 Call API
+    accountController.fetchOrders();
   }
 
   @override
@@ -29,7 +29,11 @@ class _OrderPageState extends State<OrderPage> {
     return Scaffold(
       body: Obx(() {
         if (accountController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              return ProductCardShimmer(height: 30);
+            },
+          );
         }
 
         if (accountController.errorMessage.isNotEmpty) {

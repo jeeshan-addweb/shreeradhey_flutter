@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
 import '../../../constants/app_colors.dart';
+import '../../accounts/controller/account_controller.dart';
 import 'components/payment_method_card.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -23,7 +25,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final pinController = TextEditingController();
   final notesController = TextEditingController();
   String? selectedState;
-  String? selectedCountry = "India";
+  String? selectedCountry = "IN";
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -90,7 +92,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Email & Phone
                 Row(
                   children: [
                     Expanded(
@@ -116,7 +117,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Street address
                 CommonLabeledTextField(
                   label: "Street address",
                   hint: "House number and street name",
@@ -131,7 +131,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // City & State
                 Row(
                   children: [
                     Expanded(
@@ -159,7 +158,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // PIN Code & Country
                 Row(
                   children: [
                     Expanded(
@@ -176,7 +174,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       child: CommonLabeledDropdown(
                         label: "Country / Region",
                         hint: "Select country",
-                        items: ["India", "USA", "UK"],
+                        items: ["IN", "US", "UK"],
                         value: selectedCountry,
                         onChanged: (val) {
                           selectedCountry = val;
@@ -188,7 +186,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Order notes
                 CommonLabeledTextField(
                   label: "Order notes (optional)",
                   hint:
@@ -298,7 +295,27 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ),
                           ],
                         ),
-                        PaymentMethodCard(),
+                        PaymentMethodCard(
+                          onPlaceOrder: (paymentMethod) {
+                            final controller = Get.put(AccountController());
+
+                            controller.checkout(
+                              context: context,
+                              firstName: firstNameController.text,
+                              lastName: lastNameController.text,
+                              email: emailController.text,
+                              phone: phoneController.text,
+                              address: streetController.text,
+                              city: cityController.text,
+                              state: selectedState ?? "",
+                              postcode: pinController.text,
+                              country: selectedCountry ?? "IN",
+                              customerNote: notesController.text,
+                              billToDifferent: false,
+                              paymentMethod: paymentMethod,
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),

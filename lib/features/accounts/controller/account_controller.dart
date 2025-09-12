@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shree_radhey/features/accounts/repo/account_repo.dart';
 
+import '../../../common/components/custom_snackbar.dart';
+import '../../cart/controller/cart_controller.dart';
 import '../model/order_detail_model.dart';
 import '../model/order_history_model.dart';
+import '../repo/account_repo.dart';
 
 class AccountController extends GetxController {
   final AccountRepo _accountrepo = AccountRepo();
@@ -36,6 +39,104 @@ class AccountController extends GetxController {
       orderDetail.value = data;
     } catch (e) {
       print("Error fetching order details: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> checkout({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phone,
+    required String address,
+    required String city,
+    required String state,
+    required String postcode,
+    required String country,
+    String? customerNote,
+    bool billToDifferent = false,
+    String paymentMethod = "cod",
+    required BuildContext context,
+  }) async {
+    try {
+      isLoading.value = true;
+
+      // final authController = Get.find<AuthController>();
+      // final customerId = authController.; // depends on your Auth flow
+
+      final cartController = Get.find<CartController>();
+
+      final items =
+          cartController.cart.value?.data?.cart?.contents?.nodes ?? [];
+      final lineItems =
+          items
+              .map(
+                (n) => {
+                  "productId": int.parse(
+                    n.product?.node?.databaseId.toString() ?? "0",
+                  ),
+                  "quantity": n.quantity,
+                },
+              )
+              .toList();
+
+      final input = {
+        "customerId": 975,
+        "customerNote": customerNote ?? "",
+        "paymentMethod": paymentMethod,
+        "paymentMethodTitle":
+            paymentMethod == "cod" ? "Cash on Delivery" : "Razorpay",
+        "isPaid": paymentMethod != "cod",
+
+        "status": "PROCESSING",
+        "coupons": [],
+        "billing": {
+          "firstName": firstName,
+          "lastName": lastName,
+          "email": email,
+          "phone": phone,
+          "address1": address,
+          "city": city,
+          "state": state,
+          "postcode": postcode,
+          "country": country,
+        },
+        "shipping":
+            billToDifferent
+                ? {
+                  "firstName": firstName,
+                  "lastName": lastName,
+                  "address1": address,
+                  "city": city,
+                  "state": state,
+                  "postcode": postcode,
+                  "country": country,
+                }
+                : {
+                  "firstName": firstName,
+                  "lastName": lastName,
+                  "address1": address,
+                  "city": city,
+                  "state": state,
+                  "postcode": postcode,
+                  "country": country,
+                },
+        "lineItems": lineItems,
+      };
+
+      final result = await _accountrepo.createOrder(input);
+      debugPrint(
+        "[CartController] Order Created → ${result.data?.createOrder?.orderId}",
+      );
+
+      CustomSnackbars.showSuccess(
+        context,
+        "Order #${result.data?.createOrder?.orderId} created!",
+      );
+    } catch (e) {
+      debugPrint("[CartController] Checkout failed: $e");
+      CustomSnackbars.showError(context, "Error ${e.toString()}");
     } finally {
       isLoading.value = false;
     }

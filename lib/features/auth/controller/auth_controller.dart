@@ -11,7 +11,7 @@ class AuthController extends GetxController {
   var userData = {}.obs;
   var token = "".obs;
 
-  void loadToken() {
+  Future<void> loadToken() async {
     final savedToken = box.read("auth_token");
     if (savedToken != null && savedToken.toString().isNotEmpty) {
       token.value = savedToken;

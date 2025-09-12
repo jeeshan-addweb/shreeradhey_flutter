@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../constants/app_colors.dart';
 
 class PaymentMethodCard extends StatefulWidget {
-  const PaymentMethodCard({super.key});
+  final Function(String paymentMethod)? onPlaceOrder;
+  const PaymentMethodCard({super.key, this.onPlaceOrder});
 
   @override
   State<PaymentMethodCard> createState() => _PaymentMethodCardState();
@@ -145,15 +146,9 @@ class _PaymentMethodCardState extends State<PaymentMethodCard> {
                   backgroundColor: Colors.green,
                 ),
                 onPressed:
-                    _termsAccepted
+                    (_termsAccepted && _captcha)
                         ? () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "Order placed with $_selectedPayment",
-                              ),
-                            ),
-                          );
+                          widget.onPlaceOrder?.call(_selectedPayment);
                         }
                         : null,
                 child: const Text("Place order"),

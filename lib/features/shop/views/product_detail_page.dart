@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
-import 'package:shree_radhey/features/home/views/widgets/product_section_widget.dart';
-import 'package:shree_radhey/features/shop/controller/product_variant_controller.dart';
 
 import '../../../common/components/common_footer.dart';
-import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
+import '../../home/controller/wishlist_controller.dart';
+import '../controller/product_variant_controller.dart';
 import '../controller/shop_controller.dart';
 import 'components/add_review_section.dart';
 import 'components/faq_section.dart';
@@ -32,6 +30,8 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  bool showFullVariants = false;
+
   final ShopController controller = Get.put(ShopController());
   final ProductVariantController productVariantController = Get.put(
     ProductVariantController(),
@@ -65,22 +65,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   int selectedVariantIndex = -1;
-
-  // final variants = [
-  //   {
-  //     "name": "1L Pet Bottle (Pack of 2) skxsxszxjszxbhjjhbjjhbcjbjb",
-  //     "original": 120.0,
-  //     "discounted": 110.0,
-  //     "percent": 8,
-  //   },
-  //   {
-  //     "name": "500ml Bottle",
-  //     "original": 65.0,
-  //     "discounted": 60.0,
-  //     "percent": 8,
-  //   },
-  //   {"name": "2L Bottle", "original": 220.0, "discounted": 200.0, "percent": 9},
-  // ];
 
   int selectedImageIndex = 0;
 
@@ -572,74 +556,75 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       style: TextStyle(color: AppColors.grey_212121),
                     ),
                     const SizedBox(height: 16),
+                    _buildVariantSection(variants),
 
                     // Select Variant section
-                    if (productVariantController.productVariants.isEmpty) ...[
-                      const Text(
-                        "No variants found",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ] else ...[
-                      Text(
-                        "Select Variant",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.grey_212121,
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      GridView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: variants.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                              childAspectRatio:
-                                  1.3, // adjust height/width ratio
-                            ),
-                        itemBuilder: (context, index) {
-                          final v = variants[index];
+                    // if (productVariantController.productVariants.isEmpty) ...[
+                    //   const Text(
+                    //     "No variants found",
+                    //     style: TextStyle(
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w500,
+                    //       color: Colors.grey,
+                    //     ),
+                    //   ),
+                    // ] else ...[
+                    //   Text(
+                    //     "Select Variant",
+                    //     style: TextStyle(
+                    //       fontSize: 18,
+                    //       fontWeight: FontWeight.w600,
+                    //       color: AppColors.grey_212121,
+                    //     ),
+                    //   ),
+                    //   SizedBox(height: 12),
+                    //   GridView.builder(
+                    //     padding: EdgeInsets.zero,
+                    //     shrinkWrap: true,
+                    //     physics: const NeverScrollableScrollPhysics(),
+                    //     itemCount: variants.length,
+                    //     gridDelegate:
+                    //         const SliverGridDelegateWithFixedCrossAxisCount(
+                    //           crossAxisCount: 2,
+                    //           crossAxisSpacing: 12,
+                    //           mainAxisSpacing: 12,
+                    //           childAspectRatio:
+                    //               1.3, // adjust height/width ratio
+                    //         ),
+                    //     itemBuilder: (context, index) {
+                    //       final v = variants[index];
 
-                          return VariantCard(
-                            variantName: v.productSubtitle ?? "",
-                            originalPrice: v.regularPrice ?? "",
-                            discountedPrice: v.salePrice ?? "",
-                            discountPercent: v.discountPercentage ?? 0,
-                            currencySymbol: v.currencySymbol ?? "",
-                            isSelected: selectedVariantIndex == index,
-                            onTap: () {
-                              setState(() {
-                                selectedVariantIndex = index;
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ],
-                    SizedBox(height: 12),
-                    Center(
-                      child: Text(
-                        "Explore More Variant",
-                        textAlign: TextAlign.center,
+                    //       return VariantCard(
+                    //         variantName: v.productSubtitle ?? "",
+                    //         originalPrice: v.regularPrice ?? "",
+                    //         discountedPrice: v.salePrice ?? "",
+                    //         discountPercent: v.discountPercentage ?? 0,
+                    //         currencySymbol: v.currencySymbol ?? "",
+                    //         isSelected: selectedVariantIndex == index,
+                    //         onTap: () {
+                    //           setState(() {
+                    //             selectedVariantIndex = index;
+                    //           });
+                    //         },
+                    //       );
+                    //     },
+                    //   ),
+                    // ],
+                    // SizedBox(height: 12),
+                    // Center(
+                    //   child: Text(
+                    //     "Explore More Variant",
+                    //     textAlign: TextAlign.center,
 
-                        style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.green_6cad10,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.green_6cad10,
-                        ),
-                      ),
-                    ),
+                    //     style: TextStyle(
+                    //       decoration: TextDecoration.underline,
+                    //       decorationColor: AppColors.green_6cad10,
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w700,
+                    //       color: AppColors.green_6cad10,
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(height: 20),
                     Image.asset(AppImages.product_page_image),
                     SizedBox(height: 20),
@@ -805,6 +790,91 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildVariantSection(List variants) {
+    if (variants.isEmpty) {
+      return const Text(
+        "No variants found",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.grey,
+        ),
+      );
+    }
+
+    // Show only first 3 if longer
+    final showAll = variants.length <= 3 || showFullVariants;
+    final displayVariants = showAll ? variants : variants.take(3).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Select Variant",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.grey_212121,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        GridView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: displayVariants.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.3,
+          ),
+          itemBuilder: (context, index) {
+            final v = displayVariants[index];
+            return VariantCard(
+              variantName: v.productSubtitle ?? "",
+              originalPrice: v.regularPrice ?? "",
+              discountedPrice: v.salePrice ?? "",
+              discountPercent: v.discountPercentage ?? 0,
+              currencySymbol: v.currencySymbol ?? "",
+              isSelected: selectedVariantIndex == index,
+              onTap: () {
+                setState(() {
+                  selectedVariantIndex = index;
+                });
+              },
+            );
+          },
+        ),
+
+        if (variants.length > 3 && !showFullVariants)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Center(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    showFullVariants = true;
+                  });
+                },
+                child: Text(
+                  "Explore More Variants",
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    decorationColor: AppColors.green_6cad10,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.green_6cad10,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

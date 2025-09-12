@@ -13,14 +13,15 @@ void main() async {
 
   await GetStorage.init();
   final wishlistController = Get.put(WishlistController());
-
-  wishlistController.fetchWishlist();
   final authController = Get.put(AuthController());
-  authController.loadToken();
   final cartController = Get.put(CartController());
-  // if (authController.isLoggedIn) {
-  cartController.fetchCartItems();
-  // }
+
+  await authController.loadToken();
+
+  if (authController.isLoggedIn) {
+    await wishlistController.fetchWishlist();
+    await cartController.fetchCartItems();
+  }
 
   runApp(MyApp(authController: authController));
 }

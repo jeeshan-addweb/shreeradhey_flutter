@@ -14,6 +14,7 @@ class CartController extends GetxController {
   var cart = Rxn<GetCartModel>();
   // dedocated for cart
   var isFetchingCart = false.obs;
+  var isUpdatingCart = false.obs;
 
   var updatingItems = <String, bool>{}.obs;
 
@@ -123,13 +124,13 @@ class CartController extends GetxController {
 
   Future<void> removeItem(String key) async {
     try {
-      isLoading.value = true;
+      isUpdatingCart.value = true;
       cart.value = await _repo.removeCartItem(key);
       updateCartCount();
     } catch (e) {
       print("Error removing item: $e");
     } finally {
-      isLoading.value = false;
+      isUpdatingCart.value = false;
     }
   }
 
@@ -165,7 +166,7 @@ class CartController extends GetxController {
 
   Future<void> applyCoupon(String code) async {
     try {
-      isLoading.value = true;
+      isUpdatingCart.value = true;
       errorMessage.value = "";
       final updatedCart = await _repo.applyCoupon(code);
       if (updatedCart != null) {
@@ -176,7 +177,7 @@ class CartController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isUpdatingCart.value = false;
     }
   }
 

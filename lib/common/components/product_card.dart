@@ -153,39 +153,38 @@ class _ProductCardState extends State<ProductCard> {
                         const SizedBox(width: 4),
                         Container(width: 1, height: 14, color: Colors.white),
                         const SizedBox(width: 4),
-                        Obx(() {
-                          return GestureDetector(
-                            onTap: () async {
-                              final response = await wishlistController
-                                  .toggleWishlist(widget.model.productId);
-                              if (response["success"] == true) {
-                                CustomSnackbars.showSuccess(
-                                  context,
-                                  response["message"],
-                                );
-                              } else {
-                                CustomSnackbars.showError(
-                                  context,
-                                  response["message"],
-                                );
-                              }
-                            },
-                            child: Obx(() {
-                              final isWishlisted =
-                                  wishlistController.wishlistMap[widget
-                                      .model
-                                      .productId] ??
-                                  false;
-                              return Icon(
-                                isWishlisted
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: isWishlisted ? Colors.red : Colors.white,
-                                size: 18,
+
+                        GestureDetector(
+                          onTap: () async {
+                            final response = await wishlistController
+                                .toggleWishlist(widget.model.productId);
+                            if (response["success"] == true) {
+                              CustomSnackbars.showSuccess(
+                                context,
+                                response["message"],
                               );
-                            }),
-                          );
-                        }),
+                            } else {
+                              CustomSnackbars.showError(
+                                context,
+                                response["message"],
+                              );
+                            }
+                          },
+                          child: Obx(() {
+                            final isWishlisted =
+                                wishlistController.wishlistMap[widget
+                                    .model
+                                    .productId] ??
+                                false;
+                            return Icon(
+                              isWishlisted
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isWishlisted ? Colors.red : Colors.white,
+                              size: 18,
+                            );
+                          }),
+                        ),
                       ],
                     ),
                   ),

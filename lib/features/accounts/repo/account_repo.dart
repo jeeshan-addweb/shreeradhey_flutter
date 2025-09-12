@@ -3,6 +3,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shree_radhey/features/accounts/model/order_history_model.dart';
 
 import '../../../data/network/api_client.dart';
+import '../model/create_order_model.dart';
 import '../model/order_detail_model.dart';
 
 class AccountRepo {
@@ -165,5 +166,40 @@ query GetOrderDetails($orderId: ID!) {
     }
 
     return OrderDetailModel.fromJson({"data": result.data});
+  }
+
+  Future<CreateOrderModel> createOrder(Map<String, dynamic> input) async {
+    const mutation = r'''
+      mutation CreateOrder($input: CreateOrderInput!) {
+        createOrder(input: $input) {
+          order {
+            orderKey
+            status
+            total
+            lineItems {
+              nodes {
+                product {
+                  node {
+                    name
+                  }
+                }
+                total
+              }
+            }
+          }
+          orderId
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(document: gql(mutation), variables: {"input": input}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return CreateOrderModel.fromJson(result.data!['createOrder']);
   }
 }

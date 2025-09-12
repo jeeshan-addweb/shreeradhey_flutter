@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shree_radhey/common/components/gradient_button.dart';
 import 'package:shree_radhey/features/accounts/controller/account_controller.dart';
 import '../../../../constants/app_colors.dart';
+import '../model/order_detail_model.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final int orderId;
@@ -132,9 +133,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: _addressCard("Billing address")),
+                  Expanded(
+                    child: _addressCard("Billing address", order.billing),
+                  ),
                   const SizedBox(width: 16),
-                  Expanded(child: _addressCard("Shipping address")),
+                  Expanded(
+                    child: _addressCard("Shipping address", order.shipping),
+                  ),
                 ],
               ),
             ],
@@ -178,7 +183,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _addressCard(String title) {
+  Widget _addressCard(String title, Ing? address) {
     return Card(
       color: AppColors.white,
       margin: EdgeInsets.zero,
@@ -193,34 +198,40 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             SizedBox(height: 8),
-            Text("Test Surname"),
-            Text("Test123"),
-            Text("123 370012"),
-            Text("Gujarat"),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.phone, size: 16),
-                SizedBox(width: 4),
-                Text("9265186866"),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.email, size: 16),
-                const SizedBox(width: 4),
-                Expanded(
-                  // 👈 constrain text inside row
-                  child: Text(
-                    "esha@addwebsolution.in",
-                    overflow: TextOverflow.ellipsis, // or wrap
-                    maxLines: 2, // allow wrapping
-                    softWrap: true,
-                  ),
+            if (address != null) ...[
+              Text("${address.firstName ?? ""} ${address.lastName ?? ""}"),
+              Text(address.address1 ?? ""),
+              if (address.address2?.isNotEmpty == true) Text(address.address2!),
+              Text("${address.city ?? ""} ${address.postcode ?? ""}"),
+              Text(address.state ?? ""),
+              SizedBox(height: 8),
+              if (address.phone != null && address.phone!.isNotEmpty)
+                Row(
+                  children: [
+                    Icon(Icons.phone, size: 16),
+                    SizedBox(width: 4),
+                    Text(address.phone!),
+                  ],
                 ),
-              ],
-            ),
+              if (address.email != null && address.email!.isNotEmpty)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.email, size: 16),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      // 👈 constrain text inside row
+                      child: Text(
+                        address.email!,
+                        overflow: TextOverflow.ellipsis, // or wrap
+                        maxLines: 2, // allow wrapping
+                        softWrap: true,
+                      ),
+                    ),
+                  ],
+                ),
+            ] else
+              const Text("No address available"),
           ],
         ),
       ),
