@@ -8,12 +8,14 @@ import 'package:shree_radhey/features/footer_menu/model/terms_condition_model.da
 import 'package:shree_radhey/features/footer_menu/repo/footer_repo.dart';
 
 import '../model/about_us_page_model.dart';
+import '../model/wood_press_oil_model.dart';
 
 class FooterController extends GetxController {
   final FooterRepo _repo = FooterRepo();
 
   var isLoading = true.obs;
   var aboutUs = Rxn<AboutUsPageModel>();
+  var woodPress = Rxn<WoodPressOilModel>();
   var refundPolicy = Rxn<RefundPolicyModel>();
   var privacyPolicy = Rxn<PrivacyPolicyModel>();
   var faq = Rxn<FaqModel>();
@@ -99,6 +101,20 @@ class FooterController extends GetxController {
       debugPrint("Result is ${result.data?.pageBy?.toJson()}");
     } catch (e) {
       print("Error fetching shipping: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchWoodPress() async {
+    try {
+      isLoading.value = true;
+      final result = await _repo.fetchWoodPressOil();
+      debugPrint("RAW RESPONSE: ${result.toJson()}");
+      woodPress.value = result;
+      debugPrint("Result is ${result.data?.pageBy?.toJson()}");
+    } catch (e) {
+      print("Error fetching Wood Press Us: $e");
     } finally {
       isLoading.value = false;
     }

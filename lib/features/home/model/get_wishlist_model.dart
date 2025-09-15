@@ -48,6 +48,7 @@ class Data {
 class WishlistProduct {
   String? id;
   int? databaseId;
+  bool? isInCart;
   String? name;
   String? slug;
   String? uri;
@@ -66,6 +67,7 @@ class WishlistProduct {
   WishlistProduct({
     this.id,
     this.databaseId,
+    this.isInCart,
     this.name,
     this.slug,
     this.uri,
@@ -86,6 +88,7 @@ class WishlistProduct {
       WishlistProduct(
         id: json["id"],
         databaseId: json["databaseId"],
+        isInCart: json["isInCart"],
         name: json["name"],
         slug: json["slug"],
         uri: json["uri"],
@@ -112,6 +115,7 @@ class WishlistProduct {
   Map<String, dynamic> toJson() => {
     "id": id,
     "databaseId": databaseId,
+    "isInCart": isInCart,
     "name": name,
     "slug": slug,
     "uri": uri,

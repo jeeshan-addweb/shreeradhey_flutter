@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
-import 'package:shree_radhey/common/components/common_footer_repo.dart';
-import 'package:shree_radhey/common/model/amazon_review_model.dart';
+
+import '../model/amazon_review_model.dart';
+import 'common_footer_repo.dart';
 
 class CommonFooterController extends GetxController {
   final CommonFooterRepo _repo = CommonFooterRepo();

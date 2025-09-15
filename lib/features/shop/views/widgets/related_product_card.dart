@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../constants/app_colors.dart';
-import '../../../../utils/routes/app_route_path.dart';
 import '../../models/product_detail_model.dart';
 
 class RelatedProductCard extends StatelessWidget {

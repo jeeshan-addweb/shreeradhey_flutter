@@ -5,7 +5,7 @@ import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
-import '../../../constants/app_mock_data.dart';
+import '../../cart/controller/cart_controller.dart';
 import '../../home/views/widgets/product_section_widget.dart';
 import 'components/wishlist_product_card.dart';
 
@@ -18,6 +18,7 @@ class WishlistScreen extends StatefulWidget {
 
 class _WishlistScreenState extends State<WishlistScreen> {
   final WishlistController wishlistController = Get.put(WishlistController());
+  final CartController cartController = Get.put(CartController());
   @override
   void initState() {
     super.initState();
@@ -73,11 +74,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
             if (wishlistController.isLoading.value) {
               return ProductCardShimmer(height: 500);
             }
-            // if (wishlistController.errorMessage.isNotEmpty) {
-            //   return Text("Error: ${wishlistController.errorMessage.value}");
-            // }
+
             if (wishlistController.wishlist.isEmpty) {
-              return const Text("No coupons available");
+              return Center(child: const Text("No items in wishlist"));
             }
 
             return ListView.separated(
@@ -93,11 +92,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 final product = wishlistController.wishlist[index];
                 return SizedBox(
                   width: cardWidth,
-                  child: WishlistProductCard(
-                    model: product,
-                    onAddToCart: () {},
-                    onRemove: () {},
-                  ),
+                  child: WishlistProductCard(model: product),
                 );
               },
             );

@@ -185,23 +185,18 @@ class _DealsScreenState extends State<DealsScreen> {
           // SizedBox(height: 40),
           Obx(() {
             if (controller.isLoading.value) {
-              // Show shimmer cards while loading
               return ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount:
-                    controller
-                        .products
-                        .length, // number of shimmer placeholders
+                itemCount: 2,
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final screenWidth = MediaQuery.of(context).size.width;
                   final cardWidth = screenWidth * 0.7;
                   return SizedBox(
                     width: cardWidth,
-                    child:
-                        const ProductCardShimmer(), // 👈 use your shimmer widget here
+                    child: const ProductCardShimmer(),
                   );
                 },
               );

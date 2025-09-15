@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/features/shop/controller/shop_controller.dart';
 import '../../../common/components/custom_snackbar.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../model/cart_shipping_method_model.dart';
@@ -127,6 +128,9 @@ class CartController extends GetxController {
       isUpdatingCart.value = true;
       cart.value = await _repo.removeCartItem(key);
       updateCartCount();
+      await fetchCartItems();
+      final shopController = Get.find<ShopController>();
+      shopController.fetchProducts("all");
     } catch (e) {
       print("Error removing item: $e");
     } finally {

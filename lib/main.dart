@@ -2,6 +2,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
 
+import 'common/currency_service.dart';
 import 'data/network/shared_pref/shared_preference_helper.dart';
 import 'features/auth/controller/auth_controller.dart';
 import 'utils/routes/app_router.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initCurrency();
     return Obx(() {
       return GetMaterialApp.router(
         title: 'Shree Radhey',

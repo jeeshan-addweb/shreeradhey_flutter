@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/common/components/line_shimmer.dart';
+import 'package:shree_radhey/common/components/product_shimmer.dart';
 import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 
 import '../../../../constants/app_colors.dart';
@@ -63,7 +65,7 @@ class _CartSummarySectionState extends State<CartSummarySection> {
           ),
           child: Obx(() {
             if (cartController.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return const LineShimmer(height: 30);
             }
             return Row(
               children: [
@@ -151,7 +153,7 @@ class _CartSummarySectionState extends State<CartSummarySection> {
         // }),
         Obx(() {
           if (couponController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return const LineShimmer(height: 30);
           }
           if (couponController.errorMessage.isNotEmpty) {
             return Text("Error: ${couponController.errorMessage.value}");
