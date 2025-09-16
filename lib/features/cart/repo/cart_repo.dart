@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
+import '../../../common/model/coupon_response.dart';
 import '../../../data/network/api_client.dart';
 import '../model/cart_shipping_method_model.dart';
 import '../model/get_cart_model.dart';
@@ -306,7 +307,7 @@ class CartRepo {
     return GetCartModel.fromJson(wrapped);
   }
 
-  Future<GetCartModel?> applyCoupon(String code) async {
+  Future<CouponResponse?> applyCoupon(String code) async {
     const String mutation = r'''
       mutation ApplyCoupon($code: String!) {
         applyCoupon(input: {code: $code}) {
@@ -334,6 +335,8 @@ class CartRepo {
               }
             }
           }
+          message
+
           applied {
             code
           }
@@ -348,20 +351,30 @@ class CartRepo {
     if (result.hasException) {
       throw Exception(result.exception.toString());
     }
+    final data = result.data?['applyCoupon'];
+    if (data == null) return null;
 
-    final cartData = result.data?['applyCoupon']?['cart'];
-    if (cartData == null) return null;
+    final cartData = data['cart'];
+    final message = data['message'];
 
-    return GetCartModel.fromJson({
-      "data": {"cart": cartData},
-    });
+    return CouponResponse(
+      cart:
+          cartData != null
+              ? GetCartModel.fromJson({
+                "data": {"cart": cartData},
+              })
+              : null,
+      message: message,
+    );
   }
 
   // Remove coupon
-  Future<GetCartModel?> removeCoupon(String code) async {
+  Future<CouponResponse?> removeCoupon(String code) async {
     const String mutation = r'''
       mutation RemoveCoupon($codes: [String!]!) {
         removeCoupons(input: {codes: $codes}) {
+        message
+
           cart {
             subtotal
             total
@@ -402,13 +415,21 @@ class CartRepo {
     if (result.hasException) {
       throw Exception(result.exception.toString());
     }
+    final data = result.data?['removeCoupons'];
+    if (data == null) return null;
 
-    final cartData = result.data?['removeCoupons']?['cart'];
-    if (cartData == null) return null;
+    final cartData = data['cart'];
+    final message = data['message'];
 
-    return GetCartModel.fromJson({
-      "data": {"cart": cartData},
-    });
+    return CouponResponse(
+      cart:
+          cartData != null
+              ? GetCartModel.fromJson({
+                "data": {"cart": cartData},
+              })
+              : null,
+      message: message,
+    );
   }
 
   // Shipping method

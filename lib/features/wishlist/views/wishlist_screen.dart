@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shree_radhey/common/components/product_shimmer.dart';
+import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
-import '../../../constants/app_mock_data.dart';
+import '../../cart/controller/cart_controller.dart';
+import '../../home/controller/home_controller.dart';
 import '../../home/views/widgets/product_section_widget.dart';
 import 'components/wishlist_product_card.dart';
 
@@ -14,6 +18,17 @@ class WishlistScreen extends StatefulWidget {
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
+  final WishlistController wishlistController = Get.put(WishlistController());
+  final HomeController controller = Get.put(HomeController(), permanent: true);
+  final CartController cartController = Get.put(CartController());
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      wishlistController.fetchWishlist();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -57,27 +72,33 @@ class _WishlistScreenState extends State<WishlistScreen> {
               ],
             ),
           ),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: AppMockData.mockProducts.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final screenWidth = MediaQuery.of(context).size.width;
-              final cardWidth = screenWidth * 0.7;
-              final product = AppMockData.mockProducts[index].copyWith();
-              return SizedBox(
-                width: cardWidth,
-                child: WishlistProductCard(
-                  model: product,
-                  onAddToCart: () {},
-                  onRemove: () {},
-                ),
-              );
-            },
-          ),
+          Obx(() {
+            if (wishlistController.isLoading.value) {
+              return ProductCardShimmer(height: 500);
+            }
+
+            if (wishlistController.wishlist.isEmpty) {
+              return Center(child: const Text("No items in wishlist"));
+            }
+
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: wishlistController.wishlist.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final screenWidth = MediaQuery.of(context).size.width;
+                final cardWidth = screenWidth * 0.7;
+                final product = wishlistController.wishlist[index];
+                return SizedBox(
+                  width: cardWidth,
+                  child: WishlistProductCard(model: product),
+                );
+              },
+            );
+          }),
           SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -88,7 +109,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
               secondText: "Similar Products".toUpperCase(),
               sectionBgColor: AppColors.white,
               tagText: "Best Seller",
-              products: [],
+              products: controller.allProducts,
             ),
           ),
           SizedBox(height: 20),

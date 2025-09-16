@@ -102,7 +102,7 @@ class VariantCard extends StatelessWidget {
                         Text(
                           "$currencySymbol${originalPrice}",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: AppColors.grey_212121,
                             decoration: TextDecoration.lineThrough,

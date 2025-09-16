@@ -100,8 +100,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       if (count == 0) return const SizedBox.shrink();
 
                       return Positioned(
-                        right: -2,
-                        top: -2,
+                        right: 4,
+                        top: 0,
                         child: CircleAvatar(
                           radius: 8,
                           backgroundColor: AppColors.green_5b9d0b,

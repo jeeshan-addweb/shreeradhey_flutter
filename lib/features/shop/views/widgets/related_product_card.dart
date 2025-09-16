@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../constants/app_colors.dart';
-import '../../../../utils/routes/app_route_path.dart';
 import '../../models/product_detail_model.dart';
 
 class RelatedProductCard extends StatelessWidget {
@@ -12,9 +10,9 @@ class RelatedProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.push(AppRoutePath.productDetail, extra: {'hideNav': true});
-      },
+      // onTap: () {
+      //   context.push(AppRoutePath.productDetail, extra: {'hideNav': true});
+      // },
       child: Card(
         color: AppColors.white,
         margin: const EdgeInsets.all(8),

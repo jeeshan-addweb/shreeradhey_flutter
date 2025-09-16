@@ -1,23 +1,19 @@
-// To parse this JSON data, do
-//
-//     final aboutUsPageModel = aboutUsPageModelFromJson(jsonString);
-
 import 'dart:convert';
 
-AboutUsPageModel aboutUsPageModelFromJson(String str) =>
-    AboutUsPageModel.fromJson(json.decode(str));
+GetAddressModel getAddressModelFromJson(String str) =>
+    GetAddressModel.fromJson(json.decode(str));
 
-String aboutUsPageModelToJson(AboutUsPageModel data) =>
+String getAddressModelToJson(GetAddressModel data) =>
     json.encode(data.toJson());
 
-class AboutUsPageModel {
+class GetAddressModel {
   Data? data;
   Extensions? extensions;
 
-  AboutUsPageModel({this.data, this.extensions});
+  GetAddressModel({this.data, this.extensions});
 
-  factory AboutUsPageModel.fromJson(Map<String, dynamic> json) =>
-      AboutUsPageModel(
+  factory GetAddressModel.fromJson(Map<String, dynamic> json) =>
+      GetAddressModel(
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
         extensions:
             json["extensions"] == null
@@ -32,61 +28,101 @@ class AboutUsPageModel {
 }
 
 class Data {
-  PageBy? pageBy;
+  List<CustomerAddress>? customerAddresses;
 
-  Data({this.pageBy});
+  Data({this.customerAddresses});
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    pageBy: json["pageBy"] == null ? null : PageBy.fromJson(json["pageBy"]),
-  );
-
-  Map<String, dynamic> toJson() => {"pageBy": pageBy?.toJson()};
-}
-
-class PageBy {
-  String? title;
-  List<Block>? blocks;
-
-  PageBy({this.title, this.blocks});
-
-  factory PageBy.fromJson(Map<String, dynamic> json) => PageBy(
-    title: json["title"],
-    blocks:
-        json["blocks"] == null
+    customerAddresses:
+        json["customerAddresses"] == null
             ? []
-            : List<Block>.from(json["blocks"]!.map((x) => Block.fromJson(x))),
+            : List<CustomerAddress>.from(
+              json["customerAddresses"]!.map(
+                (x) => CustomerAddress.fromJson(x),
+              ),
+            ),
   );
 
   Map<String, dynamic> toJson() => {
-    "title": title,
-    "blocks":
-        blocks == null
+    "customerAddresses":
+        customerAddresses == null
             ? []
-            : List<dynamic>.from(blocks!.map((x) => x.toJson())),
+            : List<dynamic>.from(customerAddresses!.map((x) => x.toJson())),
   };
 }
 
-class Block {
-  Name? name;
-  String? content;
+class CustomerAddress {
+  int? id;
+  String? addressType;
+  String? addressLabel;
+  String? firstName;
+  String? lastName;
+  String? company;
+  String? country;
+  String? address1;
+  String? address2;
+  String? city;
+  String? state;
+  String? postcode;
+  String? phone;
+  String? email;
+  int? isDefault;
 
-  Block({this.name, this.content});
+  CustomerAddress({
+    this.id,
+    this.addressType,
+    this.addressLabel,
+    this.firstName,
+    this.lastName,
+    this.company,
+    this.country,
+    this.address1,
+    this.address2,
+    this.city,
+    this.state,
+    this.postcode,
+    this.phone,
+    this.email,
+    this.isDefault,
+  });
 
-  factory Block.fromJson(Map<String, dynamic> json) =>
-      Block(name: nameValues.map[json["name"]], content: json["content"]);
+  factory CustomerAddress.fromJson(Map<String, dynamic> json) =>
+      CustomerAddress(
+        id: json["id"],
+        addressType: json["address_type"],
+        addressLabel: json["address_label"],
+        firstName: json["first_name"],
+        lastName: json["last_name"],
+        company: json["company"],
+        country: json["country"],
+        address1: json["address_1"],
+        address2: json["address_2"],
+        city: json["city"],
+        state: json["state"],
+        postcode: json["postcode"],
+        phone: json["phone"],
+        email: json["email"],
+        isDefault: json["is_default"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "name": nameValues.reverse[name],
-    "content": content,
+    "id": id,
+    "address_type": addressType,
+    "address_label": addressLabel,
+    "first_name": firstName,
+    "last_name": lastName,
+    "company": company,
+    "country": country,
+    "address_1": address1,
+    "address_2": address2,
+    "city": city,
+    "state": state,
+    "postcode": postcode,
+    "phone": phone,
+    "email": email,
+    "is_default": isDefault,
   };
 }
-
-enum Name { CORE_HEADING, CORE_PARAGRAPH }
-
-final nameValues = EnumValues({
-  "core/heading": Name.CORE_HEADING,
-  "core/paragraph": Name.CORE_PARAGRAPH,
-});
 
 class Extensions {
   List<dynamic>? debug;
@@ -155,16 +191,4 @@ class QueryAnalyzer {
             ? []
             : List<dynamic>.from(skippedTypes!.map((x) => x)),
   };
-}
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

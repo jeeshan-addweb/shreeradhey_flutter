@@ -19,7 +19,9 @@ class _ShippingAndDeliveryPolicyPageState
   @override
   void initState() {
     super.initState();
-    controller.fetchShipping();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchShipping();
+    });
   }
 
   @override

@@ -67,9 +67,9 @@ class ShopController extends GetxController {
       debugPrint("detail : ${productDetail.value?.data?.toJson()}");
       //  = detail;
     } catch (e) {
-      debugPrint("haalo error");
+      debugPrint("product detail error");
       CustomSnackbars.showError(context, "Something went wrong: $e");
-      debugPrint("eRROR IS $e");
+      debugPrint("product detail error IS $e");
     } finally {
       isDetailLoading.value = false;
     }
@@ -93,14 +93,7 @@ class ShopController extends GetxController {
       reviews.addAll(result);
 
       // handle pagination
-      final pageInfo =
-          result.isNotEmpty
-              ? result
-                  .last // dummy hack, you should parse pageInfo from repo
-              : null;
-
-      // update cursor & hasMoreReviews based on response
-      // (you can also return pageInfo from repo for cleaner handling)
+      final pageInfo = result.isNotEmpty ? result.last : null;
     } catch (e) {
       print("Review fetch error: $e");
     } finally {

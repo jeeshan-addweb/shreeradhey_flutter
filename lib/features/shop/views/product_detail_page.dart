@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
-import 'package:shree_radhey/features/home/views/widgets/product_section_widget.dart';
-import 'package:shree_radhey/features/shop/controller/product_variant_controller.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
+import '../../home/controller/wishlist_controller.dart';
+import '../controller/product_variant_controller.dart';
 import '../controller/shop_controller.dart';
 import 'components/add_review_section.dart';
 import 'components/faq_section.dart';
@@ -32,6 +31,8 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  bool showFullVariants = false;
+
   final ShopController controller = Get.put(ShopController());
   final ProductVariantController productVariantController = Get.put(
     ProductVariantController(),
@@ -66,22 +67,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   int selectedVariantIndex = -1;
 
-  // final variants = [
-  //   {
-  //     "name": "1L Pet Bottle (Pack of 2) skxsxszxjszxbhjjhbjjhbcjbjb",
-  //     "original": 120.0,
-  //     "discounted": 110.0,
-  //     "percent": 8,
-  //   },
-  //   {
-  //     "name": "500ml Bottle",
-  //     "original": 65.0,
-  //     "discounted": 60.0,
-  //     "percent": 8,
-  //   },
-  //   {"name": "2L Bottle", "original": 220.0, "discounted": 200.0, "percent": 9},
-  // ];
-
   int selectedImageIndex = 0;
 
   int quantity = 1;
@@ -109,55 +94,54 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Row(
           children: [
             // Quantity Selector
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Minus
-                  IconButton(
-                    icon: const Icon(Icons.remove, size: 16),
-                    onPressed: () {
-                      setState(() {
-                        if (quantity > 1) quantity--;
-                      });
-                    },
-                  ),
+            // Container(
+            //   decoration: BoxDecoration(
+            //     border: Border.all(color: Colors.grey.shade400),
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   child: Row(
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       // Minus
+            //       IconButton(
+            //         icon: const Icon(Icons.remove, size: 16),
+            //         onPressed: () {
+            //           setState(() {
+            //             if (quantity > 1) quantity--;
+            //           });
+            //         },
+            //       ),
 
-                  // Divider
-                  Container(width: 1, height: 50, color: Colors.grey.shade300),
+            //       // Divider
+            //       Container(width: 1, height: 50, color: Colors.grey.shade300),
 
-                  // Quantity Text
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      quantity.toString(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+            //       // Quantity Text
+            //       Padding(
+            //         padding: const EdgeInsets.symmetric(horizontal: 12),
+            //         child: Text(
+            //           quantity.toString(),
+            //           style: const TextStyle(
+            //             fontSize: 16,
+            //             fontWeight: FontWeight.w600,
+            //           ),
+            //         ),
+            //       ),
 
-                  // Divider
-                  Container(width: 1, height: 50, color: Colors.grey.shade300),
+            //       // Divider
+            //       Container(width: 1, height: 50, color: Colors.grey.shade300),
 
-                  // Plus
-                  IconButton(
-                    icon: const Icon(Icons.add, size: 16),
-                    onPressed: () {
-                      setState(() {
-                        quantity++;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-
+            //       // Plus
+            //       IconButton(
+            //         icon: const Icon(Icons.add, size: 16),
+            //         onPressed: () {
+            //           setState(() {
+            //             quantity++;
+            //           });
+            //         },
+            //       ),
+            //     ],
+            //   ),
+            // ),
             const SizedBox(width: 12),
 
             // Add to Cart Button with Gradient
@@ -203,28 +187,28 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             const SizedBox(width: 8),
 
             // Buy Now Button
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  // handle buy now
-                },
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.green_6cad10),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  "Buy Now",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
+            // Expanded(
+            //   child: OutlinedButton(
+            //     onPressed: () {
+            //       // handle buy now
+            //     },
+            //     style: OutlinedButton.styleFrom(
+            //       side: BorderSide(color: AppColors.green_6cad10),
+            //       padding: const EdgeInsets.symmetric(vertical: 14),
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(8),
+            //       ),
+            //     ),
+            //     child: const Text(
+            //       "Buy Now",
+            //       style: TextStyle(
+            //         fontSize: 16,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.black,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -356,19 +340,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     right: 30,
                     child: Column(
                       children: [
-                        _buildCircleIcon(
-                          detail.isInWishlist == true
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          // detail.isInWishlist == true
-                          //     ? Colors.red
-                          //     : Colors.grey,
-                          onTap: () async {
-                            if (detail.isInWishlist == true) {
+                        Obx(() {
+                          final isWishlisted =
+                              wishlistController.wishlistMap[detail
+                                  .databaseId] ??
+                              false;
+                          return _buildCircleIcon(
+                            isWishlisted
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: isWishlisted ? Colors.red : Colors.white,
+
+                            onTap: () async {
                               final response = await wishlistController
-                                  .removeFromWishlist(detail.databaseId ?? 0);
+                                  .toggleWishlist(detail.databaseId ?? 0);
                               if (response["success"] == true) {
-                                setState(() => detail.isInWishlist = false);
                                 CustomSnackbars.showSuccess(
                                   context,
                                   response["message"],
@@ -379,24 +365,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   response["message"],
                                 );
                               }
-                            } else {
-                              final response = await wishlistController
-                                  .addToWishlist(detail.databaseId ?? 0);
-                              if (response["success"] == true) {
-                                setState(() => detail.isInWishlist = true);
-                                CustomSnackbars.showSuccess(
-                                  context,
-                                  response["message"],
-                                );
-                              } else {
-                                CustomSnackbars.showError(
-                                  context,
-                                  response["message"],
-                                );
-                              }
-                            }
-                          },
-                        ),
+                            },
+                          );
+                        }),
 
                         const SizedBox(height: 12),
                         _buildCircleIcon(Icons.search, onTap: () {}),
@@ -572,74 +543,75 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       style: TextStyle(color: AppColors.grey_212121),
                     ),
                     const SizedBox(height: 16),
+                    _buildVariantSection(variants),
 
                     // Select Variant section
-                    if (productVariantController.productVariants.isEmpty) ...[
-                      const Text(
-                        "No variants found",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ] else ...[
-                      Text(
-                        "Select Variant",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.grey_212121,
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      GridView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: variants.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                              childAspectRatio:
-                                  1.3, // adjust height/width ratio
-                            ),
-                        itemBuilder: (context, index) {
-                          final v = variants[index];
+                    // if (productVariantController.productVariants.isEmpty) ...[
+                    //   const Text(
+                    //     "No variants found",
+                    //     style: TextStyle(
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w500,
+                    //       color: Colors.grey,
+                    //     ),
+                    //   ),
+                    // ] else ...[
+                    //   Text(
+                    //     "Select Variant",
+                    //     style: TextStyle(
+                    //       fontSize: 18,
+                    //       fontWeight: FontWeight.w600,
+                    //       color: AppColors.grey_212121,
+                    //     ),
+                    //   ),
+                    //   SizedBox(height: 12),
+                    //   GridView.builder(
+                    //     padding: EdgeInsets.zero,
+                    //     shrinkWrap: true,
+                    //     physics: const NeverScrollableScrollPhysics(),
+                    //     itemCount: variants.length,
+                    //     gridDelegate:
+                    //         const SliverGridDelegateWithFixedCrossAxisCount(
+                    //           crossAxisCount: 2,
+                    //           crossAxisSpacing: 12,
+                    //           mainAxisSpacing: 12,
+                    //           childAspectRatio:
+                    //               1.3, // adjust height/width ratio
+                    //         ),
+                    //     itemBuilder: (context, index) {
+                    //       final v = variants[index];
 
-                          return VariantCard(
-                            variantName: v.productSubtitle ?? "",
-                            originalPrice: v.regularPrice ?? "",
-                            discountedPrice: v.salePrice ?? "",
-                            discountPercent: v.discountPercentage ?? 0,
-                            currencySymbol: v.currencySymbol ?? "",
-                            isSelected: selectedVariantIndex == index,
-                            onTap: () {
-                              setState(() {
-                                selectedVariantIndex = index;
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ],
-                    SizedBox(height: 12),
-                    Center(
-                      child: Text(
-                        "Explore More Variant",
-                        textAlign: TextAlign.center,
+                    //       return VariantCard(
+                    //         variantName: v.productSubtitle ?? "",
+                    //         originalPrice: v.regularPrice ?? "",
+                    //         discountedPrice: v.salePrice ?? "",
+                    //         discountPercent: v.discountPercentage ?? 0,
+                    //         currencySymbol: v.currencySymbol ?? "",
+                    //         isSelected: selectedVariantIndex == index,
+                    //         onTap: () {
+                    //           setState(() {
+                    //             selectedVariantIndex = index;
+                    //           });
+                    //         },
+                    //       );
+                    //     },
+                    //   ),
+                    // ],
+                    // SizedBox(height: 12),
+                    // Center(
+                    //   child: Text(
+                    //     "Explore More Variant",
+                    //     textAlign: TextAlign.center,
 
-                        style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.green_6cad10,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.green_6cad10,
-                        ),
-                      ),
-                    ),
+                    //     style: TextStyle(
+                    //       decoration: TextDecoration.underline,
+                    //       decorationColor: AppColors.green_6cad10,
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w700,
+                    //       color: AppColors.green_6cad10,
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(height: 20),
                     Image.asset(AppImages.product_page_image),
                     SizedBox(height: 20),
@@ -805,6 +777,91 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildVariantSection(List variants) {
+    if (variants.isEmpty) {
+      return const Text(
+        "No variants found",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.grey,
+        ),
+      );
+    }
+
+    // Show only first 3 if longer
+    final showAll = variants.length <= 3 || showFullVariants;
+    final displayVariants = showAll ? variants : variants.take(3).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Select Variant",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.grey_212121,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        GridView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: displayVariants.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.3,
+          ),
+          itemBuilder: (context, index) {
+            final v = displayVariants[index];
+            return VariantCard(
+              variantName: v.productSubtitle ?? "",
+              originalPrice: v.regularPrice ?? "",
+              discountedPrice: v.salePrice ?? "",
+              discountPercent: v.discountPercentage ?? 0,
+              currencySymbol: v.currencySymbol ?? "",
+              isSelected: selectedVariantIndex == index,
+              onTap: () {
+                setState(() {
+                  selectedVariantIndex = index;
+                });
+              },
+            );
+          },
+        ),
+
+        if (variants.length > 3 && !showFullVariants)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Center(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    showFullVariants = true;
+                  });
+                },
+                child: Text(
+                  "Explore More Variants",
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    decorationColor: AppColors.green_6cad10,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.green_6cad10,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

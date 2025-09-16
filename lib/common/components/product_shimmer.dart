@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductCardShimmer extends StatelessWidget {
-  const ProductCardShimmer({super.key});
+  final double height;
+  final double imageHeight;
+  const ProductCardShimmer({
+    super.key,
+    this.height = 300,
+    this.imageHeight = 150,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +16,7 @@ class ProductCardShimmer extends StatelessWidget {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Container(
-        height: 300,
+        height: height,
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -21,7 +27,7 @@ class ProductCardShimmer extends StatelessWidget {
           children: [
             // Image placeholder
             Container(
-              height: 150,
+              height: imageHeight,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.grey[300],

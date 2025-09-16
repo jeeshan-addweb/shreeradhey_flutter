@@ -20,7 +20,9 @@ class _FaqScreenState extends State<FaqScreen> {
   @override
   void initState() {
     super.initState();
-    controller.fetchFAQ();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchFAQ();
+    });
   }
 
   List<FaqItem> parseFaqs(List<Block> blocks) {

@@ -6,6 +6,7 @@ import 'package:shree_radhey/features/home/controller/home_controller.dart';
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 
+import '../controller/wishlist_controller.dart';
 import 'components/banner_component.dart';
 
 import 'components/blog_section.dart';
@@ -32,10 +33,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     debugPrint("Token is : ${authcontroller.token}");
+    debugPrint("User is : ${authcontroller.userId}");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchHomeData();
       controller.fetchBlogs();
       controller.fetchHomePageData(context);
+      final wishlistController = Get.find<WishlistController>();
+      wishlistController.fetchWishlist();
     });
   }
 

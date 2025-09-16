@@ -1,22 +1,41 @@
 import 'package:flutter/material.dart';
-
-import '../../../../common/model/ui_product_model.dart';
+import 'package:get/get.dart';
+import 'package:shree_radhey/features/home/model/get_wishlist_model.dart';
+import '../../../../common/components/custom_snackbar.dart';
 import '../../../../constants/app_colors.dart';
+import '../../../cart/controller/cart_controller.dart';
+import '../../../home/controller/wishlist_controller.dart';
 
-class WishlistProductCard extends StatelessWidget {
-  final UiProductModel model;
-  final VoidCallback onRemove;
-  final VoidCallback onAddToCart;
+class WishlistProductCard extends StatefulWidget {
+  final WishlistProduct model;
+  // final VoidCallback onRemove;
+  // final VoidCallback onAddToCart;
 
   const WishlistProductCard({
     super.key,
     required this.model,
-    required this.onRemove,
-    required this.onAddToCart,
+    // required this.onRemove,
+    // required this.onAddToCart,
   });
 
   @override
+  State<WishlistProductCard> createState() => _WishlistProductCardState();
+}
+
+class _WishlistProductCardState extends State<WishlistProductCard> {
+  final cartController = Get.find<CartController>();
+  @override
   Widget build(BuildContext context) {
+    final WishlistController wishlistController = Get.put(WishlistController());
+    final categories = widget.model.productCategories?.nodes ?? [];
+
+    String subtitle = "";
+    if (categories.isNotEmpty) {
+      subtitle = categories.first.name ?? "";
+      if (categories.length > 1) {
+        subtitle += ", ${categories[1].name}";
+      }
+    }
     return Card(
       color: AppColors.white,
       margin: const EdgeInsets.all(8),
@@ -27,7 +46,6 @@ class WishlistProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image with Best Seller Tag
             Stack(
               children: [
                 Padding(
@@ -38,9 +56,9 @@ class WishlistProductCard extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: AspectRatio(
-                      aspectRatio: 4 / 3, // keeps image proportional
-                      child: Image.asset(
-                        model.imageUrl,
+                      aspectRatio: 4 / 3,
+                      child: Image.network(
+                        widget.model.image?.sourceUrl ?? "",
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
@@ -62,12 +80,11 @@ class WishlistProductCard extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     child: Row(
-                      mainAxisSize:
-                          MainAxisSize.min, // <— lets Row shrink to content
+                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Best Seller",
+                          widget.model.productLabels!.nodes!.first.name ?? "",
                           style: TextStyle(
                             color: AppColors.black,
                             fontSize: 12,
@@ -85,7 +102,6 @@ class WishlistProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // On Sale Tag
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 6,
@@ -106,9 +122,8 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
 
-                  // Product Name
                   Text(
-                    model.title,
+                    widget.model.name ?? "",
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -116,9 +131,8 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
 
-                  // Subtitle
                   Text(
-                    model.subtitle,
+                    subtitle,
                     style: TextStyle(
                       color: AppColors.grey,
                       fontSize: 12,
@@ -127,39 +141,25 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
 
-                  // Rating
                   Row(
                     children: [
-                      // ...List.generate(5, (index) {
-                      //   return Icon(
-                      //     index < model.rating.floor()
-                      //         ? Icons.star
-                      //         : index < model.rating
-                      //         ? Icons.star_half
-                      //         : Icons.star_border,
-                      //     color: AppColors.orange_f29102,
-                      //     size: 13,
-                      //   );
-                      // }),
-                      const SizedBox(width: 6),
                       Text(
-                        "(${model.reviewCount})",
+                        "(${widget.model.reviewCount})",
                         style: TextStyle(color: AppColors.grey, fontSize: 13),
                       ),
                     ],
                   ),
 
                   // Description
-                  Text(
-                    model.description ?? "No Description",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.grey_212121,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
+                  // Text(
+                  //   model.description ?? "No Description",
+                  //   style: TextStyle(
+                  //     fontSize: 14,
+                  //     color: AppColors.grey_212121,
+                  //   ),
+                  //   maxLines: 3,
+                  //   overflow: TextOverflow.ellipsis,
+                  // ),
                   Text(
                     "FREE Delivery on prepaid Orders.",
                     style: TextStyle(
@@ -169,11 +169,10 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
 
-                  // Price
                   Row(
                     children: [
                       Text(
-                        "₹${model.price}",
+                        "${widget.model.currencySymbol}${widget.model.price}",
                         style: TextStyle(
                           color: AppColors.blue_2da5f3,
                           fontSize: 18,
@@ -182,7 +181,7 @@ class WishlistProductCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        "₹${model.oldPrice}",
+                        "${widget.model.currencySymbol}${widget.model.regularPrice}",
                         style: TextStyle(
                           fontSize: 12,
                           decoration: TextDecoration.lineThrough,
@@ -191,7 +190,7 @@ class WishlistProductCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        "(${model.discountPercent}%)",
+                        "(${widget.model.discountPercentage}%)",
                         style: TextStyle(
                           color: AppColors.grey,
                           fontSize: 12,
@@ -202,48 +201,116 @@ class WishlistProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  // Add to cart
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppColors.green_6cad10,
-                          AppColors.green_327801,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: ElevatedButton(
-                      onPressed: onAddToCart,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Add to cart",
-                            style: TextStyle(color: AppColors.white),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.shopping_cart,
-                            color: AppColors.white,
-                            size: 18,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       if (widget.model.isInCart.value) {
+                  //         // Navigate to cart page
+                  //         context.go(AppRoutePath.cartPage);
+                  //       } else {
+                  //         // Add to cart
+                  //         cartController.addProductToCart(
+                  //           widget.model.databaseId ?? 0,
+                  //           1,
+                  //           context,
+                  //         );
+
+                  //         widget.model.isInCart.value = true;
+                  //       }
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       padding: EdgeInsets.zero,
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       minimumSize: const Size.fromHeight(40),
+                  //       shadowColor: Colors.transparent,
+                  //       backgroundColor: Colors.transparent,
+                  //     ).copyWith(
+                  //       backgroundColor: WidgetStateProperty.all<Color>(
+                  //         Colors.transparent,
+                  //       ),
+                  //       overlayColor: WidgetStateProperty.all<Color>(
+                  //         Colors.transparent,
+                  //       ),
+                  //     ),
+                  //     child: Ink(
+                  //       decoration: BoxDecoration(
+                  //         gradient: LinearGradient(
+                  //           colors: [
+                  //             AppColors.green_6cad10,
+                  //             AppColors.green_327801,
+                  //           ],
+                  //           begin: Alignment.topCenter,
+                  //           end: Alignment.bottomCenter,
+                  //         ),
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       child: Container(
+                  //         alignment: Alignment.center,
+                  //         constraints: const BoxConstraints(minHeight: 40),
+                  //         child: Obx(() {
+                  //           final isAdding =
+                  //               cartController.addingItems[widget
+                  //                   .model
+                  //                   .databaseId] ??
+                  //               false;
+
+                  //           if (isAdding) {
+                  //             return const SizedBox(
+                  //               height: 20,
+                  //               width: 20,
+                  //               child: CircularProgressIndicator(
+                  //                 color: Colors.white,
+                  //                 strokeWidth: 2,
+                  //               ),
+                  //             );
+                  //           } else {
+                  //             return Row(
+                  //               mainAxisAlignment: MainAxisAlignment.center,
+                  //               mainAxisSize: MainAxisSize.min,
+                  //               children: [
+                  //                 Text(
+                  //                   widget.model.isInCart.value
+                  //                       ? 'View My Cart'
+                  //                       : 'Add to Cart',
+                  //                   style: TextStyle(
+                  //                     color: AppColors.white,
+                  //                     fontSize: 16,
+                  //                   ),
+                  //                 ),
+                  //                 const SizedBox(width: 5),
+                  //                 Icon(
+                  //                   Icons.shopping_cart,
+                  //                   color: AppColors.white,
+                  //                   size: 20,
+                  //                 ),
+                  //               ],
+                  //             );
+                  //           }
+                  //         }),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   const SizedBox(height: 10),
 
-                  // Remove
                   GestureDetector(
-                    onTap: onRemove,
+                    onTap: () async {
+                      final response = await wishlistController.toggleWishlist(
+                        widget.model.databaseId ?? 0,
+                      );
+
+                      if (response["success"] == true) {
+                        CustomSnackbars.showSuccess(
+                          context,
+                          response["message"],
+                        );
+                      } else {
+                        CustomSnackbars.showError(context, response["message"]);
+                      }
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

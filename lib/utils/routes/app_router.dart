@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shree_radhey/features/accounts/view/order_detail_screen.dart';
 
 import '../../constants/app_mock_data.dart';
-import '../../features/accounts/model/order_model.dart';
 import '../../features/accounts/view/account_page.dart';
+import '../../features/accounts/view/order_detail_screen.dart';
 import '../../features/auth/controller/auth_controller.dart';
 import '../../features/auth/view/login_screen.dart';
 import '../../features/auth/view/otp_screen.dart';
@@ -27,7 +26,6 @@ import '../../features/footer_menu/views/refund_policy_page.dart';
 import '../../features/footer_menu/views/shipping_and_delivery_policy_page.dart';
 import '../../features/footer_menu/views/terms_and_condition_page.dart';
 import '../../features/footer_menu/views/wood_pressed_oil_screen.dart';
-import '../../features/home/model/blog_model.dart';
 import '../../features/home/views/home_page.dart';
 import '../../features/shop/views/product_detail_page.dart';
 import '../../features/shop/views/shop_page.dart';
@@ -249,8 +247,8 @@ class AppRouter {
             name: 'orderDetailScreen',
             path: AppRoutePath.orderDetailScreen,
             builder: (BuildContext context, GoRouterState state) {
-              final order = state.extra as OrderModel; // 👈 retrieve model
-              return OrderDetailScreen(order: order);
+              final orderId = state.extra as int; // 👈 retrieve only orderId
+              return OrderDetailScreen(orderId: orderId);
             },
           ),
         ],

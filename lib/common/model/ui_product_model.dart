@@ -1,7 +1,9 @@
+import 'package:get/get.dart';
+
 class UiProductModel {
   final int productId;
-  bool isWishlisted;
-  bool isInCart;
+  final RxBool isWishlisted; // <-- reactive
+  final RxBool isInCart; // optional
   final String imageUrl;
   final String title;
   final String subtitle;
@@ -28,8 +30,8 @@ class UiProductModel {
     required this.price,
     required this.oldPrice,
     required this.couponPrice,
-    this.isWishlisted = false,
-    this.isInCart = false,
+    bool isWishlisted = false,
+    bool isInCart = false,
     this.tagText = "Best Seller",
     this.description,
     this.discountPercent,
@@ -37,7 +39,8 @@ class UiProductModel {
     this.productLabels = const [], // <-- Default empty list
     this.currencySymbol = "", // <-- Default empty string
     required this.category,
-  });
+  }) : isWishlisted = isWishlisted.obs, // ✅ wrap with .obs
+       isInCart = isInCart.obs; // ✅ wrap with .obs;
   UiProductModel copyWith({
     int? productId,
     String? imageUrl,
@@ -74,8 +77,8 @@ class UiProductModel {
       slug: slug ?? this.slug,
       productLabels: productLabels ?? this.productLabels, // ✅ added
       currencySymbol: currencySymbol ?? this.currencySymbol, // ✅ added
-      isWishlisted: isWishlisted ?? this.isWishlisted,
-      isInCart: isInCart ?? this.isInCart,
+      isWishlisted: isWishlisted ?? this.isWishlisted.value,
+      isInCart: isInCart ?? this.isInCart.value,
       category: category ?? this.category,
     );
   }

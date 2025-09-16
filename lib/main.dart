@@ -1,6 +1,8 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
+import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
 
+import 'common/currency_service.dart';
 import 'data/network/shared_pref/shared_preference_helper.dart';
 import 'features/auth/controller/auth_controller.dart';
 import 'utils/routes/app_router.dart';
@@ -9,13 +11,19 @@ import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await GetStorage.init();
+  final wishlistController = Get.put(WishlistController());
   final authController = Get.put(AuthController());
-  authController.loadToken();
   final cartController = Get.put(CartController());
-  // if (authController.isLoggedIn) {
-  cartController.fetchCartItems();
-  // }
+
+  await authController.loadToken();
+
+  if (authController.isLoggedIn) {
+    await wishlistController.fetchWishlist();
+    await cartController.fetchCartItems();
+  }
+
   runApp(MyApp(authController: authController));
 }
 
@@ -25,6 +33,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initCurrency();
     return Obx(() {
       return GetMaterialApp.router(
         title: 'Shree Radhey',

@@ -94,10 +94,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     ),
                     Obx(() {
                       final count = Get.find<CartController>().cartCount.value;
+                      if (count == 0) return const SizedBox.shrink();
 
                       return Positioned(
-                        right: -2,
-                        top: -2,
+                        right: -1,
+                        top: -1,
                         child: CircleAvatar(
                           radius: 8,
                           backgroundColor: AppColors.green_5b9d0b,

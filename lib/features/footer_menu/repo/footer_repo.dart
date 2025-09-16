@@ -5,6 +5,7 @@ import 'package:shree_radhey/features/footer_menu/model/privacy_policy_model.dar
 import 'package:shree_radhey/features/footer_menu/model/refund_policy_model.dart';
 import 'package:shree_radhey/features/footer_menu/model/shipping_model.dart';
 import 'package:shree_radhey/features/footer_menu/model/terms_condition_model.dart';
+import 'package:shree_radhey/features/footer_menu/model/wood_press_oil_model.dart';
 
 import '../../../data/network/api_client.dart';
 import '../model/about_us_page_model.dart';
@@ -160,5 +161,30 @@ class FooterRepo {
     debugPrint("faq repo is $data");
 
     return ShippingModel.fromJson({'data': data});
+  }
+
+  Future<WoodPressOilModel> fetchWoodPressOil() async {
+    final String query = r'''
+    query {
+     pageBy(uri: "wood-pressed-oil") {
+   title
+   blocks {
+     name
+     content
+   }
+ }
+    }
+  ''';
+    final result = await _client.query(QueryOptions(document: gql(query)));
+    debugPrint("Result repo is $result");
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final data = result.data!;
+    debugPrint("Data repo is $data");
+
+    return WoodPressOilModel.fromJson({'data': data});
   }
 }

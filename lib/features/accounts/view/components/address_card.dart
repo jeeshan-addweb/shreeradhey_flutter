@@ -3,16 +3,16 @@ import '../../../../constants/app_colors.dart';
 import '../../model/address_model.dart';
 
 class AddressCard extends StatelessWidget {
-  final AddressModel address; // use model directly
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final AddressModel address;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
   final VoidCallback? onSetDefault;
 
   const AddressCard({
     super.key,
     required this.address,
-    required this.onEdit,
-    required this.onDelete,
+    this.onEdit,
+    this.onDelete,
     this.onSetDefault,
   });
 

@@ -153,56 +153,37 @@ class _ProductCardState extends State<ProductCard> {
                         const SizedBox(width: 4),
                         Container(width: 1, height: 14, color: Colors.white),
                         const SizedBox(width: 4),
+
                         GestureDetector(
                           onTap: () async {
-                            if (widget.model.isWishlisted == true) {
-                              final response = await wishlistController
-                                  .removeFromWishlist(widget.model.productId);
-
-                              if (response["success"] == true) {
-                                setState(() {
-                                  widget.model.isWishlisted = false;
-                                });
-                                CustomSnackbars.showSuccess(
-                                  context,
-                                  response["message"],
-                                );
-                              } else {
-                                CustomSnackbars.showError(
-                                  context,
-                                  response["message"],
-                                );
-                              }
+                            final response = await wishlistController
+                                .toggleWishlist(widget.model.productId);
+                            if (response["success"] == true) {
+                              CustomSnackbars.showSuccess(
+                                context,
+                                response["message"],
+                              );
                             } else {
-                              final response = await wishlistController
-                                  .addToWishlist(widget.model.productId);
-
-                              if (response["success"] == true) {
-                                setState(() {
-                                  widget.model.isWishlisted = true;
-                                });
-                                CustomSnackbars.showSuccess(
-                                  context,
-                                  response["message"],
-                                );
-                              } else {
-                                CustomSnackbars.showError(
-                                  context,
-                                  response["message"],
-                                );
-                              }
+                              CustomSnackbars.showError(
+                                context,
+                                response["message"],
+                              );
                             }
                           },
-                          child: Icon(
-                            widget.model.isWishlisted == true
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            size: 18,
-                            color:
-                                widget.model.isWishlisted == true
-                                    ? Colors.red
-                                    : Colors.white,
-                          ),
+                          child: Obx(() {
+                            final isWishlisted =
+                                wishlistController.wishlistMap[widget
+                                    .model
+                                    .productId] ??
+                                false;
+                            return Icon(
+                              isWishlisted
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isWishlisted ? Colors.red : Colors.white,
+                              size: 18,
+                            );
+                          }),
                         ),
                       ],
                     ),
@@ -211,7 +192,6 @@ class _ProductCardState extends State<ProductCard> {
               ],
             ),
 
-            // Title and subtitle
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Text(
@@ -236,7 +216,6 @@ class _ProductCardState extends State<ProductCard> {
               ),
             ),
 
-            // Rating row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Row(
@@ -266,7 +245,6 @@ class _ProductCardState extends State<ProductCard> {
               ),
             ),
 
-            // Pricing
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
@@ -318,14 +296,13 @@ class _ProductCardState extends State<ProductCard> {
 
             const SizedBox(height: 10),
 
-            // Add to cart button with icon on right
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (widget.model.isInCart) {
+                    if (widget.model.isInCart.value) {
                       // Navigate to cart page
                       context.go(AppRoutePath.cartPage);
                     } else {
@@ -335,9 +312,8 @@ class _ProductCardState extends State<ProductCard> {
                         1,
                         context,
                       );
-                      setState(() {
-                        widget.model.isInCart = true;
-                      });
+
+                      widget.model.isInCart.value = true;
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -393,7 +369,7 @@ class _ProductCardState extends State<ProductCard> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                widget.model.isInCart
+                                widget.model.isInCart.value
                                     ? 'View My Cart'
                                     : 'Add to Cart',
                                 style: TextStyle(
@@ -466,18 +442,14 @@ class _ProductCardState extends State<ProductCard> {
 class SaveTagClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    const double triangleWidth = 10; // Width of each triangle base
-    const double triangleHeight = 8; // Height of each triangle
+    const double triangleWidth = 10;
+    const double triangleHeight = 8;
 
     Path path = Path();
-    path.moveTo(0, 0); // Start at top-left
+    path.moveTo(0, 0);
 
-    // Draw top and right side
-    path.lineTo(size.width, 0); // Top-right
-    path.lineTo(
-      size.width,
-      size.height - triangleHeight,
-    ); // Down to start of zigzag
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height - triangleHeight);
 
     // Create zigzag pattern from right to left
     double x = size.width;
@@ -493,7 +465,6 @@ class SaveTagClipper extends CustomClipper<Path> {
       goingDown = !goingDown;
     }
 
-    // Complete the path
     path.lineTo(0, size.height - triangleHeight);
     path.close();
 

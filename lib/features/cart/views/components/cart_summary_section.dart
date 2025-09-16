@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/common/components/line_shimmer.dart';
+import 'package:shree_radhey/common/components/product_shimmer.dart';
 import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 
 import '../../../../constants/app_colors.dart';
@@ -10,8 +12,14 @@ import '../../controller/coupon_controller.dart';
 class CartSummarySection extends StatefulWidget {
   final String subtotal;
   final String total;
+  final String currencySymbol;
 
-  CartSummarySection({super.key, required this.subtotal, required this.total});
+  CartSummarySection({
+    super.key,
+    required this.subtotal,
+    required this.total,
+    required this.currencySymbol,
+  });
 
   @override
   State<CartSummarySection> createState() => _CartSummarySectionState();
@@ -40,7 +48,10 @@ class _CartSummarySectionState extends State<CartSummarySection> {
         ),
         const SizedBox(height: 24),
 
-        _PriceRow(title: "Subtotal", amount: "₹${widget.subtotal}"),
+        _PriceRow(
+          title: "Subtotal",
+          amount: "${widget.currencySymbol}${widget.subtotal}",
+        ),
 
         const SizedBox(height: 12),
         Divider(height: 24),
@@ -63,7 +74,7 @@ class _CartSummarySectionState extends State<CartSummarySection> {
           ),
           child: Obx(() {
             if (cartController.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return const LineShimmer(height: 30);
             }
             return Row(
               children: [
@@ -98,14 +109,14 @@ class _CartSummarySectionState extends State<CartSummarySection> {
                       onPressed: () {
                         if (applied != null) {
                           // remove coupon
-                          cartController.removeCoupon(applied);
+                          cartController.removeCoupon(applied, context);
                           cartController.couponControllerText.clear();
                         } else {
                           // apply coupon
                           final code =
                               cartController.couponControllerText.text.trim();
                           if (code.isNotEmpty) {
-                            cartController.applyCoupon(code);
+                            cartController.applyCoupon(code, context);
                           }
                         }
                       },
@@ -151,7 +162,7 @@ class _CartSummarySectionState extends State<CartSummarySection> {
         // }),
         Obx(() {
           if (couponController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return const LineShimmer(height: 30);
           }
           if (couponController.errorMessage.isNotEmpty) {
             return Text("Error: ${couponController.errorMessage.value}");
@@ -265,7 +276,10 @@ class _CartSummarySectionState extends State<CartSummarySection> {
         ),
         const SizedBox(height: 12),
 
-        _PriceRow(title: "Total", amount: "₹${widget.total}"),
+        _PriceRow(
+          title: "Total",
+          amount: "${widget.currencySymbol}${widget.total}",
+        ),
 
         const SizedBox(height: 12),
 

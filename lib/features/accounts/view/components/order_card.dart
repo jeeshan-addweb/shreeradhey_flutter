@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shree_radhey/features/accounts/model/order_history_model.dart';
 
 import '../../../../common/components/gradient_button.dart';
 import '../../../../constants/app_colors.dart';
-import '../../model/order_model.dart';
 import 'package:intl/intl.dart';
 
 class OrderCard extends StatelessWidget {
-  final OrderModel order;
+  final OrdersNode order;
   final VoidCallback onView;
   final VoidCallback onInvoice;
 
@@ -19,6 +19,12 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int itemCount =
+        order.lineItems?.nodes?.fold<int>(
+          0,
+          (sum, item) => sum + (item.quantity ?? 0),
+        ) ??
+        0;
     return Card(
       color: AppColors.blue_eef1ed,
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
@@ -34,7 +40,7 @@ class OrderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Order #${order.orderId}",
+                  "Order #${order.orderNumber}",
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -47,16 +53,16 @@ class OrderCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color:
-                        order.status.toLowerCase() == "completed"
+                        order.status?.toLowerCase() == "completed"
                             ? Colors.green.shade100
                             : Colors.orange.shade100,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    order.status,
+                    order.status ?? "No Status",
                     style: TextStyle(
                       color:
-                          order.status.toLowerCase() == "completed"
+                          order.status?.toLowerCase() == "completed"
                               ? Colors.green
                               : Colors.orange,
                       fontWeight: FontWeight.w600,
@@ -70,7 +76,9 @@ class OrderCard extends StatelessWidget {
 
             /// Date
             Text(
-              DateFormat("MMMM dd, yyyy").format(order.date),
+              order.date != null
+                  ? DateFormat("MMMM dd, yyyy").format(order.date!)
+                  : "No Date",
               style: const TextStyle(color: Colors.grey),
             ),
 
@@ -78,7 +86,7 @@ class OrderCard extends StatelessWidget {
 
             /// Item + Price
             Text(
-              "₹${order.totalAmount} for ${order.itemCount} item${order.itemCount > 1 ? 's' : ''}",
+              "₹${order.total} for $itemCount item${itemCount > 1 ? 's' : ''}",
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
 

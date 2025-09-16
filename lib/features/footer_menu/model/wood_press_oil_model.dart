@@ -1,20 +1,24 @@
 // To parse this JSON data, do
 //
-//     final faqModel = faqModelFromJson(jsonString);
+//     final woodPressOilModel = woodPressOilModelFromJson(jsonString);
 
 import 'dart:convert';
 
-FaqModel faqModelFromJson(String str) => FaqModel.fromJson(json.decode(str));
+WoodPressOilModel woodPressOilModelFromJson(String str) =>
+    WoodPressOilModel.fromJson(json.decode(str));
 
-String faqModelToJson(FaqModel data) => json.encode(data.toJson());
+String woodPressOilModelToJson(WoodPressOilModel data) =>
+    json.encode(data.toJson());
 
-class FaqModel {
+class WoodPressOilModel {
   Data? data;
 
-  FaqModel({this.data});
+  WoodPressOilModel({this.data});
 
-  factory FaqModel.fromJson(Map<String, dynamic> json) =>
-      FaqModel(data: json["data"] == null ? null : Data.fromJson(json["data"]));
+  factory WoodPressOilModel.fromJson(Map<String, dynamic> json) =>
+      WoodPressOilModel(
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
 
   Map<String, dynamic> toJson() => {"data": data?.toJson()};
 }
@@ -42,7 +46,7 @@ class PageBy {
     blocks:
         json["blocks"] == null
             ? []
-            : List<Block>.from(json["blocks"].map((x) => Block.fromJson(x))),
+            : List<Block>.from(json["blocks"]!.map((x) => Block.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -61,7 +65,7 @@ class Block {
   Block({this.name, this.content});
 
   factory Block.fromJson(Map<String, dynamic> json) =>
-      Block(name: nameValues.map[json["name"]], content: json["content"]);
+      Block(name: nameValues.map[json["name"]]!, content: json["content"]);
 
   Map<String, dynamic> toJson() => {
     "name": nameValues.reverse[name],
@@ -69,12 +73,24 @@ class Block {
   };
 }
 
-enum Name { CORE_DETAILS, CORE_HEADING, CORE_PARAGRAPH }
+enum Name {
+  BANNER_IMAGE,
+  CERTIFICATE,
+  CONTENT,
+  FAQ_ANS,
+  FAQ_TITLE,
+  IMAGE,
+  TITLE,
+}
 
 final nameValues = EnumValues({
-  "core/details": Name.CORE_DETAILS,
-  "core/heading": Name.CORE_HEADING,
-  "core/paragraph": Name.CORE_PARAGRAPH,
+  "banner-image": Name.BANNER_IMAGE,
+  "certificate": Name.CERTIFICATE,
+  "content": Name.CONTENT,
+  "faq-ans": Name.FAQ_ANS,
+  "faq-title": Name.FAQ_TITLE,
+  "image": Name.IMAGE,
+  "title": Name.TITLE,
 });
 
 class EnumValues<T> {

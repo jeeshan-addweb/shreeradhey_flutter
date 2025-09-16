@@ -25,7 +25,7 @@ class _AccountPageState extends State<AccountPage> {
     {"title": "Orders", "icon": Icons.shopping_bag},
     {"title": "Addresses", "icon": Icons.location_on},
     {"title": "Account details", "icon": Icons.person},
-    {"title": "Rewards Points", "icon": Icons.card_giftcard},
+    // {"title": "Rewards Points", "icon": Icons.card_giftcard},
     {"title": "Log out", "icon": Icons.logout},
   ];
 
@@ -34,10 +34,6 @@ class _AccountPageState extends State<AccountPage> {
     OrderPage(),
     AddressScreen(),
     AccountDetailsPage(),
-
-    Center(child: Text("Account Details Screen")),
-    Center(child: Text("Rewards Points Screen")),
-    Center(child: Text("Log out Screen")),
   ];
 
   @override
@@ -70,7 +66,7 @@ class _AccountPageState extends State<AccountPage> {
                         context: context,
                         builder:
                             (context) => AlertDialog(
-                              title: const Text("Confirm Logout"),
+                              title: const Text("Confirm Logout ??"),
                               content: const Text(
                                 "Are you sure you want to log out?",
                               ),
@@ -78,15 +74,21 @@ class _AccountPageState extends State<AccountPage> {
                                 TextButton(
                                   onPressed:
                                       () => Navigator.of(context).pop(false),
-                                  child: const Text("Cancel"),
+                                  child: Text(
+                                    "Cancel",
+                                    style: TextStyle(color: AppColors.black),
+                                  ),
                                 ),
                                 ElevatedButton(
                                   onPressed:
                                       () => Navigator.of(context).pop(true),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColors.green_327801,
                                   ),
-                                  child: const Text("Yes, Logout"),
+                                  child: Text(
+                                    "Yes, Logout",
+                                    style: TextStyle(color: AppColors.white),
+                                  ),
                                 ),
                               ],
                             ),
@@ -98,11 +100,7 @@ class _AccountPageState extends State<AccountPage> {
                         await authController.logout();
 
                         if (mounted) {
-                          // if you use GoRouter
                           context.go(AppRoutePath.login);
-
-                          // if you use GetX navigation
-                          // Get.offAllNamed(AppRoutePath.login);
                         }
                       }
                     } else {

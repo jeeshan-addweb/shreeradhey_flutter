@@ -10,8 +10,9 @@ class AuthController extends GetxController {
   var isLoading = false.obs;
   var userData = {}.obs;
   var token = "".obs;
+  var userId = "".obs;
 
-  void loadToken() {
+  Future<void> loadToken() async {
     final savedToken = box.read("auth_token");
     if (savedToken != null && savedToken.toString().isNotEmpty) {
       token.value = savedToken;
@@ -58,6 +59,7 @@ class AuthController extends GetxController {
       if (success && result['token'] != null) {
         // Save token in memory & storage
         token.value = result['token'];
+        userId.value = result['user']['id'];
         box.write("auth_token", result['token']);
         userData.value = result['user'] ?? {};
       }
@@ -68,6 +70,7 @@ class AuthController extends GetxController {
             result['message'] ?? (success ? "OTP verified" : "Invalid OTP"),
         "token": result['token'],
         "user": result['user'],
+        "userId": result['user']['id'],
       };
     } catch (e) {
       return {"success": false, "message": "Error: ${e.toString()}"};
@@ -75,6 +78,35 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // Future<Map<String, dynamic>> verifyOtp(String phone, String otp) async {
+  //   try {
+  //     isLoading.value = true;
+  //     final result = await _repo.verifyOtp(phone, otp);
+
+  //     final verifyData = result['data']?['verifyOTP'] ?? {};
+  //     final success = verifyData['success'] == true; // ✅ fixed
+
+  //     if (success && verifyData['token'] != null) {
+  //       // Save token in memory & storage
+  //       token.value = verifyData['token'];
+  //       box.write("auth_token", verifyData['token']);
+  //       userData.value = verifyData['user'] ?? {};
+  //     }
+
+  //     return {
+  //       "success": success,
+  //       "message":
+  //           verifyData['message'] ?? (success ? "OTP verified" : "Invalid OTP"),
+  //       "token": verifyData['token'],
+  //       "user": verifyData['user'],
+  //     };
+  //   } catch (e) {
+  //     return {"success": false, "message": "Error: ${e.toString()}"};
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   String? getSavedToken() {
     return box.read("auth_token");

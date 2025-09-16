@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/features/shop/controller/shop_controller.dart';
 import '../../../common/components/custom_snackbar.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../model/cart_shipping_method_model.dart';
@@ -14,6 +15,7 @@ class CartController extends GetxController {
   var cart = Rxn<GetCartModel>();
   // dedocated for cart
   var isFetchingCart = false.obs;
+  var isUpdatingCart = false.obs;
 
   var updatingItems = <String, bool>{}.obs;
 
@@ -123,13 +125,16 @@ class CartController extends GetxController {
 
   Future<void> removeItem(String key) async {
     try {
-      isLoading.value = true;
+      isUpdatingCart.value = true;
       cart.value = await _repo.removeCartItem(key);
       updateCartCount();
+      await fetchCartItems();
+      final shopController = Get.find<ShopController>();
+      shopController.fetchProducts("all");
     } catch (e) {
       print("Error removing item: $e");
     } finally {
-      isLoading.value = false;
+      isUpdatingCart.value = false;
     }
   }
 
@@ -163,36 +168,53 @@ class CartController extends GetxController {
     }
   }
 
-  Future<void> applyCoupon(String code) async {
+  Future<void> applyCoupon(String code, BuildContext context) async {
     try {
-      isLoading.value = true;
+      isUpdatingCart.value = true;
       errorMessage.value = "";
-      final updatedCart = await _repo.applyCoupon(code);
-      if (updatedCart != null) {
-        cart.value = updatedCart;
-        appliedCoupon.value = code;
-        couponControllerText.text = code;
+      final response = await _repo.applyCoupon(code);
+      if (response != null) {
+        if (response.cart != null) {
+          cart.value = response.cart;
+          appliedCoupon.value = code;
+          couponControllerText.text = code;
+        }
+
+        if (response.message != null) {
+          CustomSnackbars.showSuccess(
+            context,
+            response.message!,
+          ); // ✅ show message
+        }
       }
     } catch (e) {
       errorMessage.value = e.toString();
+      CustomSnackbars.showError(context, "Something went wrong");
     } finally {
-      isLoading.value = false;
+      isUpdatingCart.value = false;
     }
   }
 
   // Remove coupon
-  Future<void> removeCoupon(String code) async {
+  Future<void> removeCoupon(String code, BuildContext context) async {
     try {
       isLoading.value = true;
       errorMessage.value = "";
-      final updatedCart = await _repo.removeCoupon(code);
-      if (updatedCart != null) {
-        cart.value = updatedCart;
-        appliedCoupon.value = null;
-        couponControllerText.clear();
+      final response = await _repo.removeCoupon(code);
+      if (response != null) {
+        if (response.cart != null) {
+          cart.value = response.cart;
+          appliedCoupon.value = null;
+          couponControllerText.clear();
+        }
+
+        if (response.message != null) {
+          CustomSnackbars.showSuccess(context, response.message!);
+        }
       }
     } catch (e) {
       errorMessage.value = e.toString();
+      CustomSnackbars.showError(context, "$e Something went wrong");
     } finally {
       isLoading.value = false;
     }

@@ -64,9 +64,10 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                             padding: const EdgeInsets.only(top: 20, bottom: 8),
                             child: Text(
                               block.content ?? '',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
+                                color: AppColors.black,
                               ),
                             ),
                           );
