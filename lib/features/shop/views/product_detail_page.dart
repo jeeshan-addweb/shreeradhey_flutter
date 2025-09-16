@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../common/components/common_footer.dart';
+import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
@@ -93,55 +94,54 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Row(
           children: [
             // Quantity Selector
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Minus
-                  IconButton(
-                    icon: const Icon(Icons.remove, size: 16),
-                    onPressed: () {
-                      setState(() {
-                        if (quantity > 1) quantity--;
-                      });
-                    },
-                  ),
+            // Container(
+            //   decoration: BoxDecoration(
+            //     border: Border.all(color: Colors.grey.shade400),
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   child: Row(
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       // Minus
+            //       IconButton(
+            //         icon: const Icon(Icons.remove, size: 16),
+            //         onPressed: () {
+            //           setState(() {
+            //             if (quantity > 1) quantity--;
+            //           });
+            //         },
+            //       ),
 
-                  // Divider
-                  Container(width: 1, height: 50, color: Colors.grey.shade300),
+            //       // Divider
+            //       Container(width: 1, height: 50, color: Colors.grey.shade300),
 
-                  // Quantity Text
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      quantity.toString(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+            //       // Quantity Text
+            //       Padding(
+            //         padding: const EdgeInsets.symmetric(horizontal: 12),
+            //         child: Text(
+            //           quantity.toString(),
+            //           style: const TextStyle(
+            //             fontSize: 16,
+            //             fontWeight: FontWeight.w600,
+            //           ),
+            //         ),
+            //       ),
 
-                  // Divider
-                  Container(width: 1, height: 50, color: Colors.grey.shade300),
+            //       // Divider
+            //       Container(width: 1, height: 50, color: Colors.grey.shade300),
 
-                  // Plus
-                  IconButton(
-                    icon: const Icon(Icons.add, size: 16),
-                    onPressed: () {
-                      setState(() {
-                        quantity++;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-
+            //       // Plus
+            //       IconButton(
+            //         icon: const Icon(Icons.add, size: 16),
+            //         onPressed: () {
+            //           setState(() {
+            //             quantity++;
+            //           });
+            //         },
+            //       ),
+            //     ],
+            //   ),
+            // ),
             const SizedBox(width: 12),
 
             // Add to Cart Button with Gradient
@@ -187,28 +187,28 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             const SizedBox(width: 8),
 
             // Buy Now Button
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  // handle buy now
-                },
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.green_6cad10),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  "Buy Now",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
+            // Expanded(
+            //   child: OutlinedButton(
+            //     onPressed: () {
+            //       // handle buy now
+            //     },
+            //     style: OutlinedButton.styleFrom(
+            //       side: BorderSide(color: AppColors.green_6cad10),
+            //       padding: const EdgeInsets.symmetric(vertical: 14),
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(8),
+            //       ),
+            //     ),
+            //     child: const Text(
+            //       "Buy Now",
+            //       style: TextStyle(
+            //         fontSize: 16,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.black,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -335,60 +335,47 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                   ),
                   // Vertical Icons
-                  // Positioned(
-                  //   top: 30,
-                  //   right: 30,
-                  //   child: Column(
-                  //     children: [
-                  //       _buildCircleIcon(
-                  //         detail.isInWishlist == true
-                  //             ? Icons.favorite
-                  //             : Icons.favorite_border,
-                  //         // detail.isInWishlist == true
-                  //         //     ? Colors.red
-                  //         //     : Colors.grey,
-                  //         onTap: () async {
-                  //           if (detail.isInWishlist == true) {
-                  //             final response = await wishlistController
-                  //                 .removeFromWishlist(detail.databaseId ?? 0);
-                  //             if (response["success"] == true) {
-                  //               setState(() => detail.isInWishlist = false);
-                  //               CustomSnackbars.showSuccess(
-                  //                 context,
-                  //                 response["message"],
-                  //               );
-                  //             } else {
-                  //               CustomSnackbars.showError(
-                  //                 context,
-                  //                 response["message"],
-                  //               );
-                  //             }
-                  //           } else {
-                  //             final response = await wishlistController
-                  //                 .addToWishlist(detail.databaseId ?? 0);
-                  //             if (response["success"] == true) {
-                  //               setState(() => detail.isInWishlist = true);
-                  //               CustomSnackbars.showSuccess(
-                  //                 context,
-                  //                 response["message"],
-                  //               );
-                  //             } else {
-                  //               CustomSnackbars.showError(
-                  //                 context,
-                  //                 response["message"],
-                  //               );
-                  //             }
-                  //           }
-                  //         },
-                  //       ),
+                  Positioned(
+                    top: 30,
+                    right: 30,
+                    child: Column(
+                      children: [
+                        Obx(() {
+                          final isWishlisted =
+                              wishlistController.wishlistMap[detail
+                                  .databaseId] ??
+                              false;
+                          return _buildCircleIcon(
+                            isWishlisted
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: isWishlisted ? Colors.red : Colors.white,
 
-                  //       const SizedBox(height: 12),
-                  //       _buildCircleIcon(Icons.search, onTap: () {}),
-                  //       const SizedBox(height: 12),
-                  //       _buildCircleIcon(Icons.download, onTap: () {}),
-                  //     ],
-                  //   ),
-                  // ),
+                            onTap: () async {
+                              final response = await wishlistController
+                                  .toggleWishlist(detail.databaseId ?? 0);
+                              if (response["success"] == true) {
+                                CustomSnackbars.showSuccess(
+                                  context,
+                                  response["message"],
+                                );
+                              } else {
+                                CustomSnackbars.showError(
+                                  context,
+                                  response["message"],
+                                );
+                              }
+                            },
+                          );
+                        }),
+
+                        const SizedBox(height: 12),
+                        _buildCircleIcon(Icons.search, onTap: () {}),
+                        const SizedBox(height: 12),
+                        _buildCircleIcon(Icons.download, onTap: () {}),
+                      ],
+                    ),
+                  ),
                 ],
               ),
 

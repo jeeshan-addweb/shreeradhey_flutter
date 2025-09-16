@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shree_radhey/features/accounts/controller/account_controller.dart';
+import 'package:shree_radhey/features/auth/controller/auth_controller.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
@@ -16,7 +19,8 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  final List<AddressModel> _addresses = [];
+  final AccountController _accountController = Get.put(AccountController());
+  final AuthController _authController = Get.put(AuthController());
   bool _showForm = false;
 
   // dropdown state
@@ -52,6 +56,12 @@ class _AddressScreenState extends State<AddressScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => _accountController.getAddresses());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -75,23 +85,52 @@ class _AddressScreenState extends State<AddressScreen> {
             ),
 
             // address list
-            if (_addresses.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              ListView.builder(
-                itemCount: _addresses.length,
+            Obx(() {
+              if (_accountController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (_accountController.addresses.isEmpty) {
+                return const Center(child: Text("No addresses found"));
+              }
+
+              return ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: _accountController.addresses.length,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  final addr = _addresses[index];
+                  final addr = _accountController.addresses[index];
+                  debugPrint("Address id is : - ${addr.id}");
+                  debugPrint("Auth id  is : - ${_authController.userId}");
                   return AddressCard(
-                    address: addr,
-                    onEdit: () => _editAddress(index, addr),
-                    onDelete: () => _deleteAddress(index),
-                    onSetDefault: () => _setDefaultAddress(index),
+                    address: AddressModel(
+                      name: "${addr.firstName} ${addr.lastName}",
+                      type: addr.addressType ?? "Other",
+                      addressLine1: addr.address1 ?? "",
+                      addressLine2: addr.address2 ?? "",
+                      city: addr.city ?? "",
+                      pinCode: addr.postcode ?? "",
+                      isDefault: addr.isDefault == 1,
+                    ),
+                    // onEdit: () => _editAddress(index, addr),
+                    onDelete: () async {
+                      if (mounted) {
+                        // check if widget is still in the tree
+                        await _accountController.deleteAddress(
+                          addr.id!,
+                          int.parse(
+                            _authController.userData['id'].toString(),
+                          ), // convert to int
+                          context,
+                        );
+                      }
+                    },
+                    // onSetDefault: () => _setDefaultAddress(index),
                   );
                 },
-              ),
-            ],
+              );
+            }),
             const CommonFooter(),
           ],
         ),
@@ -227,83 +266,83 @@ class _AddressScreenState extends State<AddressScreen> {
         ),
         const SizedBox(height: 20),
 
-        Row(
-          children: [
-            Expanded(
-              child: GradientButton(
-                text: 'Save address',
-                onPressed: _saveAddress,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: GradientButton(text: 'Cancel', onPressed: _cancelForm),
-            ),
-          ],
-        ),
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: GradientButton(
+        //         text: 'Save address',
+        //         onPressed: _saveAddress,
+        //       ),
+        //     ),
+        //     const SizedBox(width: 12),
+        //     Expanded(
+        //       child: GradientButton(text: 'Cancel', onPressed: _cancelForm),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(height: 40),
       ],
     );
   }
 
-  // --- CRUD actions ---
-  void _saveAddress() {
-    if ((firstNameCtrl.text).trim().isEmpty ||
-        (lastNameCtrl.text).trim().isEmpty ||
-        (addressLine1Ctrl.text).trim().isEmpty ||
-        (cityCtrl.text).trim().isEmpty ||
-        (postcodeCtrl.text).trim().isEmpty ||
-        selectedAddressType == null ||
-        selectedCountry == null ||
-        selectedState == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields.')),
-      );
-      return;
-    }
+  // // --- CRUD actions ---
+  // void _saveAddress() {
+  //   if ((firstNameCtrl.text).trim().isEmpty ||
+  //       (lastNameCtrl.text).trim().isEmpty ||
+  //       (addressLine1Ctrl.text).trim().isEmpty ||
+  //       (cityCtrl.text).trim().isEmpty ||
+  //       (postcodeCtrl.text).trim().isEmpty ||
+  //       selectedAddressType == null ||
+  //       selectedCountry == null ||
+  //       selectedState == null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Please fill all required fields.')),
+  //     );
+  //     return;
+  //   }
 
-    final newAddress = AddressModel(
-      pinCode: postcodeCtrl.text,
-      name: "${firstNameCtrl.text} ${lastNameCtrl.text}",
+  //   final newAddress = AddressModel(
+  //     pinCode: postcodeCtrl.text,
+  //     name: "${firstNameCtrl.text} ${lastNameCtrl.text}",
 
-      addressLine1: addressLine1Ctrl.text,
-      addressLine2: addressLine2Ctrl.text,
-      city: cityCtrl.text,
+  //     addressLine1: addressLine1Ctrl.text,
+  //     addressLine2: addressLine2Ctrl.text,
+  //     city: cityCtrl.text,
 
-      type: selectedAddressType!,
-    );
+  //     type: selectedAddressType!,
+  //   );
 
-    setState(() {
-      _addresses.add(newAddress);
-    });
+  //   setState(() {
+  //     _addresses.add(newAddress);
+  //   });
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Address saved')));
-    _cancelForm();
-  }
+  //   ScaffoldMessenger.of(
+  //     context,
+  //   ).showSnackBar(const SnackBar(content: Text('Address saved')));
+  //   _cancelForm();
+  // }
 
-  void _editAddress(int index, AddressModel addr) {
-    // TODO: prefill controllers with addr and set _showForm = true
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Edit not implemented yet')));
-  }
+  // void _editAddress(int index, AddressModel addr) {
+  //   // TODO: prefill controllers with addr and set _showForm = true
+  //   ScaffoldMessenger.of(
+  //     context,
+  //   ).showSnackBar(const SnackBar(content: Text('Edit not implemented yet')));
+  // }
 
-  void _deleteAddress(int index) {
-    setState(() {
-      _addresses.removeAt(index);
-    });
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Address deleted')));
-  }
+  // void _deleteAddress(int index) {
+  //   setState(() {
+  //     _addresses.removeAt(index);
+  //   });
+  //   ScaffoldMessenger.of(
+  //     context,
+  //   ).showSnackBar(const SnackBar(content: Text('Address deleted')));
+  // }
 
-  void _setDefaultAddress(int index) {
-    setState(() {
-      print("done");
-    });
-  }
+  // void _setDefaultAddress(int index) {
+  //   setState(() {
+  //     print("done");
+  //   });
+  // }
 
   void _cancelForm() {
     addressLabelCtrl.clear();

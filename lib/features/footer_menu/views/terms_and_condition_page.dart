@@ -17,7 +17,9 @@ class _TermsAndConditionPageState extends State<TermsAndConditionPage> {
   @override
   void initState() {
     super.initState();
-    controller.fetchTermsCondition();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchTermsCondition();
+    });
   }
 
   @override

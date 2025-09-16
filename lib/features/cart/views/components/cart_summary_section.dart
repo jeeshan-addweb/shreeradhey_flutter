@@ -12,8 +12,14 @@ import '../../controller/coupon_controller.dart';
 class CartSummarySection extends StatefulWidget {
   final String subtotal;
   final String total;
+  final String currencySymbol;
 
-  CartSummarySection({super.key, required this.subtotal, required this.total});
+  CartSummarySection({
+    super.key,
+    required this.subtotal,
+    required this.total,
+    required this.currencySymbol,
+  });
 
   @override
   State<CartSummarySection> createState() => _CartSummarySectionState();
@@ -42,7 +48,10 @@ class _CartSummarySectionState extends State<CartSummarySection> {
         ),
         const SizedBox(height: 24),
 
-        _PriceRow(title: "Subtotal", amount: "₹${widget.subtotal}"),
+        _PriceRow(
+          title: "Subtotal",
+          amount: "${widget.currencySymbol}${widget.subtotal}",
+        ),
 
         const SizedBox(height: 12),
         Divider(height: 24),
@@ -100,14 +109,14 @@ class _CartSummarySectionState extends State<CartSummarySection> {
                       onPressed: () {
                         if (applied != null) {
                           // remove coupon
-                          cartController.removeCoupon(applied);
+                          cartController.removeCoupon(applied, context);
                           cartController.couponControllerText.clear();
                         } else {
                           // apply coupon
                           final code =
                               cartController.couponControllerText.text.trim();
                           if (code.isNotEmpty) {
-                            cartController.applyCoupon(code);
+                            cartController.applyCoupon(code, context);
                           }
                         }
                       },
@@ -267,7 +276,10 @@ class _CartSummarySectionState extends State<CartSummarySection> {
         ),
         const SizedBox(height: 12),
 
-        _PriceRow(title: "Total", amount: "₹${widget.total}"),
+        _PriceRow(
+          title: "Total",
+          amount: "${widget.currencySymbol}${widget.total}",
+        ),
 
         const SizedBox(height: 12),
 

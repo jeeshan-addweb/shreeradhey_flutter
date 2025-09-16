@@ -6,6 +6,7 @@ import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 import '../../cart/controller/cart_controller.dart';
+import '../../home/controller/home_controller.dart';
 import '../../home/views/widgets/product_section_widget.dart';
 import 'components/wishlist_product_card.dart';
 
@@ -18,6 +19,7 @@ class WishlistScreen extends StatefulWidget {
 
 class _WishlistScreenState extends State<WishlistScreen> {
   final WishlistController wishlistController = Get.put(WishlistController());
+  final HomeController controller = Get.put(HomeController(), permanent: true);
   final CartController cartController = Get.put(CartController());
   @override
   void initState() {
@@ -107,7 +109,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
               secondText: "Similar Products".toUpperCase(),
               sectionBgColor: AppColors.white,
               tagText: "Best Seller",
-              products: [],
+              products: controller.allProducts,
             ),
           ),
           SizedBox(height: 20),

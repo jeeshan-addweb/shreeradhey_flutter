@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../common/components/custom_snackbar.dart';
 import '../../cart/controller/cart_controller.dart';
+import '../model/get_address_model.dart';
 import '../model/order_detail_model.dart';
 import '../model/order_history_model.dart';
 import '../repo/account_repo.dart';
@@ -14,6 +15,13 @@ class AccountController extends GetxController {
   var errorMessage = ''.obs;
   var orders = <OrdersNode>[].obs;
   var orderDetail = Rxn<OrderDetailModel>();
+
+  var addresses = <CustomerAddress>[].obs;
+  @override
+  void onInit() {
+    super.onInit();
+    getAddresses();
+  }
 
   Future<void> fetchOrders({int first = 10, String? after}) async {
     try {
@@ -137,6 +145,42 @@ class AccountController extends GetxController {
     } catch (e) {
       debugPrint("[CartController] Checkout failed: $e");
       CustomSnackbars.showError(context, "Error ${e.toString()}");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> getAddresses() async {
+    try {
+      isLoading.value = true;
+      final response = await _accountrepo.fetchCustomerAddresses();
+      addresses.value = response?.data?.customerAddresses ?? [];
+    } catch (e) {
+      debugPrint("Error, ${e.toString()}");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> deleteAddress(int id, int userId, BuildContext context) async {
+    try {
+      isLoading.value = true;
+      final response = await _accountrepo.deleteAddress(id, userId);
+
+      if (response['success'] == true) {
+        CustomSnackbars.showSuccess(
+          context,
+          response['message'] ?? "Address deleted",
+        );
+        await getAddresses(); // refresh list
+      } else {
+        CustomSnackbars.showError(
+          context,
+          response['message'] ?? "Could not delete",
+        );
+      }
+    } catch (e) {
+      debugPrint("DeleteAddress Error: $e");
     } finally {
       isLoading.value = false;
     }

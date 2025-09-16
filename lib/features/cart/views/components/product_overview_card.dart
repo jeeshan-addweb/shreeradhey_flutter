@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shree_radhey/common/components/line_shimmer.dart';
 
 import '../../../../constants/app_colors.dart';
 import '../../../../constants/app_images.dart';
 
 class ProductOverviewCard extends StatefulWidget {
+  final String currencySymbol;
   final String keyValue;
   final String productName;
   final String price;
@@ -19,6 +21,7 @@ class ProductOverviewCard extends StatefulWidget {
   const ProductOverviewCard({
     super.key,
     required this.keyValue,
+    required this.currencySymbol,
     required this.productName,
     required this.price,
     required this.quantity,
@@ -128,11 +131,7 @@ class _ProductOverviewCardState extends State<ProductOverviewCard> {
                       ),
                       const SizedBox(height: 6),
                       widget.isLoading
-                          ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
+                          ? LineShimmer()
                           : QuantitySelector(
                             quantity: quantity,
                             onIncrement: _incrementQuantity,
@@ -143,7 +142,7 @@ class _ProductOverviewCardState extends State<ProductOverviewCard> {
                       // show small spinner when this item is updating
                       const SizedBox(height: 6),
                       Text(
-                        "₹${widget.price}",
+                        "${widget.currencySymbol}${widget.price}",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,

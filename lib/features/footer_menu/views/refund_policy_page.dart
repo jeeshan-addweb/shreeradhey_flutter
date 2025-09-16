@@ -18,7 +18,9 @@ class _RefundPolicyPageState extends State<RefundPolicyPage> {
   @override
   void initState() {
     super.initState();
-    controller.fetchRefundPolicy();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchRefundPolicy();
+    });
   }
 
   @override

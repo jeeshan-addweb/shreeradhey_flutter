@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
+import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
@@ -17,6 +18,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   final CartController cartController = Get.put(CartController());
+  final HomeController controller = Get.put(HomeController());
 
   @override
   void initState() {
@@ -80,7 +82,6 @@ class _CartPageState extends State<CartPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (cartController.isFetchingCart.value) ...[
-                        // show loader while fetching (keeps existing layout; visually consistent)
                         const Center(
                           child: Padding(
                             padding: EdgeInsets.all(20),
@@ -97,6 +98,15 @@ class _CartPageState extends State<CartPage> {
                               (item) => Column(
                                 children: [
                                   ProductOverviewCard(
+                                    currencySymbol:
+                                        cartController
+                                            .cart
+                                            .value!
+                                            .data!
+                                            .cart!
+                                            .contents!
+                                            .currencySymbol ??
+                                        "^",
                                     isLoading:
                                         cartController.updatingItems[item
                                             .key!] ??
@@ -138,6 +148,30 @@ class _CartPageState extends State<CartPage> {
                               ),
                             )
                             .toList(),
+
+                        if (cartController.cart.value?.data?.cart != null)
+                          CartSummarySection(
+                            currencySymbol:
+                                cartController
+                                    .cart
+                                    .value!
+                                    .data!
+                                    .cart!
+                                    .contents!
+                                    .currencySymbol ??
+                                "^",
+                            subtotal:
+                                cartController
+                                    .cart
+                                    .value!
+                                    .data!
+                                    .cart!
+                                    .subtotal ??
+                                "0",
+                            total:
+                                cartController.cart.value!.data!.cart!.total ??
+                                "0",
+                          ),
                       ] else ...[
                         const Center(
                           child: Padding(
@@ -146,29 +180,20 @@ class _CartPageState extends State<CartPage> {
                           ),
                         ),
                       ],
-
-                      if (cartController.cart.value?.data?.cart != null)
-                        CartSummarySection(
-                          subtotal:
-                              cartController.cart.value!.data!.cart!.subtotal ??
-                              "0",
-                          total:
-                              cartController.cart.value!.data!.cart!.total ??
-                              "0",
-                        ),
                     ],
                   ),
                   const SizedBox(height: 20),
-
-                  ProductSection(
-                    firstText: "",
-                    firstTextColor: AppColors.black,
-                    secondTextColor: AppColors.black,
-                    secondText: "You May Be Interested In ...",
-                    sectionBgColor: AppColors.white,
-                    tagText: "Newly Launch",
-                    products: [],
-                  ),
+                  cartController.cart.value?.data?.cart != null
+                      ? SizedBox.shrink()
+                      : ProductSection(
+                        firstText: "",
+                        firstTextColor: AppColors.black,
+                        secondTextColor: AppColors.black,
+                        secondText: "You May Be Interested In ...",
+                        sectionBgColor: AppColors.white,
+                        tagText: "Newly Launch",
+                        products: controller.allProducts,
+                      ),
                   const SizedBox(height: 20),
                 ],
               ),

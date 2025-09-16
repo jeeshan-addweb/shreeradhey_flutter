@@ -125,12 +125,14 @@ class Rate {
 
 class Contents {
   int? itemCount;
+  String? currencySymbol;
   List<NodeElement>? nodes;
 
-  Contents({this.itemCount, this.nodes});
+  Contents({this.itemCount, this.nodes, this.currencySymbol});
 
   factory Contents.fromJson(Map<String, dynamic> json) => Contents(
     itemCount: json["itemCount"],
+    currencySymbol: json["currencySymbol"] as String?,
     nodes:
         json["nodes"] == null
             ? []
@@ -141,6 +143,7 @@ class Contents {
 
   Map<String, dynamic> toJson() => {
     "itemCount": itemCount,
+    "currencySymbol": currencySymbol,
     "nodes":
         nodes == null ? [] : List<dynamic>.from(nodes!.map((x) => x.toJson())),
   };

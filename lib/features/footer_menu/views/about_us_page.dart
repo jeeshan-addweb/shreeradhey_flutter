@@ -22,7 +22,9 @@ class _AboutUsPageState extends State<AboutUsPage> {
   @override
   void initState() {
     super.initState();
-    controller.fetchAboutUs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchAboutUs();
+    });
   }
 
   // Helper method to get content by block type

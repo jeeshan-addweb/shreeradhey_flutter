@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     debugPrint("Token is : ${authcontroller.token}");
+    debugPrint("User is : ${authcontroller.userId}");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchHomeData();
       controller.fetchBlogs();

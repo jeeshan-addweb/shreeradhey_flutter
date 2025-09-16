@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:shree_radhey/features/accounts/model/get_address_model.dart';
 import 'package:shree_radhey/features/accounts/model/order_history_model.dart';
 
 import '../../../data/network/api_client.dart';
@@ -201,5 +202,63 @@ query GetOrderDetails($orderId: ID!) {
     }
 
     return CreateOrderModel.fromJson(result.data!['createOrder']);
+  }
+
+  Future<GetAddressModel?> fetchCustomerAddresses() async {
+    const String query = r'''
+      query {
+        customerAddresses {
+          id
+          address_type
+          address_label
+          first_name
+          last_name
+          company
+          country
+          address_1
+          address_2
+          city
+          state
+          postcode
+          phone
+          email
+          is_default
+        }
+      }
+    ''';
+
+    final QueryOptions options = QueryOptions(
+      document: gql(query),
+      fetchPolicy: FetchPolicy.networkOnly,
+    );
+
+    final result = await _client.query(options);
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return GetAddressModel.fromJson({"data": result.data});
+  }
+
+  Future<Map<String, dynamic>> deleteAddress(int id, int userId) async {
+    const String mutation = r'''
+      mutation DeleteAddress($id: Int!, $user_id: Int!) {
+        deleteAddress(input: { id: $id, user_id: $user_id }) {
+          success
+          message
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(
+        document: gql(mutation),
+        variables: {"id": id, "user_id": userId},
+      ),
+    );
+
+    if (result.hasException) throw Exception(result.exception.toString());
+    return result.data?['deleteAddress'] ?? {};
   }
 }
