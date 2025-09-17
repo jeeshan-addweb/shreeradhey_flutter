@@ -428,7 +428,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         children: [
                           _PriceRow(
                             title: "Subtotal",
-                            amount: cart?.subtotal ?? "0",
+                            amount: "${cart?.currencySymbol}${cart?.subtotal}",
                           ),
 
                           const SizedBox(height: 12),
@@ -452,7 +452,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      "${item.product?.node?.name ?? ""}  x${item.quantity ?? 1}",
+                                      "${item.product?.node?.name ?? ""}  x ${item.quantity ?? 1}",
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
@@ -462,7 +462,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    item.product?.node?.price ?? "0",
+                                    "${cart?.currencySymbol}${item.product?.node?.price}",
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
@@ -515,7 +515,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               const SizedBox(width: 8),
 
                               Text(
-                                cart?.total ?? "0",
+                                "${cart?.currencySymbol}${cart?.total}",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w900,

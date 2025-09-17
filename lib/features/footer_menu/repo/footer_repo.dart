@@ -187,4 +187,50 @@ class FooterRepo {
 
     return WoodPressOilModel.fromJson({'data': data});
   }
+
+  Future<Map<String, dynamic>> submitContactForm(
+    Map<String, dynamic> input,
+  ) async {
+    const String mutation = r'''
+      mutation SubmitContactForm($input: SubmitContactFormInput!) {
+        submitContactForm(input: $input) {
+          success
+          message
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(document: gql(mutation), variables: {"input": input}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['submitContactForm'];
+  }
+
+  Future<Map<String, dynamic>> submitDealerForm(
+    Map<String, dynamic> input,
+  ) async {
+    const String mutation = r'''
+      mutation SubmitDealerForm($input: SubmitDealerFormInput!) {
+        submitDealerForm(input: $input) {
+          success
+          message
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(document: gql(mutation), variables: {"input": input}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['submitDealerForm'];
+  }
 }

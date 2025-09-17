@@ -50,6 +50,9 @@ class ShopController extends GetxController {
         case "On Sale":
           apiData = await _repo.getOnSaleProducts();
           break;
+        case "Best Seller":
+          apiData = await _repo.getBestSellerProducts();
+          break;
       }
 
       products.assignAll(apiData.map((e) => e.toUiModel()).toList());

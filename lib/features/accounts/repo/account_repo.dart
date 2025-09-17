@@ -204,6 +204,44 @@ query GetOrderDetails($orderId: ID!) {
     return CreateOrderModel.fromJson(result.data!['createOrder']);
   }
 
+  Future<Map<String, dynamic>> saveAddress(Map<String, dynamic> address) async {
+    const String mutation = r'''
+      mutation SaveAddress($address: AddressInput!) {
+        saveAddress(input: { address: $address }) {
+          success
+          message
+          address {
+          id
+            address_type
+            address_label
+            first_name
+            last_name
+            company
+            country
+            address_1
+            address_2
+            city
+            state
+            postcode
+            phone
+            email
+            is_default
+          }
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(document: gql(mutation), variables: {"address": address}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['saveAddress'] ?? {};
+  }
+
   Future<GetAddressModel?> fetchCustomerAddresses() async {
     const String query = r'''
       query {

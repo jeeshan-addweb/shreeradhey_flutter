@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
 
+import '../../../common/components/product_shimmer.dart';
 import '../../../constants/app_colors.dart';
-import '../../../constants/app_mock_data.dart';
+import '../../shop/controller/shop_controller.dart';
 
 class BestSellerScreen extends StatefulWidget {
   const BestSellerScreen({super.key});
@@ -14,6 +16,15 @@ class BestSellerScreen extends StatefulWidget {
 }
 
 class _BestSellerScreenState extends State<BestSellerScreen> {
+  final ShopController controller = Get.put(ShopController());
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchProducts("Best Seller");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -57,24 +68,49 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
             ),
           ),
 
-          // SizedBox(height: 40),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: AppMockData.mockProducts.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final screenWidth = MediaQuery.of(context).size.width;
-              final cardWidth = screenWidth * 0.7;
-              final product = AppMockData.mockProducts[index].copyWith();
-              return SizedBox(
-                width: cardWidth,
-                child: ProductCard(model: product),
+          Obx(() {
+            if (controller.isLoading.value) {
+              // Show shimmer cards while loading
+              return ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: 5,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final screenWidth = MediaQuery.of(context).size.width;
+                  final cardWidth = screenWidth * 0.7;
+                  return SizedBox(
+                    width: cardWidth,
+                    child: const ProductCardShimmer(),
+                  );
+                },
               );
-            },
-          ),
+            }
+            if (controller.error.isNotEmpty) {
+              return Center(child: Text("Error: ${controller.error}"));
+            }
+            if (controller.products.isEmpty) {
+              return const Center(child: Text("No Products Found"));
+            }
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: controller.products.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final screenWidth = MediaQuery.of(context).size.width;
+                final cardWidth = screenWidth * 0.7;
+                final product = controller.products[index];
+                return SizedBox(
+                  width: cardWidth,
+                  child: ProductCard(model: product),
+                );
+              },
+            );
+          }),
           SizedBox(height: 40),
 
           CommonFooter(),

@@ -17,6 +17,10 @@ class AuthController extends GetxController {
     if (savedToken != null && savedToken.toString().isNotEmpty) {
       token.value = savedToken;
     }
+    final savedUserId = box.read("id");
+    if (savedUserId != null && savedUserId.toString().isNotEmpty) {
+      userId.value = savedUserId;
+    }
   }
 
   bool get isLoggedIn => token.isNotEmpty;
@@ -61,6 +65,7 @@ class AuthController extends GetxController {
         token.value = result['token'];
         userId.value = result['user']['id'];
         box.write("auth_token", result['token']);
+        box.write("id", result['user']['id']);
         userData.value = result['user'] ?? {};
       }
 

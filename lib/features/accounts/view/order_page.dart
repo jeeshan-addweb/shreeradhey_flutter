@@ -31,7 +31,7 @@ class _OrderPageState extends State<OrderPage> {
         if (accountController.isLoading.value) {
           return ListView.builder(
             itemBuilder: (context, index) {
-              return ProductCardShimmer(height: 30);
+              return ProductCardShimmer(height: 30, imageHeight: 0);
             },
           );
         }

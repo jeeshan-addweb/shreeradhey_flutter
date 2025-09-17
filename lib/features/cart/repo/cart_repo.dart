@@ -13,50 +13,61 @@ class CartRepo {
 
   Future<GetCartModel> getCartItems() async {
     const String query = r'''
-      query GetCartItems {
-        cart {
-          contents {
-            itemCount
-            nodes {
-              key
-              quantity
-              subtotal
-              total
-              product {
-                node {
-                  id
-                  databaseId
-                  name
-                  slug
-                  sku
-                  type
-                  image {
-                    sourceUrl
-                    altText
-                  }
-                  ... on SimpleProduct {
-                    price
-                    regularPrice
-                    salePrice
-                  }
-                }
-              }
+     query GetCartItems {
+  cart {
+    currencySymbol
+    subtotal
+    total
+    discountTotal
+    discountTax
+    shippingTotal
+    totalTax
+    chosenShippingMethods
+    availableShippingMethods {
+      rates {
+        id
+        label
+        cost
+      }
+    }
+    fees {
+      name
+      total
+    }
+    contents {
+      itemCount
+      nodes {
+        key
+        quantity
+        subtotal
+        total
+        product {
+          node {
+            id
+            databaseId
+            name
+            slug
+            sku
+            type
+            image {
+              sourceUrl
+              altText
             }
-          }
-          subtotal
-          total
-          shippingTotal
-          totalTax
-          chosenShippingMethods
-          availableShippingMethods {
-            rates {
-              id
-              label
-              cost
+            ... on SimpleProduct {
+                price
+                regularPrice
+                salePrice
+                bestPrice
+                discountPercentage
+                averageRating
+                reviewCount
             }
           }
         }
       }
+    }
+  }
+}
     ''';
     try {
       debugPrint('[CartRepo] getCartItems - starting query...');

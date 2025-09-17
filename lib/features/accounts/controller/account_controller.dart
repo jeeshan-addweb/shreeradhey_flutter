@@ -150,6 +150,40 @@ class AccountController extends GetxController {
     }
   }
 
+  Future<void> saveOrUpdateAddress(
+    Map<String, dynamic> address,
+    BuildContext context,
+  ) async {
+    try {
+      isLoading.value = true;
+      final response = await _accountrepo.saveAddress(address);
+
+      if (response['success'] == true) {
+        if (context.mounted) {
+          CustomSnackbars.showSuccess(
+            context,
+            response['message'] ?? "Address saved",
+          );
+        }
+        await getAddresses();
+      } else {
+        if (context.mounted) {
+          CustomSnackbars.showError(
+            context,
+            response['message'] ?? "Could not save address",
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("SaveOrUpdateAddress  Error: $e");
+      if (context.mounted) {
+        CustomSnackbars.showError(context, "Something went wrong");
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> getAddresses() async {
     try {
       isLoading.value = true;
@@ -168,19 +202,26 @@ class AccountController extends GetxController {
       final response = await _accountrepo.deleteAddress(id, userId);
 
       if (response['success'] == true) {
-        CustomSnackbars.showSuccess(
-          context,
-          response['message'] ?? "Address deleted",
-        );
-        await getAddresses(); // refresh list
+        if (context.mounted) {
+          CustomSnackbars.showSuccess(
+            context,
+            response['message'] ?? "Address deleted",
+          );
+        }
+        await getAddresses();
       } else {
-        CustomSnackbars.showError(
-          context,
-          response['message'] ?? "Could not delete",
-        );
+        if (context.mounted) {
+          CustomSnackbars.showError(
+            context,
+            response['message'] ?? "Could not delete",
+          );
+        }
       }
     } catch (e) {
       debugPrint("DeleteAddress Error: $e");
+      if (context.mounted) {
+        CustomSnackbars.showError(context, "Something went wrong");
+      }
     } finally {
       isLoading.value = false;
     }

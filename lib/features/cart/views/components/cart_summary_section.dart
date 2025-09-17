@@ -184,6 +184,9 @@ class _CartSummarySectionState extends State<CartSummarySection> {
                   );
                 }).toList(),
             onChanged: (value) {
+              if (value != null) {
+                cartController.applyCoupon(value, context);
+              }
               debugPrint("Selected coupon: $value");
             },
             decoration: InputDecoration(

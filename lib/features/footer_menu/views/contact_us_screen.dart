@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shree_radhey/features/footer_menu/controller/footer_controller.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
@@ -14,6 +16,7 @@ class ContactUsScreen extends StatefulWidget {
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
+  final FooterController footerController = Get.put(FooterController());
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController firstNameController = TextEditingController();
@@ -135,17 +138,34 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                     const SizedBox(height: 24),
 
                     /// Submit Button
-                    GradientButton(
-                      text: "Submit",
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          /// submit logic here
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Form Submitted")),
-                          );
-                        }
-                      },
-                    ),
+                    Obx(() {
+                      return GradientButton(
+                        text: "Submit",
+                        isLoading: footerController.isLoading.value,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            footerController
+                                .submitContact(
+                                  context: context,
+                                  firstName: firstNameController.text.trim(),
+                                  lastName: lastNameController.text.trim(),
+                                  email: emailController.text.trim(),
+                                  phone: phoneController.text.trim(),
+                                  message: messageController.text.trim(),
+                                )
+                                .then((_) {
+                                  firstNameController.clear();
+                                  lastNameController.clear();
+                                  emailController.clear();
+                                  phoneController.clear();
+                                  messageController.clear();
+                                  _formKey.currentState?.reset();
+                                });
+                          }
+                        },
+                      );
+                    }),
+
                     const SizedBox(height: 32),
                     ContactMapSection(
                       address:
