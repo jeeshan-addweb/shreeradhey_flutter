@@ -105,7 +105,7 @@ class _CartPageState extends State<CartPage> {
                                             ?.data
                                             ?.cart
                                             ?.currencySymbol ??
-                                        "^",
+                                        "",
                                     isLoading:
                                         cartController.updatingItems[item
                                             .key!] ??
@@ -157,7 +157,7 @@ class _CartPageState extends State<CartPage> {
                                     ?.data
                                     ?.cart
                                     ?.currencySymbol ??
-                                "^",
+                                "",
                             subtotal:
                                 cartController
                                     .cart

@@ -1,87 +1,147 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shree_radhey/common/search_product_controller.dart';
 
-// import '../../../common/components/common_footer.dart';
-// import '../../../common/components/product_card.dart';
+import '../../../common/components/common_footer.dart';
+import '../../../common/components/product_card.dart';
+import '../../../common/components/product_shimmer.dart';
+import '../../../constants/app_colors.dart';
+// ✅ import your search controller
 
-// import '../../../common/components/product_shimmer.dart';
-// import '../../../constants/app_colors.dart';
-// import '../../shop/controller/shop_controller.dart';
+class SearchPage extends StatefulWidget {
+  final String query;
 
-// class SearchPage extends StatefulWidget {
-//   const SearchPage({super.key});
+  const SearchPage({super.key, required this.query});
 
-//   @override
-//   State<SearchPage> createState() => _SearchPageState();
-// }
+  @override
+  State<SearchPage> createState() => _SearchPageState();
+}
 
-// class _SearchPageState extends State<SearchPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return SingleChildScrollView(
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.start,
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Padding(
-//             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-//             child: Column(
-//               crossAxisAlignment:
-//                   CrossAxisAlignment.start, // so text aligns like your design
-//               children: [
-//                 Text(
-//                   "Best Sellers",
-//                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-//                 ),
-//                 RichText(
-//                   text: TextSpan(
-//                     style: const TextStyle(
-//                       fontSize: 16,
-//                       fontWeight: FontWeight.w500,
-//                     ),
-//                     children: [
-//                       TextSpan(
-//                         text: "Home ",
-//                         style: TextStyle(color: AppColors.black),
-//                       ),
-//                       TextSpan(
-//                         text: "/ ",
-//                         style: TextStyle(color: AppColors.red_CC0003),
-//                       ),
-//                       TextSpan(
-//                         text: "Best Sellers",
-//                         style: TextStyle(color: AppColors.red_CC0003),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
+class _SearchPageState extends State<SearchPage> {
+  final SearchProductController controller = Get.put(SearchProductController());
 
-//           ListView.separated(
-//             shrinkWrap: true,
-//             physics: NeverScrollableScrollPhysics(),
-//             scrollDirection: Axis.vertical,
-//             padding: const EdgeInsets.symmetric(horizontal: 20),
-//             itemCount: 4,
-//             separatorBuilder: (_, __) => const SizedBox(height: 12),
-//             itemBuilder: (context, index) {
-//               final screenWidth = MediaQuery.of(context).size.width;
-//               final cardWidth = screenWidth * 0.7;
-//               // final product = controller.products[index];
-//               return SizedBox(
-//                 width: cardWidth,
-//                 child: ProductCard(model: product),
-//               );
-//             },
-//           ),
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.searchProducts(widget.query);
+    });
+  }
 
-//           SizedBox(height: 40),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const ProductCardShimmer();
+        }
 
-//           CommonFooter(),
-//         ],
-//       ),
-//     );
-//   }
-// }
+        // if (controller.searchResults.isEmpty) {
+        //   return Column(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       const SizedBox(height: 100),
+        //       Text(
+        //         "No products found for \"${widget.query}\"",
+        //         style: const TextStyle(
+        //           fontSize: 16,
+        //           fontWeight: FontWeight.w500,
+        //         ),
+        //       ),
+        //       const SizedBox(height: 20),
+        //       const CommonFooter(),
+        //     ],
+        //   );
+        // }
+
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// --- Heading + Breadcrumb ---
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Search Results",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "Home ",
+                            style: TextStyle(color: AppColors.black),
+                          ),
+                          TextSpan(
+                            text: "/ ",
+                            style: TextStyle(color: AppColors.red_CC0003),
+                          ),
+                          TextSpan(
+                            text: "Shop ",
+                            style: TextStyle(color: AppColors.black),
+                          ),
+                          TextSpan(
+                            text: "/ ",
+                            style: TextStyle(color: AppColors.red_CC0003),
+                          ),
+                          TextSpan(
+                            text: "Search Results for '${widget.query}'",
+                            style: TextStyle(color: AppColors.red_CC0003),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              controller.searchResults.isEmpty
+                  ? Center(
+                    child: Text(
+                      "No result found for ${widget.query}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                  : ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: controller.searchResults.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final product = controller.searchResults[index];
+                      final screenWidth = MediaQuery.of(context).size.width;
+                      final cardWidth = screenWidth * 0.7;
+
+                      return SizedBox(
+                        width: cardWidth,
+                        child: ProductCard(model: product),
+                      );
+                    },
+                  ),
+
+              const SizedBox(height: 40),
+              const CommonFooter(),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+}

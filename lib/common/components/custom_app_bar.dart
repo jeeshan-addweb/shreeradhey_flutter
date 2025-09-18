@@ -9,16 +9,47 @@ import '../../constants/app_images.dart';
 import '../../features/cart/controller/cart_controller.dart';
 import '../../utils/routes/app_route_path.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isDrawerOpen;
   final VoidCallback onMenuTap;
+
   const CustomAppBar({
     super.key,
     required this.isDrawerOpen,
     required this.onMenuTap,
   });
+
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight + 50); // adjust height if needed
+  Size get preferredSize => Size.fromHeight(kToolbarHeight + 50);
+
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  bool isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
+
+  void _startSearch() {
+    setState(() => isSearching = true);
+  }
+
+  void _stopSearch() {
+    setState(() {
+      isSearching = false;
+      _searchController.clear();
+    });
+  }
+
+  void _onSearchSubmit(String query) {
+    if (query.trim().isNotEmpty) {
+      context.push(
+        AppRoutePath.searchPage,
+        extra: query.trim(), // Pass search term to SearchPage
+      );
+      _stopSearch();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,101 +57,131 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(height: 42, child: Container(color: AppColors.green_6cad10)),
-        TopBannerToggle(),
         Container(
           height: kToolbarHeight + 20,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             children: [
+              // Drawer/Menu button
               Builder(
                 builder:
                     (context) => IconButton(
-                      padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
                       icon: Icon(
-                        isDrawerOpen ? Icons.close : Icons.menu,
+                        widget.isDrawerOpen ? Icons.close : Icons.menu,
                         size: 30,
                       ),
-                      onPressed: onMenuTap,
+                      onPressed: widget.onMenuTap,
                     ),
               ),
 
-              // Logo
-              Image.asset(AppImages.logo, height: 40),
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Image.asset(
-                  AppImages.search,
-                  color: AppColors.black,
-                  height: 30,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  context.push(AppRoutePath.wishlistScreen);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Image.asset(
-                    AppImages.wishlist,
-                    color: AppColors.black,
-                    height: 30,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  context.push(AppRoutePath.accountPage);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Image.asset(
-                    AppImages.profile,
-                    color: AppColors.black,
-                    height: 30,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  context.push(AppRoutePath.cartPage);
-                },
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: Image.asset(
-                        AppImages.cart,
-                        color: AppColors.black,
-                        height: 30,
+              // Logo (hidden if searching)
+              if (!isSearching) Image.asset(AppImages.logo, height: 40),
+
+              const Spacer(),
+
+              // --- Search Mode ---
+              if (isSearching) ...[
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: "Search products...",
+                      prefixIcon: const Icon(Icons.search, color: Colors.black),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.black),
+                        onPressed: _stopSearch,
                       ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade200,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
                     ),
-                    Obx(() {
-                      final count = Get.find<CartController>().cartCount.value;
-                      if (count == 0) return const SizedBox.shrink();
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: _onSearchSubmit,
+                  ),
+                ),
+              ]
+              // --- Normal Mode ---
+              else ...[
+                GestureDetector(
+                  onTap: _startSearch,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Image.asset(
+                      AppImages.search,
+                      color: AppColors.black,
+                      height: 30,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => context.push(AppRoutePath.wishlistScreen),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Image.asset(
+                      AppImages.wishlist,
+                      color: AppColors.black,
+                      height: 30,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => context.push(AppRoutePath.accountPage),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Image.asset(
+                      AppImages.profile,
+                      color: AppColors.black,
+                      height: 30,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => context.push(AppRoutePath.cartPage),
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Image.asset(
+                          AppImages.cart,
+                          color: AppColors.black,
+                          height: 30,
+                        ),
+                      ),
+                      Obx(() {
+                        final count =
+                            Get.find<CartController>().cartCount.value;
+                        if (count == 0) return const SizedBox.shrink();
 
-                      return Positioned(
-                        right: 4,
-                        top: 0,
-                        child: CircleAvatar(
-                          radius: 8,
-                          backgroundColor: AppColors.green_5b9d0b,
-                          child: Text(
-                            count.toString(),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.white,
+                        return Positioned(
+                          right: 4,
+                          top: 0,
+                          child: CircleAvatar(
+                            radius: 8,
+                            backgroundColor: AppColors.green_5b9d0b,
+                            child: Text(
+                              count.toString(),
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }),
-                  ],
+                        );
+                      }),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
+        const TopBannerToggle(),
       ],
     );
   }

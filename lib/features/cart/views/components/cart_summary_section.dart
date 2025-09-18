@@ -33,7 +33,9 @@ class _CartSummarySectionState extends State<CartSummarySection> {
   @override
   void initState() {
     super.initState();
-    cartController.fetchAvailableShippingMethod();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cartController.fetchAvailableShippingMethod();
+    });
   }
 
   @override

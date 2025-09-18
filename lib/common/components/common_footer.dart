@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
@@ -54,14 +55,26 @@ class CommonFooter extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SocialIconButton(imagePath: AppImages.facebook, onTap: () {}),
+                  SocialIconButton(
+                    imagePath: AppImages.facebook,
+                    onTap:
+                        () => _launchUrl(
+                          "https://www.facebook.com/shreeradheyghee",
+                        ),
+                  ),
                   SizedBox(width: 15),
                   SocialIconButton(
                     imagePath: AppImages.instagram,
-                    onTap: () {},
+                    onTap:
+                        () => _launchUrl(
+                          "https://www.instagram.com/shreeradheyghee/",
+                        ),
                   ),
                   SizedBox(width: 15),
-                  SocialIconButton(imagePath: AppImages.twitter, onTap: () {}),
+                  SocialIconButton(
+                    imagePath: AppImages.twitter,
+                    onTap: () => _launchUrl("https://x.com/ShreeRadheyGhee"),
+                  ),
                 ],
               ),
 
@@ -421,5 +434,12 @@ class SocialIconButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> _launchUrl(String url) async {
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+    throw Exception('Could not launch $url');
   }
 }

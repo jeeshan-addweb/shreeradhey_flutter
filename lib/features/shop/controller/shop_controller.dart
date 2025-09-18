@@ -25,6 +25,8 @@ class ShopController extends GetxController {
 
   var isSubmitting = false.obs;
 
+  var deliveryData = Rxn<Map<String, dynamic>>();
+
   Future<void> fetchProducts(String category) async {
     try {
       isLoading.value = true;
@@ -134,6 +136,21 @@ class ShopController extends GetxController {
       debugPrint("Error $e");
     } finally {
       isSubmitting.value = false;
+    }
+  }
+
+  Future<void> checkDelivery(int postcode) async {
+    try {
+      isLoading.value = true;
+      error.value = "";
+      deliveryData.value = null;
+
+      final data = await _repo.getDeliveryEstimate(postcode);
+      deliveryData.value = data;
+    } catch (e) {
+      error.value = e.toString().replaceAll("Exception:", "").trim();
+    } finally {
+      isLoading.value = false;
     }
   }
 }

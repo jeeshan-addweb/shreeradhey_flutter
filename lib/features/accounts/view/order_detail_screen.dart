@@ -16,10 +16,15 @@ class OrderDetailScreen extends StatefulWidget {
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
-  final controller = Get.put(AccountController());
+  final AccountController controller = Get.put(
+    AccountController(),
+    permanent: true,
+  );
+
   @override
   void initState() {
     super.initState();
+    debugPrint("Order Id is ${widget.orderId}");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchOrderDetail(widget.orderId);
     });
@@ -30,6 +35,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Obx(() {
+        debugPrint("Order detail: ${controller.orderDetail.value}");
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -55,6 +61,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     const TextSpan(text: "was placed on "),
                     TextSpan(
                       text: DateFormat("MMMM dd, yyyy").format(order.date!),
+
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const TextSpan(text: " and is currently "),

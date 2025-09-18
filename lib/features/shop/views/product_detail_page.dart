@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 import '../../../common/components/common_footer.dart';
@@ -34,6 +35,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   bool showFullVariants = false;
 
   final ShopController controller = Get.put(ShopController());
+  final TextEditingController pinController = TextEditingController();
   final ProductVariantController productVariantController = Get.put(
     ProductVariantController(),
   );
@@ -187,28 +189,28 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             const SizedBox(width: 8),
 
             // Buy Now Button
-            // Expanded(
-            //   child: OutlinedButton(
-            //     onPressed: () {
-            //       // handle buy now
-            //     },
-            //     style: OutlinedButton.styleFrom(
-            //       side: BorderSide(color: AppColors.green_6cad10),
-            //       padding: const EdgeInsets.symmetric(vertical: 14),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(8),
-            //       ),
-            //     ),
-            //     child: const Text(
-            //       "Buy Now",
-            //       style: TextStyle(
-            //         fontSize: 16,
-            //         fontWeight: FontWeight.bold,
-            //         color: Colors.black,
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  // handle buy now
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.green_6cad10),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  "Buy Now",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -349,7 +351,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             isWishlisted
                                 ? Icons.favorite
                                 : Icons.favorite_border,
-                            color: isWishlisted ? Colors.red : Colors.white,
+                            color:
+                                isWishlisted
+                                    ? Colors.red
+                                    : AppColors.red_CC0003,
 
                             onTap: () async {
                               final response = await wishlistController
@@ -369,10 +374,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           );
                         }),
 
+                        // const SizedBox(height: 12),
+                        // _buildCircleIcon(Icons.search, onTap: () {}),
                         const SizedBox(height: 12),
-                        _buildCircleIcon(Icons.search, onTap: () {}),
-                        const SizedBox(height: 12),
-                        _buildCircleIcon(Icons.download, onTap: () {}),
+                        _buildCircleIcon(
+                          Icons.ios_share_outlined,
+                          onTap: () {},
+                        ),
                       ],
                     ),
                   ),
@@ -629,6 +637,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         // Pincode TextField
                         Expanded(
                           child: TextField(
+                            controller: pinController,
                             decoration: InputDecoration(
                               hintText: "Enter your pincode",
                               contentPadding: const EdgeInsets.symmetric(
@@ -659,32 +668,81 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         const SizedBox(width: 8),
 
                         // Check Button
-                        Container(
-                          height: 48,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            gradient: LinearGradient(
-                              colors: [
-                                AppColors.green_6cad10,
-                                AppColors.green_327801,
-                              ], // green gradient
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                        GestureDetector(
+                          onTap: () {
+                            final pin = int.tryParse(pinController.text.trim());
+                            if (pin != null) {
+                              controller.checkDelivery(pin);
+                            } else {
+                              CustomSnackbars.showError(
+                                context,
+                                "Enter a valid pincode",
+                              );
+                            }
+                          },
+                          child: Container(
+                            height: 48,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.green_6cad10,
+                                  AppColors.green_327801,
+                                ], // green gradient
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
                             ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Check",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                            child: Center(
+                              child: Text(
+                                "Check",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 20),
+                    Obx(() {
+                      if (controller.isLoading.value) {
+                        return const CircularProgressIndicator();
+                      }
+
+                      if (controller.error.isNotEmpty) {
+                        return Center(
+                          child: Text(
+                            controller.error.value,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }
+
+                      final data = controller.deliveryData.value;
+                      if (data == null) return const SizedBox();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "${data['city']}- ${data['postcode']}, ${data['state']}, ${data['country']}",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Html(data: data['estimatedDelivery'] ?? ""),
+                        ],
+                      );
+                    }),
                     const SizedBox(height: 20),
                     descriptionWidget(detail.description ?? ""),
 

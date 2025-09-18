@@ -157,16 +157,17 @@ query GetOrderDetails($orderId: ID!) {
     final result = await _client.query(
       QueryOptions(
         document: gql(query),
-        variables: {"orderId": orderId},
+        variables: {"orderId": orderId.toString()},
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
 
     if (result.hasException) {
+      print("ORDER DETAIL EXCEPTION: ${result.exception}");
       throw Exception(result.exception.toString());
     }
-
-    return OrderDetailModel.fromJson({"data": result.data});
+    print("ORDER DETAIL RESPONSE: ${result.data}");
+    return OrderDetailModel.fromJson(result.data!);
   }
 
   Future<CreateOrderModel> createOrder(Map<String, dynamic> input) async {
@@ -298,5 +299,53 @@ query GetOrderDetails($orderId: ID!) {
 
     if (result.hasException) throw Exception(result.exception.toString());
     return result.data?['deleteAddress'] ?? {};
+  }
+
+  Future<Map<String, dynamic>?> updateCustomer({
+    required String firstName,
+    required String lastName,
+    required String displayName,
+    required String email,
+  }) async {
+    const String mutation = r'''
+    mutation UpdateFullCustomer($input: UpdateFullCustomerInput!) {
+      updateFullCustomer(input: $input) {
+        user {
+          id
+          databaseId
+          firstName
+          lastName
+          displayName
+          email
+        }
+        message
+      }
+    }
+    ''';
+
+    try {
+      final MutationOptions options = MutationOptions(
+        document: gql(mutation),
+        variables: {
+          "input": {
+            "firstName": firstName,
+            "lastName": lastName,
+            "displayName": displayName,
+            "email": email,
+          },
+        },
+      );
+
+      final result = await _client.mutate(options);
+
+      if (result.hasException) {
+        throw Exception(result.exception.toString());
+      }
+
+      return result.data?['updateFullCustomer'];
+    } catch (e) {
+      print("Error in updateCustomer: $e");
+      return null;
+    }
   }
 }

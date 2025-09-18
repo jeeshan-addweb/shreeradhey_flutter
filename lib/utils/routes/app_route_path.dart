@@ -36,4 +36,5 @@ class AppRoutePath {
   // Accounts
   static const String accountPage = '/accountPage';
   static const String orderDetailScreen = '/orderDetailScreen';
+  static const String searchPage = '/orderDetailScreen';
 }

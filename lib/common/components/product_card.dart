@@ -143,7 +143,7 @@ class _ProductCardState extends State<ProductCard> {
                           // widget.model.tagText,
                           widget.model.productLabels.isNotEmpty
                               ? widget.model.productLabels.first
-                              : "No Label", // fallback empty
+                              : "No Label",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -269,25 +269,27 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Best Price ${widget.model.currencySymbol}${widget.model.couponPrice}',
-                          style: TextStyle(
-                            color: AppColors.green_327801,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
+                    child: FittedBox(
+                      child: Row(
+                        children: [
+                          Text(
+                            'Best Price ${widget.model.currencySymbol}${widget.model.couponPrice}',
+                            style: TextStyle(
+                              color: AppColors.green_327801,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'with coupon',
-                          style: TextStyle(
-                            color: AppColors.grey_212121,
-                            fontSize: 16,
+                          const SizedBox(width: 4),
+                          Text(
+                            'with coupon',
+                            style: TextStyle(
+                              color: AppColors.grey_212121,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

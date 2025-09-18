@@ -141,13 +141,48 @@ class _WishlistProductCardState extends State<WishlistProductCard> {
                   ),
                   const SizedBox(height: 6),
 
-                  Row(
-                    children: [
-                      Text(
-                        "(${widget.model.reviewCount})",
-                        style: TextStyle(color: AppColors.grey, fontSize: 13),
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      // horizontal: 12,
+                      vertical: 6,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.star,
+                          color: AppColors.orange_f29102,
+                          size: 18,
+                        ),
+                        Icon(
+                          Icons.star,
+                          color: AppColors.orange_f29102,
+                          size: 18,
+                        ),
+                        Icon(
+                          Icons.star,
+                          color: AppColors.orange_f29102,
+                          size: 18,
+                        ),
+                        Icon(
+                          Icons.star_half,
+                          color: AppColors.orange_f29102,
+                          size: 18,
+                        ),
+                        Icon(
+                          Icons.star_border,
+                          color: AppColors.orange_f29102,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${widget.model.averageRating} | ${widget.model.reviewCount} Reviews',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.grey_212121,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   // Description

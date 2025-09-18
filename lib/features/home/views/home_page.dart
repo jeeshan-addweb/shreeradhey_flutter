@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/features/auth/controller/auth_controller.dart';
+import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
 import '../../../common/components/common_footer.dart';
@@ -40,6 +41,8 @@ class _HomePageState extends State<HomePage> {
       controller.fetchHomePageData(context);
       final wishlistController = Get.find<WishlistController>();
       wishlistController.fetchWishlist();
+      final cartController = Get.find<CartController>();
+      cartController.fetchCartItems();
     });
   }
 
@@ -50,11 +53,10 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
             BannerComponent(),
             const SizedBox(height: 40),
 
-            // ✅ Each section gets its own Obx
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Obx(

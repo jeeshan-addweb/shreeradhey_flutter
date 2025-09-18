@@ -21,7 +21,9 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
-    accountController.fetchOrders();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      accountController.fetchOrders();
+    });
   }
 
   @override
@@ -31,7 +33,7 @@ class _OrderPageState extends State<OrderPage> {
         if (accountController.isLoading.value) {
           return ListView.builder(
             itemBuilder: (context, index) {
-              return ProductCardShimmer(height: 30, imageHeight: 0);
+              return ProductCardShimmer();
             },
           );
         }
@@ -51,6 +53,7 @@ class _OrderPageState extends State<OrderPage> {
               return OrderCard(
                 order: order,
                 onView: () {
+                  debugPrint("Id is ${order.databaseId}");
                   context.push(
                     AppRoutePath.orderDetailScreen,
                     extra: order.databaseId,

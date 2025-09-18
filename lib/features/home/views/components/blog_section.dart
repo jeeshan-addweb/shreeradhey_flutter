@@ -51,7 +51,7 @@ class BlogSection extends StatelessWidget {
                       ?.productName ??
                   "Product name not found",
               onShopNow: () {
-                // controller.homePageData.value?.data?.specialOffer?.productUrl;
+                context.push(AppRoutePath.productDetail);
               },
             ),
             SizedBox(height: 40),

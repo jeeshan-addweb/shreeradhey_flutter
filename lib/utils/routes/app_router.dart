@@ -23,6 +23,7 @@ import '../../features/footer_menu/views/dealership_form_screen.dart';
 import '../../features/footer_menu/views/faq_screen.dart';
 import '../../features/footer_menu/views/privacy_policy_page.dart';
 import '../../features/footer_menu/views/refund_policy_page.dart';
+import '../../features/footer_menu/views/search_page.dart';
 import '../../features/footer_menu/views/shipping_and_delivery_policy_page.dart';
 import '../../features/footer_menu/views/terms_and_condition_page.dart';
 import '../../features/footer_menu/views/wood_pressed_oil_screen.dart';
@@ -124,6 +125,17 @@ class AppRouter {
             },
           ),
 
+          GoRoute(
+            path: AppRoutePath.searchPage,
+            builder: (context, state) {
+              final query = state.extra;
+              if (query == null || query is! String) {
+                // Don't build SearchPage at all
+                return const SizedBox.shrink();
+              }
+              return SearchPage(query: query);
+            },
+          ),
           GoRoute(
             name: 'cartPage',
             path: AppRoutePath.cartPage,

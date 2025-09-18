@@ -17,6 +17,8 @@ class AccountController extends GetxController {
   var orderDetail = Rxn<OrderDetailModel>();
 
   var addresses = <CustomerAddress>[].obs;
+
+  var updateMessage = ''.obs;
   @override
   void onInit() {
     super.onInit();
@@ -222,6 +224,35 @@ class AccountController extends GetxController {
       if (context.mounted) {
         CustomSnackbars.showError(context, "Something went wrong");
       }
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> updateCustomer({
+    required String firstName,
+    required String lastName,
+    required String displayName,
+    required String email,
+  }) async {
+    try {
+      isLoading.value = true;
+
+      final result = await _accountrepo.updateCustomer(
+        firstName: firstName,
+        lastName: lastName,
+        displayName: displayName,
+        email: email,
+      );
+
+      if (result != null) {
+        updateMessage.value =
+            result['message'] ?? "Profile updated successfully!";
+      } else {
+        updateMessage.value = "Failed to update profile.";
+      }
+    } catch (e) {
+      updateMessage.value = "Error: $e";
     } finally {
       isLoading.value = false;
     }

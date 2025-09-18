@@ -501,4 +501,33 @@ productLabels {
     final nodes = result.data?["productLabel"]?["products"]?["nodes"] ?? [];
     return (nodes as List).map((e) => ProductsNode.fromJson(e)).toList();
   }
+
+  Future<Map<String, dynamic>> getDeliveryEstimate(int postcode) async {
+    const String query = r'''
+      query GetPostcodeData($postcode: Int!) {
+        postcodeData(postcode: $postcode) {
+          postcode
+          city
+          state
+          country
+          latitude
+          longitude
+          address
+          estimatedDelivery
+        }
+      }
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(document: gql(query), variables: {"postcode": postcode}),
+    );
+
+    if (result.hasException) {
+      throw Exception(
+        result.exception?.graphqlErrors.first.message ?? "Something went wrong",
+      );
+    }
+
+    return result.data?["postcodeData"] as Map<String, dynamic>;
+  }
 }
