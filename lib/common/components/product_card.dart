@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shree_radhey/utils/routes/app_route_path.dart';
 
 import '../../constants/app_colors.dart';
+import '../../features/auth/controller/auth_controller.dart';
 import '../../features/cart/controller/cart_controller.dart';
 import '../../features/home/controller/wishlist_controller.dart';
 import '../model/ui_product_model.dart';
@@ -20,6 +21,7 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   final cartController = Get.find<CartController>();
+  final auth = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     final WishlistController wishlistController = Get.put(WishlistController());
@@ -143,16 +145,26 @@ class _ProductCardState extends State<ProductCard> {
                           // widget.model.tagText,
                           widget.model.productLabels.isNotEmpty
                               ? widget.model.productLabels.first
-                              : "No Label",
+                              : "",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        Container(width: 1, height: 14, color: Colors.white),
-                        const SizedBox(width: 4),
+                        widget.model.productLabels.isNotEmpty
+                            ? const SizedBox(width: 4)
+                            : SizedBox(),
+                        widget.model.productLabels.isNotEmpty
+                            ? Container(
+                              width: 1,
+                              height: 14,
+                              color: Colors.white,
+                            )
+                            : SizedBox(),
+                        widget.model.productLabels.isNotEmpty
+                            ? const SizedBox(width: 4)
+                            : SizedBox(),
 
                         GestureDetector(
                           onTap: () async {
@@ -304,8 +316,18 @@ class _ProductCardState extends State<ProductCard> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    if (auth.isGuest) {
+                      CustomSnackbars.showError(
+                        context,
+                        "Login Required ! Please login to add items to cart.",
+                      );
+
+                      // Navigate to login with go_router
+                      context.push(AppRoutePath.login);
+                      return;
+                    }
+
                     if (widget.model.isInCart.value) {
-                      // Navigate to cart page
                       context.go(AppRoutePath.cartPage);
                     } else {
                       // Add to cart
@@ -314,8 +336,6 @@ class _ProductCardState extends State<ProductCard> {
                         1,
                         context,
                       );
-
-                      widget.model.isInCart.value = true;
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -355,6 +375,9 @@ class _ProductCardState extends State<ProductCard> {
                                 .model
                                 .productId] ??
                             false;
+                        final inCart = cartController.isInCart(
+                          widget.model.productId,
+                        );
 
                         if (isAdding) {
                           return const SizedBox(
@@ -371,9 +394,7 @@ class _ProductCardState extends State<ProductCard> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                widget.model.isInCart.value
-                                    ? 'View My Cart'
-                                    : 'Add to Cart',
+                                inCart ? 'View My Cart' : 'Add to Cart',
                                 style: TextStyle(
                                   color: AppColors.white,
                                   fontSize: 16,

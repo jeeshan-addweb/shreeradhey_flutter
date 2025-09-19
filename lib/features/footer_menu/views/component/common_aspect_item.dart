@@ -17,7 +17,7 @@ class CommonAspectItem extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(imagePath, height: 100, width: 100, fit: BoxFit.contain),
+        Image.network(imagePath, height: 100, width: 100, fit: BoxFit.contain),
         const SizedBox(height: 8),
         Text(
           label,

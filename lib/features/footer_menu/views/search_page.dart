@@ -6,7 +6,6 @@ import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
 import '../../../common/components/product_shimmer.dart';
 import '../../../constants/app_colors.dart';
-// ✅ import your search controller
 
 class SearchPage extends StatefulWidget {
   final String query;

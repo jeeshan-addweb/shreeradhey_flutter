@@ -3,6 +3,8 @@ import 'package:get_storage/get_storage.dart';
 
 import '../repo/auth_repo.dart';
 
+enum AuthStatus { guest, authenticated }
+
 class AuthController extends GetxController {
   final AuthRepo _repo = AuthRepo();
   final box = GetStorage(); // local storage
@@ -12,23 +14,38 @@ class AuthController extends GetxController {
   var token = "".obs;
   var userId = "".obs;
 
+  var status = AuthStatus.guest.obs;
+
   Future<void> loadToken() async {
     final savedToken = box.read("auth_token");
     if (savedToken != null && savedToken.toString().isNotEmpty) {
       token.value = savedToken;
+      status.value = AuthStatus.authenticated;
+    } else {
+      status.value = AuthStatus.guest;
     }
+
     final savedUserId = box.read("id");
     if (savedUserId != null && savedUserId.toString().isNotEmpty) {
       userId.value = savedUserId;
     }
   }
 
-  bool get isLoggedIn => token.isNotEmpty;
+  bool get isLoggedIn => status.value == AuthStatus.authenticated;
+  bool get isGuest => status.value == AuthStatus.guest;
+
+  Future<void> continueAsGuest() async {
+    await logout(); // clear any saved token
+    status.value = AuthStatus.guest;
+  }
 
   Future<void> logout() async {
     token.value = "";
+    userId.value = "";
     userData.clear();
     await box.remove("auth_token");
+    await box.remove("id");
+    status.value = AuthStatus.guest;
   }
 
   Future<Map<String, dynamic>> requestOtp(String phone) async {
@@ -67,6 +84,7 @@ class AuthController extends GetxController {
         box.write("auth_token", result['token']);
         box.write("id", result['user']['id']);
         userData.value = result['user'] ?? {};
+        status.value = AuthStatus.authenticated;
       }
 
       return {

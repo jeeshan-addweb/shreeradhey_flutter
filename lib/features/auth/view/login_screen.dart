@@ -3,6 +3,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../common/components/common_button.dart';
 import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
@@ -265,6 +266,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
 
                       const SizedBox(height: 20),
+                      CommonElevatedButtonWithIcon(
+                        color: AppColors.green_10b981,
+                        text: "Continue as Guest",
+                        onPressed: () {
+                          Get.find<AuthController>().continueAsGuest();
+                          context.go(AppRoutePath.homeScreen);
+                        },
+                      ),
 
                       // T&C text
                       const Text.rich(

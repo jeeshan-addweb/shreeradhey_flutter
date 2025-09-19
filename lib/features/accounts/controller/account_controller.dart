@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -143,6 +145,14 @@ class AccountController extends GetxController {
       CustomSnackbars.showSuccess(
         context,
         "Order #${result.data?.createOrder?.orderId} created!",
+      );
+    } on TimeoutException {
+      debugPrint(
+        "[CartController] Order likely created but response timed out",
+      );
+      CustomSnackbars.showSuccess(
+        context,
+        "Your order is being processed. Please check Orders page.",
       );
     } catch (e) {
       debugPrint("[CartController] Checkout failed: $e");

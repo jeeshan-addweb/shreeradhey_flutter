@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/features/footer_menu/controller/footer_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
 import '../../features/home/views/components/review_section.dart';
 import '../../utils/routes/app_route_path.dart';
+import 'custom_snackbar.dart';
 
-class CommonFooter extends StatelessWidget {
+class CommonFooter extends StatefulWidget {
   final bool isShow;
   const CommonFooter({super.key, this.isShow = true});
 
   @override
+  State<CommonFooter> createState() => _CommonFooterState();
+}
+
+class _CommonFooterState extends State<CommonFooter> {
+  final footerController = Get.put(FooterController());
+  final emailController = TextEditingController();
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        isShow ? ReviewSection() : SizedBox(),
+        widget.isShow ? ReviewSection() : SizedBox(),
         SizedBox(height: 30, child: Container(color: AppColors.blue_eef1ed)),
         Container(
           color: AppColors.footer_1a2531,
@@ -261,6 +271,7 @@ class CommonFooter extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         hintText: 'Enter your email address',
                         hintStyle: TextStyle(color: AppColors.grey),
@@ -288,42 +299,73 @@ class CommonFooter extends StatelessWidget {
               ),
 
               SizedBox(height: 10),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.green_6cad10, AppColors.green_327801],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+              Obx(() {
+                return Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.green_6cad10, AppColors.green_327801],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    minimumSize: const Size.fromHeight(40),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  child: ElevatedButton(
+                    onPressed:
+                        footerController.isLoading.value
+                            ? null
+                            : () {
+                              final email = emailController.text.trim();
+                              if (email.isNotEmpty) {
+                                footerController.subscribe(email, context).then(
+                                  (_) {
+                                    // clear only if success
+                                    emailController.clear();
+                                  },
+                                );
+                              } else {
+                                CustomSnackbars.showError(
+                                  context,
+                                  "Please enter a valid email",
+                                );
+                              }
+                            },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      minimumSize: const Size.fromHeight(40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (footerController.isLoading.value) ...[
+                          const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        ] else ...[
+                          const Text(
+                            'Subscribe',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          const SizedBox(width: 5),
+                          const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Subscribe',
-                        style: TextStyle(color: AppColors.white, fontSize: 16),
-                      ),
-                      SizedBox(width: 5),
-                      Icon(
-                        Icons.arrow_forward,
-                        color: AppColors.white,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                );
+              }),
             ],
           ),
         ),

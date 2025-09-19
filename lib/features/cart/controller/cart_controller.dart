@@ -71,7 +71,7 @@ class CartController extends GetxController {
   bool isInCart(int productId) {
     final nodes = cart.value?.data?.cart?.contents?.nodes ?? [];
     final found = nodes.any(
-      (node) => node.product?.node?.id == productId.toString(),
+      (node) => node.product?.node?.databaseId == productId,
     );
     debugPrint("[CartController] isInCart($productId) → $found");
     return found;
@@ -84,6 +84,14 @@ class CartController extends GetxController {
       final response = await _repo.getCartItems();
       cart.value = response;
       updateCartCount();
+      final appliedCoupons = response.data?.cart?.appliedCoupons;
+      if (appliedCoupons != null && appliedCoupons.isNotEmpty) {
+        appliedCoupon.value = appliedCoupons.first.code;
+        couponControllerText.text = appliedCoupon.value!;
+      } else {
+        appliedCoupon.value = null;
+        couponControllerText.clear();
+      }
       debugPrint(
         '[CartController] fetchCartItems - success: items = ${response.data?.cart?.contents?.itemCount ?? 0}',
       );

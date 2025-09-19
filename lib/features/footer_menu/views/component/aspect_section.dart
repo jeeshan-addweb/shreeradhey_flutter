@@ -11,33 +11,37 @@ class AspectsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: AppColors.grey_65758b,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: AppColors.grey_65758b,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Column(
-          children:
-              aspects
-                  .map(
-                    (aspect) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: CommonAspectItem(
-                        imagePath: aspect["icon"]!,
-                        label: aspect["text"]!,
+          const SizedBox(height: 16),
+          Column(
+            children:
+                aspects
+                    .map(
+                      (aspect) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: CommonAspectItem(
+                          imagePath: aspect["icon"]!,
+                          label: aspect["text"]!,
+                        ),
                       ),
-                    ),
-                  )
-                  .toList(),
-        ),
-      ],
+                    )
+                    .toList(),
+          ),
+        ],
+      ),
     );
   }
 }

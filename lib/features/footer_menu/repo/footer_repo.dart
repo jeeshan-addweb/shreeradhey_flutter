@@ -163,29 +163,79 @@ class FooterRepo {
     return ShippingModel.fromJson({'data': data});
   }
 
-  Future<WoodPressOilModel> fetchWoodPressOil() async {
-    final String query = r'''
-    query {
-     pageBy(uri: "wood-pressed-oil") {
-   title
-   blocks {
-     name
-     content
-   }
- }
+  Future<WoodPressOilModel> fetchWoodPressOil(String slug) async {
+    const String query = r'''
+   query GetPageSections($slug: ID!) {
+  page(id: $slug, idType: URI) {
+    title
+    sections {
+      type
+      title
+      description
+      image
+      faqItems {
+        question
+        answer
+      }
+      aspects {
+        icon
+        text
+        content
+      }
+      awards {
+        imageUrl
+        title
+      }
+      points
+      slides {
+        icon
+        title
+        description
+      }
+
+      products {
+        ... on SimpleProduct {
+          id
+        currencySymbol
+        price
+        regularPricePage
+        salePricePage
+        bestPrice
+        discountPercentage
+        isInWishlist
+        isInCart
+        averageRating
+        reviewCount
+        image {
+         sourceUrl
+         altText
+       }
+
+        }
+      }
     }
+  }
+}
   ''';
-    final result = await _client.query(QueryOptions(document: gql(query)));
+
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(query),
+        variables: {"slug": slug},
+        fetchPolicy: FetchPolicy.networkOnly,
+      ),
+    );
+
     debugPrint("Result repo is $result");
 
     if (result.hasException) {
       throw Exception(result.exception.toString());
     }
 
-    final data = result.data!;
+    final data = result.data;
     debugPrint("Data repo is $data");
 
-    return WoodPressOilModel.fromJson({'data': data});
+    return WoodPressOilModel.fromJson({"data": result.data});
   }
 
   Future<Map<String, dynamic>> submitContactForm(
@@ -232,5 +282,27 @@ class FooterRepo {
     }
 
     return result.data?['submitDealerForm'];
+  }
+
+  Future<Map<String, dynamic>> subscribeUser(String email) async {
+    const String mutation = r'''
+      mutation SubmitBrevoForm($email: String!) {
+        submitBrevoForm(input: { email: $email }) {
+          success
+          message
+          redirect
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(document: gql(mutation), variables: {"email": email}),
+    );
+
+    if (result.hasException) {
+      throw result.exception!;
+    }
+
+    return result.data?["submitBrevoForm"] ?? {};
   }
 }

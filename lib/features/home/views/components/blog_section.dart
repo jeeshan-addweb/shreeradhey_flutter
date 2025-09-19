@@ -51,7 +51,16 @@ class BlogSection extends StatelessWidget {
                       ?.productName ??
                   "Product name not found",
               onShopNow: () {
-                context.push(AppRoutePath.productDetail);
+                debugPrint("Tapped");
+                context.push(
+                  AppRoutePath.productDetail,
+                  // pathParameters: {'slug': widget.model.slug ?? ""},
+                  extra: {
+                    'hideNav': true,
+                    'slug': "shree-radhey-a2-gir-cow-ghee-300-ml-274gm",
+                    'category': "ghee",
+                  },
+                );
               },
             ),
             SizedBox(height: 40),

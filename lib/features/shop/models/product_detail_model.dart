@@ -45,6 +45,7 @@ class Product {
   String? type;
   String? productSubtitle;
   bool? isInWishlist;
+  bool? isInCart;
   String? price;
   String? regularPrice;
   String? salePrice;
@@ -82,6 +83,7 @@ class Product {
     this.type,
     this.productSubtitle,
     this.isInWishlist,
+    this.isInCart,
     this.price,
     this.regularPrice,
     this.salePrice,
@@ -120,6 +122,7 @@ class Product {
     type: json["type"],
     productSubtitle: json["productSubtitle"],
     isInWishlist: json["isInWishlist"],
+    isInCart: json["isInCart"],
     price: json["price"],
     regularPrice: json["regularPrice"],
     salePrice: json["salePrice"],
@@ -177,6 +180,7 @@ class Product {
     "type": type,
     "productSubtitle": productSubtitle,
     "isInWishlist": isInWishlist,
+    "isInCart": isInCart,
     "price": price,
     "regularPrice": regularPrice,
     "salePrice": salePrice,

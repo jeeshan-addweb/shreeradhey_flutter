@@ -34,6 +34,10 @@ class CartRepo {
       name
       total
     }
+    appliedCoupons {
+      code
+      discountAmount
+    }
     contents {
       itemCount
       nodes {

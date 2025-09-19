@@ -108,7 +108,7 @@ class SpecialOfferCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: onShopNow,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/utils/routes/app_route_path.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
+import '../../cart/controller/cart_controller.dart';
 import '../../home/controller/wishlist_controller.dart';
 import '../controller/product_variant_controller.dart';
 import '../controller/shop_controller.dart';
@@ -32,6 +35,7 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  final cartController = Get.find<CartController>();
   bool showFullVariants = false;
 
   final ShopController controller = Get.put(ShopController());
@@ -158,7 +162,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    final detail =
+                        controller.productDetail.value?.data?.product;
+                    if (detail?.isInCart == true) {
+                      // Navigate to cart page
+                      context.go(AppRoutePath.cartPage);
+                    } else {
+                      // Add to cart
+                      cartController.addProductToCart(
+                        detail?.databaseId ?? 0,
+                        1,
+                        context,
+                      );
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     elevation: 0, // remove shadow since gradient is outside
                     backgroundColor: Colors.transparent,
@@ -167,21 +185,46 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Add to Cart",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                  child: Obx(() {
+                    final detail =
+                        controller.productDetail.value?.data?.product;
+                    final isAdding =
+                        cartController.addingItems[detail?.databaseId] ?? false;
+                    final inCart = cartController.isInCart(
+                      detail?.databaseId ?? 0,
+                    );
+
+                    if (isAdding) {
+                      return const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.shopping_cart, color: Colors.white),
-                    ],
-                  ),
+                      );
+                    } else {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            inCart ? 'View My Cart' : 'Add to Cart',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Icon(
+                            Icons.shopping_cart,
+                            color: AppColors.white,
+                            size: 20,
+                          ),
+                        ],
+                      );
+                    }
+                  }),
                 ),
               ),
             ),
@@ -192,7 +235,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             Expanded(
               child: OutlinedButton(
                 onPressed: () {
-                  // handle buy now
+                  final detail = controller.productDetail.value?.data?.product;
+                  cartController.addProductToCart(
+                    detail?.databaseId ?? 0,
+                    1,
+                    context,
+                  );
+                  context.push(AppRoutePath.checkoutScreen);
                 },
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: AppColors.green_6cad10),

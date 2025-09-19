@@ -107,20 +107,6 @@ class FooterController extends GetxController {
     }
   }
 
-  Future<void> fetchWoodPress() async {
-    try {
-      isLoading.value = true;
-      final result = await _repo.fetchWoodPressOil();
-      debugPrint("RAW RESPONSE: ${result.toJson()}");
-      woodPress.value = result;
-      debugPrint("Result is ${result.data?.pageBy?.toJson()}");
-    } catch (e) {
-      print("Error fetching Wood Press Us: $e");
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   Future<void> submitContact({
     required BuildContext context,
     required String firstName,
@@ -212,6 +198,41 @@ class FooterController extends GetxController {
     } catch (e) {
       debugPrint("SubmitContact error: $e");
       CustomSnackbars.showError(context, "Something went wrong");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> subscribe(String email, BuildContext context) async {
+    try {
+      isLoading.value = true;
+      final data = await _repo.subscribeUser(email);
+
+      if (data["success"] == true) {
+        CustomSnackbars.showSuccess(context, data['message'] ?? "Submitted");
+      } else {
+        CustomSnackbars.showError(context, data['message'] ?? "Failed");
+      }
+    } catch (e) {
+      debugPrint("Subscribe error: $e");
+      CustomSnackbars.showError(context, "Something went wrong");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchWoodPress(String slug) async {
+    try {
+      isLoading.value = true;
+      final result = await _repo.fetchWoodPressOil(slug);
+      debugPrint("RAW RESPONSE: ${result.toJson()}");
+
+      woodPress.value = result;
+
+      debugPrint("Page title: ${result.data?.page?.title}");
+      debugPrint("Sections count: ${result.data?.page?.sections?.length}");
+    } catch (e) {
+      debugPrint("Error fetching Wood Press: $e");
     } finally {
       isLoading.value = false;
     }

@@ -17,7 +17,9 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   @override
   void initState() {
     super.initState();
-    controller.fetchPrivacyPolicy();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchPrivacyPolicy();
+    });
   }
 
   @override

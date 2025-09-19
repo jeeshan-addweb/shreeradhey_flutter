@@ -51,6 +51,7 @@ class Cart {
   List<String>? chosenShippingMethods;
   List<AvailableShippingMethod>? availableShippingMethods;
   dynamic fees;
+  List<AppliedCoupon>? appliedCoupons;
   Contents? contents;
 
   Cart({
@@ -64,6 +65,7 @@ class Cart {
     this.chosenShippingMethods,
     this.availableShippingMethods,
     this.fees,
+    this.appliedCoupons,
     this.contents,
   });
 
@@ -88,6 +90,12 @@ class Cart {
               ),
             ),
     fees: json["fees"],
+    appliedCoupons:
+        json["appliedCoupons"] == null
+            ? []
+            : List<AppliedCoupon>.from(
+              json["appliedCoupons"]!.map((x) => AppliedCoupon.fromJson(x)),
+            ),
     contents:
         json["contents"] == null ? null : Contents.fromJson(json["contents"]),
   );
@@ -111,7 +119,26 @@ class Cart {
               availableShippingMethods!.map((x) => x.toJson()),
             ),
     "fees": fees,
+    "appliedCoupons":
+        appliedCoupons == null
+            ? []
+            : List<dynamic>.from(appliedCoupons!.map((x) => x.toJson())),
     "contents": contents?.toJson(),
+  };
+}
+
+class AppliedCoupon {
+  String? code;
+  String? discountAmount;
+
+  AppliedCoupon({this.code, this.discountAmount});
+
+  factory AppliedCoupon.fromJson(Map<String, dynamic> json) =>
+      AppliedCoupon(code: json["code"], discountAmount: json["discountAmount"]);
+
+  Map<String, dynamic> toJson() => {
+    "code": code,
+    "discountAmount": discountAmount,
   };
 }
 
