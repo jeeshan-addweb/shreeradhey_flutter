@@ -95,7 +95,7 @@ class AccountRepo {
     return Orders.fromJson(data['customer']['orders']);
   }
 
-  Future<OrderDetailModel> getOrderDetail(int orderId) async {
+  Future<OrderDetailModel> getOrderDetail(String orderId) async {
     const query = r'''
 query GetOrderDetails($orderId: ID!) {
   order(id: $orderId, idType: DATABASE_ID) {
@@ -167,7 +167,7 @@ query GetOrderDetails($orderId: ID!) {
       throw Exception(result.exception.toString());
     }
     print("ORDER DETAIL RESPONSE: ${result.data}");
-    return OrderDetailModel.fromJson(result.data!);
+    return OrderDetailModel.fromJson({"data": result.data});
   }
 
   Future<CreateOrderModel> createOrder(Map<String, dynamic> input) async {

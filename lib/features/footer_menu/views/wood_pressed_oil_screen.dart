@@ -117,6 +117,7 @@ class _WoodPressedOilScreenState extends State<WoodPressedOilScreen> {
                               (a) => {
                                 "icon": a.icon ?? "",
                                 "text": a.text ?? "",
+                                "content": a.content ?? "",
                               },
                             )
                             .toList() ??

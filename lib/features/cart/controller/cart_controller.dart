@@ -52,6 +52,11 @@ class CartController extends GetxController {
     }
   }
 
+  void clearCart() {
+    cart.value = null; // clear local reactive cart object
+    cartCount.value = 0;
+  }
+
   void updateCartCount() {
     final count = cart.value?.data?.cart?.contents?.itemCount ?? 0;
 

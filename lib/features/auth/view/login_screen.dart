@@ -266,13 +266,43 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
 
                       const SizedBox(height: 20),
-                      CommonElevatedButtonWithIcon(
-                        color: AppColors.green_10b981,
-                        text: "Continue as Guest",
-                        onPressed: () {
-                          Get.find<AuthController>().continueAsGuest();
-                          context.go(AppRoutePath.homeScreen);
-                        },
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.green_6cad10,
+                                AppColors.green_327801,
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                            ),
+                            onPressed: () {
+                              Get.find<AuthController>().continueAsGuest();
+                              context.go(AppRoutePath.homeScreen);
+                            },
+                            child: Text(
+                              "Continue as Guest",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
 
                       // T&C text

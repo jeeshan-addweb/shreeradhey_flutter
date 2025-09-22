@@ -21,6 +21,8 @@ import '../../features/footer_menu/views/blog_listing_screen.dart';
 import '../../features/footer_menu/views/contact_us_screen.dart';
 import '../../features/footer_menu/views/dealership_form_screen.dart';
 import '../../features/footer_menu/views/faq_screen.dart';
+import '../../features/footer_menu/views/ghee_screen.dart';
+import '../../features/footer_menu/views/oil_screen.dart';
 import '../../features/footer_menu/views/privacy_policy_page.dart';
 import '../../features/footer_menu/views/refund_policy_page.dart';
 import '../../features/footer_menu/views/search_page.dart';
@@ -259,8 +261,22 @@ class AppRouter {
             name: 'orderDetailScreen',
             path: AppRoutePath.orderDetailScreen,
             builder: (BuildContext context, GoRouterState state) {
-              final orderId = state.extra as int; // 👈 retrieve only orderId
+              final orderId = state.extra as String; // 👈 retrieve only orderId
               return OrderDetailScreen(orderId: orderId);
+            },
+          ),
+          GoRoute(
+            name: 'gheeScreen',
+            path: AppRoutePath.gheeScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              return GheeScreen();
+            },
+          ),
+          GoRoute(
+            name: 'oilScreen',
+            path: AppRoutePath.oilScreen,
+            builder: (BuildContext context, GoRouterState state) {
+              return OilScreen();
             },
           ),
         ],

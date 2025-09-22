@@ -82,10 +82,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     },
                   ),
                   _drawerItem(context, AppImages.ghee, "A2 Ghee", () {
-                    context.push(AppRoutePath.a2girCowDesiGheePage);
+                    context.push(AppRoutePath.gheeScreen);
                   }),
                   _drawerItem(context, AppImages.oil, "Wood Pressed Oils", () {
-                    context.push(AppRoutePath.woodpressedoilScreen);
+                    context.push(AppRoutePath.oilScreen);
                   }),
                   _drawerItem(context, AppImages.shop, "Shop", () {
                     context.push(AppRoutePath.shopScreen);

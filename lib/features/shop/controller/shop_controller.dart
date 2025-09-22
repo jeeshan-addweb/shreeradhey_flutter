@@ -7,6 +7,7 @@ import '../../../common/components/custom_snackbar.dart';
 import '../models/api_product_model.dart';
 import '../models/product_detail_model.dart';
 import '../repo/shop_repo.dart';
+import 'product_variant_controller.dart';
 
 class ShopController extends GetxController {
   final ShopRepo _repo = ShopRepo();
@@ -16,6 +17,7 @@ class ShopController extends GetxController {
   var error = "".obs;
 
   var isDetailLoading = false.obs;
+  var isVariantLoading = false.obs;
   var productDetail = Rxn<ProductDetailModel>();
 
   var reviews = <NodeElement>[].obs;
@@ -67,16 +69,22 @@ class ShopController extends GetxController {
 
   Future<void> fetchProductDetail(BuildContext context, String slug) async {
     try {
-      isDetailLoading.value = true;
-      productDetail.value = await _repo.getProductDetail(slug);
-      debugPrint("detail : ${productDetail.value?.data?.toJson()}");
-      //  = detail;
-    } catch (e) {
-      debugPrint("product detail error");
-      CustomSnackbars.showError(context, "Something went wrong: $e");
-      debugPrint("product detail error IS $e");
+      isVariantLoading.value = true;
+      isLoading.value = true;
+      final detail = await _repo.getProductDetail(slug);
+      productDetail.value = detail;
+
+      // 🔑 Auto-select the matching variant
+      final variants = Get.find<ProductVariantController>().productVariants;
+      final index = variants.indexWhere(
+        (v) => v.slug == detail.data?.product?.slug, // or databaseId
+      );
+      if (index != -1) {
+        Get.find<ProductVariantController>().setSelectedVariant(index);
+      }
     } finally {
-      isDetailLoading.value = false;
+      isLoading.value = false;
+      isVariantLoading.value = false;
     }
   }
 

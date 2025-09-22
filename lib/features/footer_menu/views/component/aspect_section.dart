@@ -35,6 +35,7 @@ class AspectsSection extends StatelessWidget {
                         child: CommonAspectItem(
                           imagePath: aspect["icon"]!,
                           label: aspect["text"]!,
+                          description: aspect["content"]!,
                         ),
                       ),
                     )

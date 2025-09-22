@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
+import '../../features/auth/controller/auth_controller.dart';
 import '../../features/cart/controller/cart_controller.dart';
 import '../../utils/routes/app_route_path.dart';
 
@@ -29,6 +30,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   bool isSearching = false;
   final TextEditingController _searchController = TextEditingController();
+  final auth = Get.find<AuthController>();
 
   void _startSearch() {
     setState(() => isSearching = true);
@@ -131,7 +133,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => context.push(AppRoutePath.accountPage),
+                  onTap: () {
+                    if (auth.isGuest) {
+                      // Navigate to login with go_router
+                      context.push(AppRoutePath.login);
+                      return;
+                    }
+                    context.push(AppRoutePath.accountPage);
+                  },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: Image.asset(

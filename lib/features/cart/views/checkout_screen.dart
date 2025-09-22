@@ -32,6 +32,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String? selectedState;
   String? selectedCountry = "IN";
 
+  final billingFirstNameController = TextEditingController();
+  final billingLastNameController = TextEditingController();
+  final billingEmailController = TextEditingController();
+  final billingPhoneController = TextEditingController();
+  final billingStreetController = TextEditingController();
+  final billingApartmentController = TextEditingController();
+  final billingCityController = TextEditingController();
+  final billingPinController = TextEditingController();
+  String? billingSelectedState;
+  String? billingSelectedCountry = "IN";
+
   Widget _buildAddressForm({
     required TextEditingController firstNameController,
     required TextEditingController lastNameController,
@@ -263,18 +274,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                   const SizedBox(height: 16),
                   _buildAddressForm(
-                    firstNameController: TextEditingController(),
-                    lastNameController: TextEditingController(),
-                    emailController: TextEditingController(),
-                    phoneController: TextEditingController(),
-                    streetController: TextEditingController(),
-                    apartmentController: TextEditingController(),
-                    cityController: TextEditingController(),
-                    pinController: TextEditingController(),
-                    selectedState: null,
-                    selectedCountry: "IN",
-                    onStateChanged: (val) {},
-                    onCountryChanged: (val) {},
+                    firstNameController: billingFirstNameController,
+                    lastNameController: billingLastNameController,
+                    emailController: billingEmailController,
+                    phoneController: billingPhoneController,
+                    streetController: billingStreetController,
+                    apartmentController: billingApartmentController,
+                    cityController: billingCityController,
+                    pinController: billingPinController,
+                    selectedState: billingSelectedState,
+                    selectedCountry: billingSelectedCountry,
+                    onStateChanged:
+                        (val) => setState(() => billingSelectedState = val),
+                    onCountryChanged:
+                        (val) => setState(() => billingSelectedCountry = val),
                     showNotes: false,
                   ),
                 ],
@@ -527,7 +540,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             onPlaceOrder: (paymentMethod) async {
                               final controller = Get.put(AccountController());
                               if (paymentMethod == "razorpay") {
-                                // Navigate to Razorpay screen
                                 final paymentId = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -554,7 +566,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                               country: selectedCountry ?? "IN",
                                               customerNote:
                                                   notesController.text,
-                                              billToDifferent: false,
+                                              billToDifferent: billToDifferent,
+                                              shippingFirstName:
+                                                  billingFirstNameController
+                                                      .text,
+                                              shippingLastName:
+                                                  billingLastNameController
+                                                      .text,
+                                              shippingAddress:
+                                                  billingStreetController.text,
+                                              shippingCity:
+                                                  billingCityController.text,
+                                              shippingState:
+                                                  billingSelectedState,
+                                              shippingPostcode:
+                                                  billingPinController.text,
+                                              shippingCountry:
+                                                  billingSelectedCountry,
                                               paymentMethod: "razorpay",
                                             );
                                           },
@@ -574,7 +602,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   postcode: pinController.text,
                                   country: selectedCountry ?? "IN",
                                   customerNote: notesController.text,
-                                  billToDifferent: false,
+                                  billToDifferent: billToDifferent,
+                                  shippingFirstName:
+                                      billingFirstNameController.text,
+                                  shippingLastName:
+                                      billingLastNameController.text,
+                                  shippingAddress: billingStreetController.text,
+                                  shippingCity: billingCityController.text,
+                                  shippingState: billingSelectedState,
+                                  shippingPostcode: billingPinController.text,
+                                  shippingCountry: billingSelectedCountry,
                                   paymentMethod: paymentMethod,
                                 );
                               }

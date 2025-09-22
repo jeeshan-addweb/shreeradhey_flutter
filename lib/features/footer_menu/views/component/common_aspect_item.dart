@@ -5,11 +5,13 @@ import '../../../../constants/app_colors.dart';
 class CommonAspectItem extends StatelessWidget {
   final String imagePath; // asset path or network url
   final String label;
+  final String description;
 
   const CommonAspectItem({
     super.key,
     required this.imagePath,
     required this.label,
+    this.description = "",
   });
 
   @override
@@ -24,6 +26,16 @@ class CommonAspectItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
+            color: AppColors.grey_65758b,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          description,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
             color: AppColors.grey_65758b,
           ),
           textAlign: TextAlign.center,

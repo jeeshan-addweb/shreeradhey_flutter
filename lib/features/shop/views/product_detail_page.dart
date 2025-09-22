@@ -9,6 +9,7 @@ import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
+import '../../auth/controller/auth_controller.dart';
 import '../../cart/controller/cart_controller.dart';
 import '../../home/controller/wishlist_controller.dart';
 import '../controller/product_variant_controller.dart';
@@ -36,6 +37,7 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   final cartController = Get.find<CartController>();
+  final auth = Get.find<AuthController>();
   bool showFullVariants = false;
 
   final ShopController controller = Get.put(ShopController());
@@ -71,11 +73,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  int selectedVariantIndex = -1;
-
   int selectedImageIndex = 0;
 
   int quantity = 1;
+
   @override
   void initState() {
     super.initState();
@@ -163,6 +164,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
+                    if (auth.isGuest) {
+                      CustomSnackbars.showError(
+                        context,
+                        "Login Required ! Please login to add items to cart",
+                      );
+
+                      // Navigate to login with go_router
+                      context.push(AppRoutePath.login);
+                      return;
+                    }
                     final detail =
                         controller.productDetail.value?.data?.product;
                     if (detail?.isInCart == true) {
@@ -188,11 +199,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   child: Obx(() {
                     final detail =
                         controller.productDetail.value?.data?.product;
+                    if (detail?.databaseId == null) {
+                      return const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      );
+                    }
+                    final productId = detail!.databaseId!;
                     final isAdding =
-                        cartController.addingItems[detail?.databaseId] ?? false;
-                    final inCart = cartController.isInCart(
-                      detail?.databaseId ?? 0,
-                    );
+                        cartController.addingItems[productId] ?? false;
+                    final inCart = cartController.isInCart(productId);
 
                     if (isAdding) {
                       return const SizedBox(
@@ -265,7 +285,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ),
       backgroundColor: AppColors.white,
       body: Obx(() {
-        if (controller.isDetailLoading.value) {
+        if (controller.isDetailLoading.value ||
+            controller.isVariantLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -406,6 +427,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     : AppColors.red_CC0003,
 
                             onTap: () async {
+                              if (auth.isGuest) {
+                                CustomSnackbars.showError(
+                                  context,
+                                  "Login Required ! Please login to add items to wishlist.",
+                                );
+
+                                // Navigate to login with go_router
+                                context.push(AppRoutePath.login);
+                                return;
+                              }
                               final response = await wishlistController
                                   .toggleWishlist(detail.databaseId ?? 0);
                               if (response["success"] == true) {
@@ -888,6 +919,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   Widget _buildVariantSection(List variants) {
+    final productVariantController = Get.find<ProductVariantController>();
+
     if (variants.isEmpty) {
       return const Text(
         "No variants found",
@@ -916,34 +949,42 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
         const SizedBox(height: 12),
 
-        GridView.builder(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: displayVariants.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.3,
-          ),
-          itemBuilder: (context, index) {
-            final v = displayVariants[index];
-            return VariantCard(
-              variantName: v.productSubtitle ?? "",
-              originalPrice: v.regularPrice ?? "",
-              discountedPrice: v.salePrice ?? "",
-              discountPercent: v.discountPercentage ?? 0,
-              currencySymbol: v.currencySymbol ?? "",
-              isSelected: selectedVariantIndex == index,
-              onTap: () {
-                setState(() {
-                  selectedVariantIndex = index;
-                });
-              },
-            );
-          },
-        ),
+        Obx(() {
+          final selectedIndex =
+              productVariantController.selectedVariantIndex.value;
+
+          return GridView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: displayVariants.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.3,
+            ),
+            itemBuilder: (context, index) {
+              final v = displayVariants[index];
+              return VariantCard(
+                variantName: v.productSubtitle ?? "",
+                originalPrice: v.regularPrice ?? "",
+                discountedPrice: v.salePrice ?? "",
+                discountPercent: v.discountPercentage ?? 0,
+                currencySymbol: v.currencySymbol ?? "",
+                isSelected: selectedIndex == index,
+                onTap: () {
+                  // Update controller instead of local state
+                  productVariantController.setSelectedVariant(index);
+
+                  // Call product detail API again for the selected variant
+                  final slug = v.slug; // assuming variant has slug
+                  Get.find<ShopController>().fetchProductDetail(context, slug);
+                },
+              );
+            },
+          );
+        }),
 
         if (variants.length > 3 && !showFullVariants)
           Padding(

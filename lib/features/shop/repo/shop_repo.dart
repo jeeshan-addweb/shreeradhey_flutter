@@ -385,7 +385,11 @@ currencySymbol
   ''';
 
     final result = await _client.query(
-      QueryOptions(document: gql(query), variables: variables),
+      QueryOptions(
+        document: gql(query),
+        variables: variables,
+        fetchPolicy: FetchPolicy.networkOnly,
+      ),
     );
     if (result.hasException) {
       throw Exception(result.exception.toString());

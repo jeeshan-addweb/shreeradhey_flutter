@@ -43,7 +43,7 @@ class AccountController extends GetxController {
     }
   }
 
-  Future<void> fetchOrderDetail(int orderId) async {
+  Future<void> fetchOrderDetail(String orderId) async {
     try {
       isLoading.value = true;
       final data = await _accountrepo.getOrderDetail(orderId);
@@ -57,6 +57,7 @@ class AccountController extends GetxController {
   }
 
   Future<void> checkout({
+    // Billing
     required String firstName,
     required String lastName,
     required String email,
@@ -66,16 +67,22 @@ class AccountController extends GetxController {
     required String state,
     required String postcode,
     required String country,
+    // Optional note
     String? customerNote,
+    // Shipping (only if different)
+    String? shippingFirstName,
+    String? shippingLastName,
+    String? shippingAddress,
+    String? shippingCity,
+    String? shippingState,
+    String? shippingPostcode,
+    String? shippingCountry,
     bool billToDifferent = false,
     String paymentMethod = "cod",
     required BuildContext context,
   }) async {
     try {
       isLoading.value = true;
-
-      // final authController = Get.find<AuthController>();
-      // final customerId = authController.; // depends on your Auth flow
 
       final cartController = Get.find<CartController>();
 
@@ -85,7 +92,7 @@ class AccountController extends GetxController {
           items
               .map(
                 (n) => {
-                  "productId": int.parse(
+                  "productId": int.tryParse(
                     n.product?.node?.databaseId.toString() ?? "0",
                   ),
                   "quantity": n.quantity,
@@ -100,7 +107,6 @@ class AccountController extends GetxController {
         "paymentMethodTitle":
             paymentMethod == "cod" ? "Cash on Delivery" : "Razorpay",
         "isPaid": paymentMethod != "cod",
-
         "status": "PROCESSING",
         "coupons": [],
         "billing": {
@@ -117,13 +123,13 @@ class AccountController extends GetxController {
         "shipping":
             billToDifferent
                 ? {
-                  "firstName": firstName,
-                  "lastName": lastName,
-                  "address1": address,
-                  "city": city,
-                  "state": state,
-                  "postcode": postcode,
-                  "country": country,
+                  "firstName": shippingFirstName ?? firstName,
+                  "lastName": shippingLastName ?? lastName,
+                  "address1": shippingAddress ?? address,
+                  "city": shippingCity ?? city,
+                  "state": shippingState ?? state,
+                  "postcode": shippingPostcode ?? postcode,
+                  "country": shippingCountry ?? country,
                 }
                 : {
                   "firstName": firstName,
@@ -142,10 +148,8 @@ class AccountController extends GetxController {
         "[CartController] Order Created → ${result.data?.createOrder?.orderId}",
       );
 
-      CustomSnackbars.showSuccess(
-        context,
-        "Order #${result.data?.createOrder?.orderId} created!",
-      );
+      CustomSnackbars.showSuccess(context, "Order created!");
+      cartController.clearCart();
     } on TimeoutException {
       debugPrint(
         "[CartController] Order likely created but response timed out",

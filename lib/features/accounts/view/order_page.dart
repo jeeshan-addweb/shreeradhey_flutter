@@ -53,10 +53,10 @@ class _OrderPageState extends State<OrderPage> {
               return OrderCard(
                 order: order,
                 onView: () {
-                  debugPrint("Id is ${order.databaseId}");
+                  debugPrint("Id is ${order.databaseId.toString()}");
                   context.push(
                     AppRoutePath.orderDetailScreen,
-                    extra: order.databaseId,
+                    extra: order.databaseId.toString(),
                   );
                 },
                 onInvoice: () {},

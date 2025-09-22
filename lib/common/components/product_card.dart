@@ -168,6 +168,17 @@ class _ProductCardState extends State<ProductCard> {
 
                         GestureDetector(
                           onTap: () async {
+                            if (auth.isGuest) {
+                              CustomSnackbars.showError(
+                                context,
+                                "Login Required ! Please login to add items to wishlist.",
+                              );
+
+                              // Navigate to login with go_router
+                              context.push(AppRoutePath.login);
+                              return;
+                            }
+
                             final response = await wishlistController
                                 .toggleWishlist(widget.model.productId);
                             if (response["success"] == true) {

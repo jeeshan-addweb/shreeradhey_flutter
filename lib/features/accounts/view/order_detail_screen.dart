@@ -7,7 +7,7 @@ import '../../../../constants/app_colors.dart';
 import '../model/order_detail_model.dart';
 
 class OrderDetailScreen extends StatefulWidget {
-  final int orderId;
+  final String orderId;
 
   const OrderDetailScreen({super.key, required this.orderId});
 
@@ -16,17 +16,14 @@ class OrderDetailScreen extends StatefulWidget {
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
-  final AccountController controller = Get.put(
-    AccountController(),
-    permanent: true,
-  );
+  final AccountController controller = Get.put(AccountController());
 
   @override
   void initState() {
     super.initState();
     debugPrint("Order Id is ${widget.orderId}");
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchOrderDetail(widget.orderId);
+      controller.fetchOrderDetail(widget.orderId.toString());
     });
   }
 
