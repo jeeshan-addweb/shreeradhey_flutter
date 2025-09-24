@@ -94,6 +94,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       hint: "Enter your first name",
                       controller: firstNameController,
                       isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "First Name is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
@@ -101,6 +107,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       hint: "Enter your last name",
                       controller: lastNameController,
                       isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Last Name is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonEmailTextField(

@@ -168,17 +168,16 @@ class BlogSection extends StatelessWidget {
               ),
             ),
 
-            if (controller.pageInfo.value?.hasNextPage == true)
-              controller.isLoadingMore.value
-                  ? const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                  : TextButton(
-                    onPressed: controller.loadMoreBlogs,
-                    child: const Text("Load More"),
-                  ),
-
+            // if (controller.pageInfo.value?.hasNextPage == true)
+            //   controller.isLoadingMore.value
+            //       ? const Padding(
+            //         padding: EdgeInsets.all(8.0),
+            //         child: Center(child: CircularProgressIndicator()),
+            //       )
+            //       : TextButton(
+            //         onPressed: controller.loadMoreBlogs,
+            //         child: const Text("Load More"),
+            //       ),
             SizedBox(height: 40),
           ],
         ),

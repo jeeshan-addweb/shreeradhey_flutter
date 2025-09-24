@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -111,7 +112,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
                           if (success) {
                             CustomSnackbars.showSuccess(context, message);
-                            context.go(
+                            context.push(
                               AppRoutePath.homeScreen,
                             ); // ✅ only on success
                           } else {
@@ -144,25 +145,39 @@ class _OtpScreenState extends State<OtpScreen> {
                     const SizedBox(height: 20),
 
                     // T&C text
-                    const Text.rich(
+                    Text.rich(
                       TextSpan(
                         text: "By proceeding, you are agreeing to our ",
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                         children: [
                           TextSpan(
                             text: "T&C",
-                            style: TextStyle(
+                            style: const TextStyle(
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
                             ),
+                            recognizer:
+                                TapGestureRecognizer()
+                                  ..onTap = () {
+                                    context.push(
+                                      AppRoutePath.termsAndConditionsPage,
+                                    );
+                                  },
                           ),
-                          TextSpan(text: " and "),
+                          const TextSpan(text: " and "),
                           TextSpan(
                             text: "Privacy policy",
-                            style: TextStyle(
+                            style: const TextStyle(
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
                             ),
+                            recognizer:
+                                TapGestureRecognizer()
+                                  ..onTap = () {
+                                    context.push(
+                                      AppRoutePath.privacyPolicyPage,
+                                    );
+                                  },
                           ),
                         ],
                       ),

@@ -21,7 +21,7 @@ class _CoreValueCardState extends State<CoreValueCard> {
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minHeight: 400,
-          maxHeight: MediaQuery.of(context).size.height * 0.52,
+          maxHeight: MediaQuery.of(context).size.height * 0.55,
         ),
         child: Stack(
           alignment: Alignment.center,

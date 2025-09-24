@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
+import '../../features/auth/controller/auth_controller.dart';
 import '../../features/home/views/components/review_section.dart';
 import '../../utils/routes/app_route_path.dart';
 import 'custom_snackbar.dart';
@@ -194,6 +195,17 @@ class _CommonFooterState extends State<CommonFooter> {
                       footerLink(
                         'Cart',
                         onTap: () {
+                          final auth = Get.find<AuthController>();
+                          if (auth.isGuest) {
+                            CustomSnackbars.showError(
+                              context,
+                              "Login Required ! Please login to use cart.",
+                            );
+
+                            // Navigate to login with go_router
+                            context.push(AppRoutePath.login);
+                            return;
+                          }
                           context.push(AppRoutePath.cartPage);
                         },
                       ),

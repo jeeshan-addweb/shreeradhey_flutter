@@ -10,11 +10,13 @@ import '../../utils/routes/app_route_path.dart';
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final VoidCallback? onMenuTap; // new
+  final VoidCallback? onTabTap;
 
   CustomBottomNavigationBar({
     super.key,
     required this.currentIndex,
     this.onMenuTap,
+    this.onTabTap,
   });
 
   final List<String> icons = [
@@ -47,11 +49,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
   }
 
   Widget buildNavItem(BuildContext context, int index) {
-    final bool isSelected = index == currentIndex;
+    final bool isSelected = index == currentIndex && currentIndex != -1;
 
     return Expanded(
       child: GestureDetector(
         onTap: () {
+          if (index != 4) {
+            onTabTap?.call();
+          }
           switch (index) {
             case 0:
               context.push(AppRoutePath.homeScreen);

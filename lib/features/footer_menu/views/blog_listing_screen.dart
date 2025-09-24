@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants/app_colors.dart';
-import '../../../constants/app_mock_data.dart';
 import '../../../utils/routes/app_route_path.dart';
 import '../../home/controller/home_controller.dart';
 import '../../home/model/get_blog_model.dart';

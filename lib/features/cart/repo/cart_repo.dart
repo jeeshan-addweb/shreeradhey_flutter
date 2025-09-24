@@ -344,6 +344,8 @@ class CartRepo {
                     name
                     ... on SimpleProduct {
                       price
+                      currencySymbol
+
                     }
                   }
                 }
@@ -408,6 +410,8 @@ class CartRepo {
                     name
                     ... on SimpleProduct {
                       price
+                      currencySymbol
+
                     }
                   }
                 }

@@ -112,6 +112,7 @@ class _AccountPageState extends State<AccountPage> {
                   child: Column(
                     children: [
                       Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
                         height: 60,
                         width: 100,
                         decoration: BoxDecoration(

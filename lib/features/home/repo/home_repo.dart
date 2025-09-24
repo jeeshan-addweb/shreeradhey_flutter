@@ -5,6 +5,7 @@ import 'package:shree_radhey/features/home/model/home_data_model.dart';
 import '../../../data/network/api_client.dart';
 import '../model/blog_detail_model.dart';
 import '../model/get_blog_model.dart';
+import '../model/search_and_filter_blog_model.dart';
 
 class HomeRepo {
   final _client = ApiClient().graphQLClient;
@@ -137,6 +138,77 @@ posts(first: $first, after: $after, where: { orderby: { field: DATE, order: DESC
     } else {
       throw Exception("No Data Found");
     }
+  }
+
+  Future<PostsSearch> fetchSearchandFilterBlogs({
+    int first = 10,
+    String? after,
+    String? categoryName,
+    String? search,
+  }) async {
+    const String query = r'''
+    query GetPostsByCategoryAndSearch(
+      $first: Int
+      $after: String
+      $categoryName: String
+      $search: String
+    ) {
+      posts(
+        first: $first
+        after: $after
+        where: {
+          orderby: { field: DATE, order: DESC }
+          categoryName: $categoryName
+          search: $search
+        }
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          title
+          slug
+          uri
+          date
+          excerpt
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+          categories {
+            nodes {
+              id
+              name
+              slug
+            }
+          }
+        }
+      }
+    }
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(query),
+        variables: {
+          "first": first,
+          "after": after,
+          "categoryName": categoryName,
+          "search": search,
+        },
+        fetchPolicy: FetchPolicy.networkOnly,
+      ),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return PostsSearch.fromJson(result.data!['posts']);
   }
 
   Future<HomeDataModel> getHomeData() async {

@@ -8,6 +8,7 @@ class CommonLabeledTextField extends StatelessWidget {
   final bool isRequired;
   final TextInputType keyboardType;
   final double fontSize;
+  final String? Function(String?)? validator;
 
   const CommonLabeledTextField({
     super.key,
@@ -17,6 +18,7 @@ class CommonLabeledTextField extends StatelessWidget {
     this.isRequired = false,
     this.keyboardType = TextInputType.text,
     this.fontSize = 14,
+    this.validator,
   });
 
   @override
@@ -44,7 +46,8 @@ class CommonLabeledTextField extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        TextField(
+        TextFormField(
+          validator: validator,
           controller: controller,
           keyboardType: keyboardType,
           decoration: InputDecoration(
@@ -73,6 +76,7 @@ class CommonLabeledDropdown extends StatelessWidget {
   final String? value;
   final Function(String?) onChanged;
   final bool isRequired;
+  final String? Function(String?)? validator;
 
   const CommonLabeledDropdown({
     super.key,
@@ -82,6 +86,7 @@ class CommonLabeledDropdown extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.isRequired = false,
+    this.validator,
   });
 
   @override
@@ -110,6 +115,7 @@ class CommonLabeledDropdown extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
+          validator: validator,
           value: value,
           decoration: InputDecoration(
             border: OutlineInputBorder(

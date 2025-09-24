@@ -191,6 +191,7 @@ class CartController extends GetxController {
           cart.value = response.cart;
           appliedCoupon.value = code;
           couponControllerText.text = code;
+          await fetchCartItems();
         }
 
         if (response.message != null) {
@@ -219,6 +220,7 @@ class CartController extends GetxController {
           cart.value = response.cart;
           appliedCoupon.value = null;
           couponControllerText.clear();
+          await fetchCartItems();
         }
 
         if (response.message != null) {

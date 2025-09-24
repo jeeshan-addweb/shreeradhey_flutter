@@ -23,11 +23,12 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _getIndexFromLocation(String location) {
+    if (location.startsWith("/home")) return 0;
     if (location.startsWith('/shop')) return 1;
     if (location.startsWith('/deals')) return 2;
     if (location.startsWith('/cart')) return 3;
     if (location.startsWith('/menu')) return 4;
-    return 0; // default to Home
+    return -1; // default to Home
   }
 
   bool _isDrawerOpen = false;
@@ -40,7 +41,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const double topBarHeight = kToolbarHeight + 90; // matches your app bar
+    const double topBarHeight = kToolbarHeight + 60;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -106,6 +107,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   GoRouterState.of(context).uri.toString(),
                 ),
                 onMenuTap: _toggleDrawer,
+                onTabTap: () {
+                  if (_isDrawerOpen) setState(() => _isDrawerOpen = false);
+                },
               )
               : null,
     );

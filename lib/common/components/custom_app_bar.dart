@@ -9,6 +9,7 @@ import '../../constants/app_images.dart';
 import '../../features/auth/controller/auth_controller.dart';
 import '../../features/cart/controller/cart_controller.dart';
 import '../../utils/routes/app_route_path.dart';
+import 'custom_snackbar.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isDrawerOpen;
@@ -73,6 +74,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         widget.isDrawerOpen ? Icons.close : Icons.menu,
                         size: 30,
                       ),
+
                       onPressed: widget.onMenuTap,
                     ),
               ),
@@ -80,7 +82,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               // Logo (hidden if searching)
               if (!isSearching) Image.asset(AppImages.logo, height: 40),
 
-              const Spacer(),
+              if (!isSearching) const Spacer(),
 
               // --- Search Mode ---
               if (isSearching) ...[
@@ -122,7 +124,20 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => context.push(AppRoutePath.wishlistScreen),
+                  onTap: () {
+                    final auth = Get.find<AuthController>();
+                    if (auth.isGuest) {
+                      CustomSnackbars.showError(
+                        context,
+                        "Login Required ! Please login to access wishlist.",
+                      );
+
+                      // Navigate to login with go_router
+                      context.push(AppRoutePath.login);
+                      return;
+                    }
+                    context.push(AppRoutePath.wishlistScreen);
+                  },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: Image.asset(
@@ -151,7 +166,20 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => context.push(AppRoutePath.cartPage),
+                  onTap: () {
+                    final auth = Get.find<AuthController>();
+                    if (auth.isGuest) {
+                      CustomSnackbars.showError(
+                        context,
+                        "Login Required ! Please login to use cart.",
+                      );
+
+                      // Navigate to login with go_router
+                      context.push(AppRoutePath.login);
+                      return;
+                    }
+                    context.push(AppRoutePath.cartPage);
+                  },
                   child: Stack(
                     children: [
                       Padding(

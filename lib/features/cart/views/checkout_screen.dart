@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/common/components/custom_snackbar.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
@@ -19,6 +20,8 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final CartController cartController = Get.find<CartController>();
   bool billToDifferent = false;
+  final _shippingFormKey = GlobalKey<FormState>();
+  final _billingFormKey = GlobalKey<FormState>();
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -42,6 +45,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final billingPinController = TextEditingController();
   String? billingSelectedState;
   String? billingSelectedCountry = "IN";
+
+  @override
+  void dispose() {
+    // Shipping
+    firstNameController.dispose();
+    lastNameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    streetController.dispose();
+    apartmentController.dispose();
+    cityController.dispose();
+    pinController.dispose();
+    notesController.dispose();
+
+    // Billing
+    billingFirstNameController.dispose();
+    billingLastNameController.dispose();
+    billingEmailController.dispose();
+    billingPhoneController.dispose();
+    billingStreetController.dispose();
+    billingApartmentController.dispose();
+    billingCityController.dispose();
+    billingPinController.dispose();
+
+    super.dispose();
+  }
 
   Widget _buildAddressForm({
     required TextEditingController firstNameController,
@@ -71,6 +100,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 hint: "Enter first name",
                 controller: firstNameController,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "First Name is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -80,6 +115,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 hint: "Enter last name",
                 controller: lastNameController,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Last Name is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
@@ -96,6 +137,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 controller: emailController,
                 isRequired: true,
                 keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty)
+                    return "Email is required";
+                  final emailRegex = RegExp(
+                    r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+                  );
+                  if (!emailRegex.hasMatch(value)) return "Enter a valid email";
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -106,6 +156,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 controller: phoneController,
                 isRequired: true,
                 keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty)
+                    return "Phone is required";
+                  if (!RegExp(r'^[0-9]{10}$').hasMatch(value))
+                    return "Enter a valid 10-digit phone number";
+                  return null;
+                },
               ),
             ),
           ],
@@ -117,6 +174,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           hint: "House number and street name",
           controller: streetController,
           isRequired: true,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Street Address is required";
+            }
+            return null;
+          },
         ),
         CommonLabeledTextField(
           label: "",
@@ -134,6 +197,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 hint: "Enter town/city",
                 controller: cityController,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Town is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -145,6 +214,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 value: selectedState,
                 onChanged: onStateChanged,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please Select State is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
@@ -161,6 +236,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 controller: pinController,
                 isRequired: true,
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "PIN Code is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -172,16 +253,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 value: selectedCountry,
                 onChanged: onCountryChanged,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please Select Country is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
         ),
-        if (showNotes) ...[
+        if (showNotes && notesController != null) ...[
           const SizedBox(height: 16),
           CommonLabeledTextField(
             label: "Order notes (optional)",
             hint: "Notes about your order, e.g. special notes for delivery.",
-            controller: notesController!,
+            controller: notesController,
           ),
         ],
       ],
@@ -249,22 +336,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                _buildAddressForm(
-                  firstNameController: firstNameController,
-                  lastNameController: lastNameController,
-                  emailController: emailController,
-                  phoneController: phoneController,
-                  streetController: streetController,
-                  apartmentController: apartmentController,
-                  cityController: cityController,
-                  pinController: pinController,
-                  selectedState: selectedState,
-                  selectedCountry: selectedCountry,
-                  onStateChanged: (val) => setState(() => selectedState = val),
-                  onCountryChanged:
-                      (val) => setState(() => selectedCountry = val),
-                  showNotes: true,
-                  notesController: notesController,
+                Form(
+                  key: _shippingFormKey,
+                  child: _buildAddressForm(
+                    firstNameController: firstNameController,
+                    lastNameController: lastNameController,
+                    emailController: emailController,
+                    phoneController: phoneController,
+                    streetController: streetController,
+                    apartmentController: apartmentController,
+                    cityController: cityController,
+                    pinController: pinController,
+                    selectedState: selectedState,
+                    selectedCountry: selectedCountry,
+                    onStateChanged:
+                        (val) => setState(() => selectedState = val),
+                    onCountryChanged:
+                        (val) => setState(() => selectedCountry = val),
+                    showNotes: true,
+                    notesController: notesController,
+                  ),
                 ),
                 if (billToDifferent) ...[
                   const SizedBox(height: 24),
@@ -273,22 +364,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  _buildAddressForm(
-                    firstNameController: billingFirstNameController,
-                    lastNameController: billingLastNameController,
-                    emailController: billingEmailController,
-                    phoneController: billingPhoneController,
-                    streetController: billingStreetController,
-                    apartmentController: billingApartmentController,
-                    cityController: billingCityController,
-                    pinController: billingPinController,
-                    selectedState: billingSelectedState,
-                    selectedCountry: billingSelectedCountry,
-                    onStateChanged:
-                        (val) => setState(() => billingSelectedState = val),
-                    onCountryChanged:
-                        (val) => setState(() => billingSelectedCountry = val),
-                    showNotes: false,
+                  Form(
+                    key: _billingFormKey,
+                    child: _buildAddressForm(
+                      firstNameController: billingFirstNameController,
+                      lastNameController: billingLastNameController,
+                      emailController: billingEmailController,
+                      phoneController: billingPhoneController,
+                      streetController: billingStreetController,
+                      apartmentController: billingApartmentController,
+                      cityController: billingCityController,
+                      pinController: billingPinController,
+                      selectedState: billingSelectedState,
+                      selectedCountry: billingSelectedCountry,
+                      onStateChanged:
+                          (val) => setState(() => billingSelectedState = val),
+                      onCountryChanged:
+                          (val) => setState(() => billingSelectedCountry = val),
+                      showNotes: false,
+                    ),
                   ),
                 ],
 
@@ -539,6 +633,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           PaymentMethodCard(
                             onPlaceOrder: (paymentMethod) async {
                               final controller = Get.put(AccountController());
+                              final shippingValid =
+                                  _shippingFormKey.currentState?.validate() ??
+                                  false;
+
+                              // 2️⃣ Validate billing only if "bill to different" is checked
+                              final billingValid =
+                                  !billToDifferent ||
+                                  (_billingFormKey.currentState?.validate() ??
+                                      false);
+
+                              if (!shippingValid || !billingValid) {
+                                CustomSnackbars.showError(
+                                  context,
+                                  "Please fill all required fields",
+                                );
+                                return;
+                              }
+
                               if (paymentMethod == "razorpay") {
                                 final paymentId = await Navigator.push(
                                   context,
@@ -552,6 +664,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                           phone: phoneController.text,
                                           onSuccess: (paymentId) {
                                             // After payment, call checkout with Razorpay method
+
                                             controller.checkout(
                                               context: context,
                                               firstName:
