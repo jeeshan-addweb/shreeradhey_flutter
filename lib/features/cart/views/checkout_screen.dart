@@ -7,6 +7,7 @@ import '../../../common/components/common_textfield.dart';
 import '../../../common/components/razorpay_payment_screen.dart';
 import '../../../constants/app_colors.dart';
 import '../../accounts/controller/account_controller.dart';
+import '../../auth/controller/auth_controller.dart';
 import '../controller/cart_controller.dart';
 import 'components/payment_method_card.dart';
 
@@ -19,6 +20,8 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final CartController cartController = Get.find<CartController>();
+  final AuthController _authController = Get.put(AuthController());
+  final controller = Get.put(AccountController());
   bool billToDifferent = false;
   final _shippingFormKey = GlobalKey<FormState>();
   final _billingFormKey = GlobalKey<FormState>();
@@ -287,29 +290,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "Home",
-                        style: TextStyle(color: AppColors.black),
-                      ),
-                      TextSpan(
-                        text: " / ",
-                        style: TextStyle(color: AppColors.red_CC0003),
-                      ),
-                      TextSpan(
-                        text: "Checkout",
-                        style: TextStyle(color: AppColors.red_CC0003),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
+                // RichText(
+                //   text: TextSpan(
+                //     style: const TextStyle(
+                //       fontSize: 16,
+                //       fontWeight: FontWeight.w500,
+                //     ),
+                //     children: [
+                //       TextSpan(
+                //         text: "Home",
+                //         style: TextStyle(color: AppColors.black),
+                //       ),
+                //       TextSpan(
+                //         text: " / ",
+                //         style: TextStyle(color: AppColors.red_CC0003),
+                //       ),
+                //       TextSpan(
+                //         text: "Checkout",
+                //         style: TextStyle(color: AppColors.red_CC0003),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // const SizedBox(height: 32),
                 Row(
                   children: [
                     Checkbox(
@@ -631,8 +634,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ],
                           ),
                           PaymentMethodCard(
+                            isLoading: controller.isLoading.value,
                             onPlaceOrder: (paymentMethod) async {
-                              final controller = Get.put(AccountController());
                               final shippingValid =
                                   _shippingFormKey.currentState?.validate() ??
                                   false;
@@ -666,6 +669,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                             // After payment, call checkout with Razorpay method
 
                                             controller.checkout(
+                                              customerId: int.parse(
+                                                _authController.userId
+                                                    .toString(),
+                                              ),
                                               context: context,
                                               firstName:
                                                   firstNameController.text,
@@ -704,6 +711,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 );
                               } else {
                                 controller.checkout(
+                                  customerId: int.parse(
+                                    _authController.userId.toString(),
+                                  ),
                                   context: context,
                                   firstName: firstNameController.text,
                                   lastName: lastNameController.text,

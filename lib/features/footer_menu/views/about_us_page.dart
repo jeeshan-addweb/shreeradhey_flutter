@@ -149,28 +149,28 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Breadcrumb
-                    RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "Home",
-                            style: TextStyle(color: AppColors.black),
-                          ),
-                          TextSpan(
-                            text: " / ",
-                            style: TextStyle(color: AppColors.red_CC0003),
-                          ),
-                          TextSpan(
-                            text: aboutUs?.title ?? "About Us",
-                            style: TextStyle(color: AppColors.red_CC0003),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     style: const TextStyle(
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w500,
+                    //     ),
+                    //     children: [
+                    //       TextSpan(
+                    //         text: "Home",
+                    //         style: TextStyle(color: AppColors.black),
+                    //       ),
+                    //       TextSpan(
+                    //         text: " / ",
+                    //         style: TextStyle(color: AppColors.red_CC0003),
+                    //       ),
+                    //       TextSpan(
+                    //         text: aboutUs?.title ?? "About Us",
+                    //         style: TextStyle(color: AppColors.red_CC0003),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
 
                     // Main About Us Card
                     Padding(

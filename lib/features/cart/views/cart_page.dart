@@ -42,42 +42,41 @@ class _CartPageState extends State<CartPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Home",
-                          style: TextStyle(
-                            color: AppColors.grey_3C403D,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextSpan(
-                          text: " / ",
-                          style: TextStyle(
-                            color: AppColors.red_CC0003,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "Cart",
-                          style: TextStyle(
-                            color: AppColors.red_CC0003,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
+                  // RichText(
+                  //   text: TextSpan(
+                  //     style: const TextStyle(
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w500,
+                  //     ),
+                  //     children: [
+                  //       TextSpan(
+                  //         text: "Home",
+                  //         style: TextStyle(
+                  //           color: AppColors.grey_3C403D,
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //       TextSpan(
+                  //         text: " / ",
+                  //         style: TextStyle(
+                  //           color: AppColors.red_CC0003,
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //       TextSpan(
+                  //         text: "Cart",
+                  //         style: TextStyle(
+                  //           color: AppColors.red_CC0003,
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -101,37 +101,36 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Home",
-                          style: TextStyle(color: AppColors.black),
-                        ),
-                        TextSpan(
-                          text: " / ",
-                          style: TextStyle(color: AppColors.red_CC0003),
-                        ),
-                        TextSpan(
-                          text: "Blog",
-                          style: TextStyle(color: AppColors.black),
-                        ),
-                        TextSpan(
-                          text: " / ",
-                          style: TextStyle(color: AppColors.red_CC0003),
-                        ),
-                        TextSpan(
-                          text: detail.title,
-                          style: TextStyle(color: AppColors.red_CC0003),
-                        ),
-                      ],
-                    ),
-                  ),
-
+                  // RichText(
+                  //   text: TextSpan(
+                  //     style: const TextStyle(
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w600,
+                  //     ),
+                  //     children: [
+                  //       TextSpan(
+                  //         text: "Home",
+                  //         style: TextStyle(color: AppColors.black),
+                  //       ),
+                  //       TextSpan(
+                  //         text: " / ",
+                  //         style: TextStyle(color: AppColors.red_CC0003),
+                  //       ),
+                  //       TextSpan(
+                  //         text: "Blog",
+                  //         style: TextStyle(color: AppColors.black),
+                  //       ),
+                  //       TextSpan(
+                  //         text: " / ",
+                  //         style: TextStyle(color: AppColors.red_CC0003),
+                  //       ),
+                  //       TextSpan(
+                  //         text: detail.title,
+                  //         style: TextStyle(color: AppColors.red_CC0003),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   const SizedBox(height: 16),
 
                   Row(

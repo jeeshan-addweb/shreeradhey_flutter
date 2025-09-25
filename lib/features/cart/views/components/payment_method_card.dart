@@ -3,7 +3,12 @@ import '../../../../constants/app_colors.dart';
 
 class PaymentMethodCard extends StatefulWidget {
   final Function(String paymentMethod)? onPlaceOrder;
-  const PaymentMethodCard({super.key, this.onPlaceOrder});
+  final bool isLoading;
+  const PaymentMethodCard({
+    super.key,
+    this.onPlaceOrder,
+    this.isLoading = false,
+  });
 
   @override
   State<PaymentMethodCard> createState() => _PaymentMethodCardState();
@@ -151,7 +156,17 @@ class _PaymentMethodCardState extends State<PaymentMethodCard> {
                           widget.onPlaceOrder?.call(_selectedPayment);
                         }
                         : null,
-                child: const Text("Place order"),
+                child:
+                    widget.isLoading
+                        ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : const Text("Place order"),
               ),
             ),
           ],

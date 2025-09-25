@@ -227,14 +227,14 @@ class _CartSummarySectionState extends State<CartSummarySection> {
                       ),
                     ),
 
-                    const Text(
-                      "Calculate shipping",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFFE51900),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    // const Text(
+                    //   "Calculate shipping",
+                    //   style: TextStyle(
+                    //     fontSize: 12,
+                    //     color: Color(0xFFE51900),
+                    //     fontWeight: FontWeight.w500,
+                    //   ),
+                    // ),
                   ],
                 );
               }),

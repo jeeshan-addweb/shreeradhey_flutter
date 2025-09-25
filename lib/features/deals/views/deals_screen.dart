@@ -134,53 +134,53 @@ class _DealsScreenState extends State<DealsScreen> {
               },
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // so text aligns like your design
-              children: [
-                Text(
-                  "SHOP",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "Home ",
-                        style: TextStyle(
-                          color: AppColors.grey_3C403D,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Home in black
-                      ),
-                      TextSpan(
-                        text: "/ ",
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Slash in black
-                      ),
-                      TextSpan(
-                        text: categories[selectedIndex]['title']!,
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Selected category in red
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          //   child: Column(
+          //     crossAxisAlignment:
+          //         CrossAxisAlignment.start, // so text aligns like your design
+          //     children: [
+          //       Text(
+          //         "SHOP",
+          //         style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          //       ),
+          //       RichText(
+          //         text: TextSpan(
+          //           style: const TextStyle(
+          //             fontSize: 16,
+          //             fontWeight: FontWeight.w500,
+          //           ),
+          //           children: [
+          //             TextSpan(
+          //               text: "Home ",
+          //               style: TextStyle(
+          //                 color: AppColors.grey_3C403D,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Home in black
+          //             ),
+          //             TextSpan(
+          //               text: "/ ",
+          //               style: TextStyle(
+          //                 color: AppColors.red_CC0003,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Slash in black
+          //             ),
+          //             TextSpan(
+          //               text: categories[selectedIndex]['title']!,
+          //               style: TextStyle(
+          //                 color: AppColors.red_CC0003,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Selected category in red
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           // SizedBox(height: 40),
           Obx(() {

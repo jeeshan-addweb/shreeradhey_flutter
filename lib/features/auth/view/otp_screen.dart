@@ -112,14 +112,9 @@ class _OtpScreenState extends State<OtpScreen> {
 
                           if (success) {
                             CustomSnackbars.showSuccess(context, message);
-                            context.push(
-                              AppRoutePath.homeScreen,
-                            ); // ✅ only on success
+                            context.go(AppRoutePath.homeScreen);
                           } else {
-                            CustomSnackbars.showError(
-                              context,
-                              message,
-                            ); // ❌ stay on same screen
+                            CustomSnackbars.showError(context, message);
                           }
                         },
                       ),

@@ -258,8 +258,7 @@ class _ProductCardState extends State<ProductCard> {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
                   Text(
                     '${widget.model.currencySymbol}${widget.model.price}',
@@ -269,7 +268,7 @@ class _ProductCardState extends State<ProductCard> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(width: 5),
                   Text(
                     '${widget.model.currencySymbol}${widget.model.oldPrice}',
                     style: TextStyle(
@@ -278,32 +277,32 @@ class _ProductCardState extends State<ProductCard> {
                       color: AppColors.grey_212121,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: FittedBox(
-                      child: Row(
-                        children: [
-                          Text(
-                            'Best Price ${widget.model.currencySymbol}${widget.model.couponPrice}',
-                            style: TextStyle(
-                              color: AppColors.green_327801,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'with coupon',
-                            style: TextStyle(
-                              color: AppColors.grey_212121,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: FittedBox(
+                child: Row(
+                  children: [
+                    Text(
+                      'Best Price ${widget.model.currencySymbol}${widget.model.couponPrice}',
+                      style: TextStyle(
+                        color: AppColors.green_327801,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Text(
+                      'with coupon',
+                      style: TextStyle(
+                        color: AppColors.grey_212121,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -320,16 +319,19 @@ class _ProductCardState extends State<ProductCard> {
                         context,
                         "Login Required ! Please login to add items to cart.",
                       );
-
-                      // Navigate to login with go_router
                       context.push(AppRoutePath.login);
                       return;
                     }
 
-                    if (widget.model.isInCart.value) {
+                    final inCart = cartController.isInCart(
+                      widget.model.productId,
+                    );
+
+                    if (inCart) {
+                      // ✅ Only navigate, no re-add
                       context.go(AppRoutePath.cartPage);
                     } else {
-                      // Add to cart
+                      // ✅ Add only once
                       cartController.addProductToCart(
                         widget.model.productId,
                         1,
@@ -337,6 +339,7 @@ class _ProductCardState extends State<ProductCard> {
                       );
                     }
                   },
+
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(

@@ -32,42 +32,41 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // so text aligns like your design
-              children: [
-                Text(
-                  "Best Sellers",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "Home ",
-                        style: TextStyle(color: AppColors.black),
-                      ),
-                      TextSpan(
-                        text: "/ ",
-                        style: TextStyle(color: AppColors.red_CC0003),
-                      ),
-                      TextSpan(
-                        text: "Best Sellers",
-                        style: TextStyle(color: AppColors.red_CC0003),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
+          // Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          //   child: Column(
+          //     crossAxisAlignment:
+          //         CrossAxisAlignment.start, // so text aligns like your design
+          //     children: [
+          //       Text(
+          //         "Best Sellers",
+          //         style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          //       ),
+          //       RichText(
+          //         text: TextSpan(
+          //           style: const TextStyle(
+          //             fontSize: 16,
+          //             fontWeight: FontWeight.w500,
+          //           ),
+          //           children: [
+          //             TextSpan(
+          //               text: "Home ",
+          //               style: TextStyle(color: AppColors.black),
+          //             ),
+          //             TextSpan(
+          //               text: "/ ",
+          //               style: TextStyle(color: AppColors.red_CC0003),
+          //             ),
+          //             TextSpan(
+          //               text: "Best Sellers",
+          //               style: TextStyle(color: AppColors.red_CC0003),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           Obx(() {
             if (controller.isLoading.value) {
               // Show shimmer cards while loading

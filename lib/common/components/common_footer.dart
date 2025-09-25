@@ -188,6 +188,17 @@ class _CommonFooterState extends State<CommonFooter> {
                       footerLink(
                         'My account',
                         onTap: () {
+                          final auth = Get.find<AuthController>();
+                          if (auth.isGuest) {
+                            CustomSnackbars.showError(
+                              context,
+                              "Login Required ! Please login",
+                            );
+
+                            // Navigate to login with go_router
+                            context.push(AppRoutePath.login);
+                            return;
+                          }
                           context.push(AppRoutePath.dealershipFormScreen);
                         },
                       ),
@@ -213,6 +224,17 @@ class _CommonFooterState extends State<CommonFooter> {
                       footerLink(
                         'Checkout',
                         onTap: () {
+                          final auth = Get.find<AuthController>();
+                          if (auth.isGuest) {
+                            CustomSnackbars.showError(
+                              context,
+                              "Login Required ! Please login .",
+                            );
+
+                            // Navigate to login with go_router
+                            context.push(AppRoutePath.login);
+                            return;
+                          }
                           context.push(AppRoutePath.checkoutScreen);
                         },
                       ),
@@ -220,6 +242,17 @@ class _CommonFooterState extends State<CommonFooter> {
                       footerLink(
                         'Wishlist',
                         onTap: () {
+                          final auth = Get.find<AuthController>();
+                          if (auth.isGuest) {
+                            CustomSnackbars.showError(
+                              context,
+                              "Login Required ! Please login to use wishlist.",
+                            );
+
+                            // Navigate to login with go_router
+                            context.push(AppRoutePath.login);
+                            return;
+                          }
                           context.push(AppRoutePath.wishlistScreen);
                         },
                       ),

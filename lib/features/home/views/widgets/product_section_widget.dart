@@ -83,7 +83,7 @@ class _ProductSectionState extends State<ProductSection> {
 
   @override
   Widget build(BuildContext context) {
-    final cardHeight = MediaQuery.of(context).size.width * 1.4;
+    final cardHeight = MediaQuery.of(context).size.width * 1.3;
     return Container(
       color: widget.sectionBgColor,
       padding: const EdgeInsets.symmetric(vertical: 16),

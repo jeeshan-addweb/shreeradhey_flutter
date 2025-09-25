@@ -58,6 +58,7 @@ class AccountController extends GetxController {
 
   Future<void> checkout({
     // Billing
+    required int customerId,
     required String firstName,
     required String lastName,
     required String email,
@@ -78,7 +79,7 @@ class AccountController extends GetxController {
     String? shippingPostcode,
     String? shippingCountry,
     bool billToDifferent = false,
-    String paymentMethod = "cod",
+    String? paymentMethod,
     required BuildContext context,
   }) async {
     try {
@@ -101,7 +102,7 @@ class AccountController extends GetxController {
               .toList();
 
       final input = {
-        "customerId": 975,
+        "customerId": customerId,
         "customerNote": customerNote ?? "",
         "paymentMethod": paymentMethod,
         "paymentMethodTitle":
@@ -147,9 +148,9 @@ class AccountController extends GetxController {
       debugPrint(
         "[CartController] Order Created → ${result.data?.createOrder?.orderId}",
       );
+      await cartController.emptyCart();
 
       CustomSnackbars.showSuccess(context, "Order created!");
-      cartController.clearCart();
     } on TimeoutException {
       debugPrint(
         "[CartController] Order likely created but response timed out",

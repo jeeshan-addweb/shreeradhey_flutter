@@ -65,80 +65,80 @@ class _BlogListingScreenState extends State<BlogListingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Blog", style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 4),
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "Home ",
-                      style: TextStyle(color: AppColors.black),
-                    ),
-                    TextSpan(
-                      text: "/ ",
-                      style: TextStyle(color: AppColors.red_CC0003),
-                    ),
-                    TextSpan(
-                      text: "Blog",
-                      style: TextStyle(color: AppColors.red_CC0003),
-                    ),
-                  ],
-                ),
-              ),
+              // Text("Blogs", style: Theme.of(context).textTheme.headlineMedium),
+              // const SizedBox(height: 4),
 
+              // RichText(
+              //   text: TextSpan(
+              //     style: const TextStyle(
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.w500,
+              //     ),
+              //     children: [
+              //       TextSpan(
+              //         text: "Home ",
+              //         style: TextStyle(color: AppColors.black),
+              //       ),
+              //       TextSpan(
+              //         text: "/ ",
+              //         style: TextStyle(color: AppColors.red_CC0003),
+              //       ),
+              //       TextSpan(
+              //         text: "Blog",
+              //         style: TextStyle(color: AppColors.red_CC0003),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(height: 16),
               BlogCarousel(blogs: controller.blogs),
 
               const SizedBox(height: 16),
 
               /// --- Filter + Search ---
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Dropdown
-                    DropdownButtonFormField<String>(
-                      value: selectedFilter,
-                      decoration: const InputDecoration(
-                        labelText: "Filter By",
-                        border: OutlineInputBorder(),
-                      ),
-                      items:
-                          ["All", "Health", "Recipes", "Tips"]
-                              .map(
-                                (item) => DropdownMenuItem(
-                                  value: item,
-                                  child: Text(item),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (value) {
-                        setState(() => selectedFilter = value ?? "All");
-                      },
-                    ),
-                    const SizedBox(height: 12),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 16),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       // Dropdown
+              //       DropdownButtonFormField<String>(
+              //         value: selectedFilter,
+              //         decoration: const InputDecoration(
+              //           labelText: "Filter By",
+              //           border: OutlineInputBorder(),
+              //         ),
+              //         items:
+              //             ["All", "Health", "Recipes", "Tips"]
+              //                 .map(
+              //                   (item) => DropdownMenuItem(
+              //                     value: item,
+              //                     child: Text(item),
+              //                   ),
+              //                 )
+              //                 .toList(),
+              //         onChanged: (value) {
+              //           setState(() => selectedFilter = value ?? "All");
+              //         },
+              //       ),
+              //       const SizedBox(height: 12),
 
-                    // Search
-                    TextField(
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.search),
-                        hintText: "Search...",
-                        border: OutlineInputBorder(),
-                      ),
-                      onChanged: (value) {
-                        setState(() => searchQuery = value);
-                      },
-                    ),
-                  ],
-                ),
-              ),
+              //       // Search
+              //       TextField(
+              //         decoration: const InputDecoration(
+              //           prefixIcon: Icon(Icons.search),
+              //           hintText: "Search...",
+              //           border: OutlineInputBorder(),
+              //         ),
+              //         onChanged: (value) {
+              //           setState(() => searchQuery = value);
+              //         },
+              //       ),
+              //     ],
+              //   ),
+              // ),
 
-              const SizedBox(height: 16),
+              // const SizedBox(height: 16),
 
               /// --- Vertical Blog List ---
               ListView.separated(

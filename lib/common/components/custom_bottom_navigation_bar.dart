@@ -5,7 +5,9 @@ import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
+import '../../features/auth/controller/auth_controller.dart';
 import '../../utils/routes/app_route_path.dart';
+import 'custom_snackbar.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -68,6 +70,17 @@ class CustomBottomNavigationBar extends StatelessWidget {
               context.push(AppRoutePath.dealsScreen); // All
               break;
             case 3:
+              final auth = Get.find<AuthController>();
+              if (auth.isGuest) {
+                CustomSnackbars.showError(
+                  context,
+                  "Login Required ! Please login to use wishlist.",
+                );
+
+                // Navigate to login with go_router
+                context.push(AppRoutePath.login);
+                return;
+              }
               context.go(AppRoutePath.cartPage);
               break;
             case 4:

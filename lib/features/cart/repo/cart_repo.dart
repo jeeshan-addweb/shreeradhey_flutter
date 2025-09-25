@@ -322,6 +322,32 @@ class CartRepo {
     return GetCartModel.fromJson(wrapped);
   }
 
+  Future<void> emptyCart() async {
+    const mutation = r'''
+      mutation EmptyCart {
+        emptyCart(input: {}) {
+          cart {
+            contents {
+              itemCount
+            }
+          }
+        }
+      }
+    ''';
+
+    final result = await client.mutate(
+      MutationOptions(document: gql(mutation)),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    debugPrint(
+      "[CartRepo] Cart emptied → ${result.data?['emptyCart']?['cart']?['contents']?['itemCount']}",
+    );
+  }
+
   Future<CouponResponse?> applyCoupon(String code) async {
     const String mutation = r'''
       mutation ApplyCoupon($code: String!) {

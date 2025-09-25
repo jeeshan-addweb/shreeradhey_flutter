@@ -111,6 +111,21 @@ class CartController extends GetxController {
     }
   }
 
+  Future<void> emptyCart() async {
+    try {
+      isLoading.value = true;
+
+      await _repo.emptyCart();
+      clearCart();
+
+      debugPrint("[CartController] Cart emptied successfully");
+    } catch (e) {
+      debugPrint("[CartController] Failed to empty cart: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> updateQuantity(String key, int quantity) async {
     if (key.isEmpty) return;
     try {
@@ -191,7 +206,6 @@ class CartController extends GetxController {
           cart.value = response.cart;
           appliedCoupon.value = code;
           couponControllerText.text = code;
-          await fetchCartItems();
         }
 
         if (response.message != null) {
@@ -200,6 +214,7 @@ class CartController extends GetxController {
             response.message!,
           ); // ✅ show message
         }
+        await fetchCartItems();
       }
     } catch (e) {
       errorMessage.value = e.toString();
@@ -220,12 +235,12 @@ class CartController extends GetxController {
           cart.value = response.cart;
           appliedCoupon.value = null;
           couponControllerText.clear();
-          await fetchCartItems();
         }
 
         if (response.message != null) {
           CustomSnackbars.showSuccess(context, response.message!);
         }
+        await fetchCartItems();
       }
     } catch (e) {
       errorMessage.value = e.toString();

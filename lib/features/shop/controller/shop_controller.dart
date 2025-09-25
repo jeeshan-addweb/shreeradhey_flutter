@@ -28,6 +28,11 @@ class ShopController extends GetxController {
   var isSubmitting = false.obs;
 
   var deliveryData = Rxn<Map<String, dynamic>>();
+  void resetDelivery() {
+    deliveryData.value = null;
+    error.value = "";
+    isLoading.value = false;
+  }
 
   Future<void> fetchProducts(String category) async {
     try {

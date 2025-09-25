@@ -67,43 +67,43 @@ class _SearchPageState extends State<SearchPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Search Results",
+                    Text(
+                      "Search Results for '${widget.query}'",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "Home ",
-                            style: TextStyle(color: AppColors.black),
-                          ),
-                          TextSpan(
-                            text: "/ ",
-                            style: TextStyle(color: AppColors.red_CC0003),
-                          ),
-                          TextSpan(
-                            text: "Shop ",
-                            style: TextStyle(color: AppColors.black),
-                          ),
-                          TextSpan(
-                            text: "/ ",
-                            style: TextStyle(color: AppColors.red_CC0003),
-                          ),
-                          TextSpan(
-                            text: "Search Results for '${widget.query}'",
-                            style: TextStyle(color: AppColors.red_CC0003),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     style: const TextStyle(
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w500,
+                    //     ),
+                    //     children: [
+                    //       TextSpan(
+                    //         text: "Home ",
+                    //         style: TextStyle(color: AppColors.black),
+                    //       ),
+                    //       TextSpan(
+                    //         text: "/ ",
+                    //         style: TextStyle(color: AppColors.red_CC0003),
+                    //       ),
+                    //       TextSpan(
+                    //         text: "Shop ",
+                    //         style: TextStyle(color: AppColors.black),
+                    //       ),
+                    //       TextSpan(
+                    //         text: "/ ",
+                    //         style: TextStyle(color: AppColors.red_CC0003),
+                    //       ),
+                    //       TextSpan(
+                    //         text: "Search Results for '${widget.query}'",
+                    //         style: TextStyle(color: AppColors.red_CC0003),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

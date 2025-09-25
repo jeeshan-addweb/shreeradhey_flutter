@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shree_radhey/utils/routes/app_route_path.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/custom_snackbar.dart';
@@ -11,7 +12,9 @@ import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../cart/controller/cart_controller.dart';
+import '../../home/controller/home_controller.dart';
 import '../../home/controller/wishlist_controller.dart';
+import '../../home/views/widgets/product_section_widget.dart';
 import '../controller/product_variant_controller.dart';
 import '../controller/shop_controller.dart';
 import 'components/add_review_section.dart';
@@ -37,6 +40,10 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   final cartController = Get.find<CartController>();
+  final HomeController homecontroller = Get.put(
+    HomeController(),
+    permanent: true,
+  );
   final auth = Get.find<AuthController>();
   bool showFullVariants = false;
 
@@ -86,6 +93,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       controller.fetchProductDetail(context, widget.slug);
       controller.fetchProductReviews(widget.slug);
       productVariantController.fetchProductVariants(widget.category);
+      Get.find<ShopController>().resetDelivery();
     });
   }
 
@@ -255,6 +263,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             Expanded(
               child: OutlinedButton(
                 onPressed: () {
+                  if (auth.isGuest) {
+                    CustomSnackbars.showError(
+                      context,
+                      "Login Required ! Please login to add items to cart",
+                    );
+
+                    // Navigate to login with go_router
+                    context.push(AppRoutePath.login);
+                    return;
+                  }
                   final detail = controller.productDetail.value?.data?.product;
                   cartController.addProductToCart(
                     detail?.databaseId ?? 0,
@@ -335,59 +353,59 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "Home",
-                        style: TextStyle(
-                          color: AppColors.grey_3C403D,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: " / ",
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "Ghee",
-                        style: TextStyle(
-                          color: AppColors.grey_3C403D,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: " / ",
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: detail.name,
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(12.0),
+              //   child: RichText(
+              //     text: TextSpan(
+              //       style: const TextStyle(
+              //         fontSize: 16,
+              //         fontWeight: FontWeight.w500,
+              //       ),
+              //       children: [
+              //         // TextSpan(
+              //         //   text: "Home",
+              //         //   style: TextStyle(
+              //         //     color: AppColors.grey_3C403D,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //         // TextSpan(
+              //         //   text: " / ",
+              //         //   style: TextStyle(
+              //         //     color: AppColors.red_CC0003,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //         // TextSpan(
+              //         //   text: "Ghee",
+              //         //   style: TextStyle(
+              //         //     color: AppColors.grey_3C403D,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //         // TextSpan(
+              //         //   text: " / ",
+              //         //   style: TextStyle(
+              //         //     color: AppColors.red_CC0003,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //         // TextSpan(
+              //         //   text: detail.name,
+              //         //   style: TextStyle(
+              //         //     color: AppColors.red_CC0003,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               // ====== IMAGE SECTION ======
               Stack(
                 children: [
@@ -459,7 +477,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         const SizedBox(height: 12),
                         _buildCircleIcon(
                           Icons.ios_share_outlined,
-                          onTap: () {},
+                          onTap: () {
+                            showShareOptions(context, detail.name ?? "");
+                          },
                         ),
                       ],
                     ),
@@ -569,31 +589,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star_half,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star_border,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
+                        ..._buildStarRating(detail.averageRating ?? 0.0),
                         const SizedBox(width: 4),
                         Text(
                           "${detail.averageRating.toString()} | ${detail.reviewCount.toString()} Reviews",
@@ -858,6 +854,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
 
                     SizedBox(height: 20),
+
                     AddReviewSection(productId: detail.databaseId!),
                     SizedBox(height: 20),
 
@@ -885,15 +882,24 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ],
 
-                    RelatedProductSection(
+                    ProductSection(
                       firstText: "",
                       firstTextColor: AppColors.black,
                       secondTextColor: AppColors.black,
                       secondText: "Similar Products".toUpperCase(),
                       sectionBgColor: AppColors.white,
-
-                      products: detail.related?.nodes ?? [],
+                      tagText: "Best Seller",
+                      products: homecontroller.allProducts,
                     ),
+                    // RelatedProductSection(
+                    //   firstText: "",
+                    //   firstTextColor: AppColors.black,
+                    //   secondTextColor: AppColors.black,
+                    //   secondText: "Similar Products".toUpperCase(),
+                    //   sectionBgColor: AppColors.white,
+
+                    //   products: detail.related?.nodes ?? [],
+                    // ),
                     // ProductSection(firstText: "", firstTextColor: AppColors.black, secondTextColor: AppColors.black, secondText: "Similar Products".toUpperCase(), sectionBgColor: AppColors.white, tagText: "", products: detail)
 
                     // ProductSection(
@@ -916,6 +922,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         );
       }),
     );
+  }
+
+  List<Widget> _buildStarRating(double rating) {
+    const maxStars = 5;
+    List<Widget> stars = [];
+
+    for (int i = 1; i <= maxStars; i++) {
+      if (i <= rating.floor()) {
+        // Full star
+        stars.add(Icon(Icons.star, color: AppColors.orange_f29102, size: 18));
+      } else if (i - rating <= 0.5) {
+        // Half star
+        stars.add(
+          Icon(Icons.star_half, color: AppColors.orange_f29102, size: 18),
+        );
+      } else {
+        // Empty star
+        stars.add(
+          Icon(Icons.star_border, color: AppColors.orange_f29102, size: 18),
+        );
+      }
+    }
+
+    return stars;
   }
 
   Widget _buildVariantSection(List variants) {
@@ -1011,5 +1041,74 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
       ],
     );
+  }
+}
+
+void showShareOptions(
+  BuildContext context,
+  String productName,
+  // String productUrl,
+) {
+  showModalBottomSheet(
+    context: context,
+    builder: (_) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: Icon(Icons.whatshot, color: Colors.green, size: 30),
+              onPressed: () => _shareWhatsApp(productName),
+            ),
+            IconButton(
+              icon: Icon(Icons.facebook, color: Colors.blue, size: 30),
+              onPressed: () => _shareFacebook(productName),
+            ),
+            IconButton(
+              icon: Icon(Icons.email, color: Colors.red, size: 30),
+              onPressed: () => _shareEmail(productName),
+            ),
+            IconButton(
+              icon: Icon(Icons.share, color: Colors.lightBlue, size: 30),
+              onPressed: () => _shareTwitter(productName),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+void _shareWhatsApp(String productName) async {
+  final message = Uri.encodeComponent("Check out this product: $productName\n");
+  final url = "https://wa.me/?text=$message";
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url));
+  }
+}
+
+void _shareFacebook(String productName) async {
+  final url = "https://www.facebook.com/sharer/sharer.php?u=${(productName)}";
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url));
+  }
+}
+
+void _shareEmail(String productName) async {
+  final subject = Uri.encodeComponent("Check out this product: $productName");
+  // final body = Uri.encodeComponent("Here is the product link: $productUrl");
+  final url = "mailto:?subject=$subject";
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url));
+  }
+}
+
+void _shareTwitter(String productName) async {
+  final text = Uri.encodeComponent("Check out this product: $productName");
+  final url =
+      "https://twitter.com/intent/tweet?text=$text&url=${(productName)}";
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url));
   }
 }
