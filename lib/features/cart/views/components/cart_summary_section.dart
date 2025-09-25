@@ -140,23 +140,36 @@ class _CartSummarySectionState extends State<CartSummarySection> {
           if (couponController.isLoading.value) {
             return const LineShimmer(height: 30);
           }
+
           if (couponController.errorMessage.isNotEmpty) {
             return Text("Error: ${couponController.errorMessage.value}");
           }
+
           if (couponController.coupons.isEmpty) {
             return const Text("No coupons available");
           }
 
+          // Build items list
+          final items =
+              couponController.coupons.map((coupon) {
+                return DropdownMenuItem<String>(
+                  value: coupon.code,
+                  child: Text(coupon.code ?? ""),
+                );
+              }).toList();
+
+          // Ensure applied coupon is in the items, or set value to null
+          final currentValue =
+              couponController.coupons.any(
+                    (c) => c.code == cartController.appliedCoupon.value,
+                  )
+                  ? cartController.appliedCoupon.value
+                  : null;
+
           return DropdownButtonFormField<String>(
-            value: cartController.appliedCoupon.value,
+            value: currentValue, // safe value
             hint: const Text("Available Coupons"),
-            items:
-                couponController.coupons.map((coupon) {
-                  return DropdownMenuItem(
-                    value: coupon.code,
-                    child: Text("${coupon.code} "),
-                  );
-                }).toList(),
+            items: items,
             onChanged: (value) {
               if (value != null) {
                 cartController.applyCoupon(value, context);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shree_radhey/features/shop/controller/shop_controller.dart';
 import '../../../common/components/custom_snackbar.dart';
 import '../../auth/controller/auth_controller.dart';
@@ -138,7 +139,7 @@ class CartController extends GetxController {
         cart.value = response;
         updateCartCount();
         // force sync from backend
-        await fetchCartItems();
+        // await fetchCartItems();
       }
 
       debugPrint('[CartController] updateQuantity - success key:$key');
@@ -180,7 +181,7 @@ class CartController extends GetxController {
         cart.value = result; // refresh cart
         updateCartCount();
         debugPrint("[CartController] Added product $productId ✅");
-        await fetchCartItems();
+        // await fetchCartItems();
       }
 
       CustomSnackbars.showSuccess(
@@ -198,27 +199,67 @@ class CartController extends GetxController {
 
   Future<void> applyCoupon(String code, BuildContext context) async {
     try {
+      if (appliedCoupon.value == code) {
+        CustomSnackbars.showSuccess(context, "Coupon already applied");
+        return;
+      }
+
       isUpdatingCart.value = true;
       errorMessage.value = "";
+
       final response = await _repo.applyCoupon(code);
+
       if (response != null) {
         if (response.cart != null) {
           cart.value = response.cart;
           appliedCoupon.value = code;
           couponControllerText.text = code;
+          updateCartCount();
         }
 
         if (response.message != null) {
-          CustomSnackbars.showSuccess(
-            context,
-            response.message!,
-          ); // ✅ show message
+          CustomSnackbars.showSuccess(context, response.message!);
         }
-        await fetchCartItems();
       }
+    } on OperationException catch (e) {
+      // Handle GraphQL exceptions explicitly
+      debugPrint("[applyCoupon] GraphQL Error: ${e.graphqlErrors}");
+
+      String message = "Something went wrong";
+      if (e.graphqlErrors.isNotEmpty) {
+        final errorMsg = e.graphqlErrors.first.message.toLowerCase();
+        if (errorMsg.contains("already been applied")) {
+          message = "Coupon already applied";
+        } else if (errorMsg.contains(
+          "cannot be applied because it does not exist",
+        )) {
+          message = "Coupon is invalid";
+        } else {
+          message = e.graphqlErrors.first.message;
+        }
+      }
+
+      // Reset applied coupon safely
+      appliedCoupon.value = null;
+      couponControllerText.clear();
+
+      // Show snackbar
+      CustomSnackbars.showError(context, message);
     } catch (e) {
       errorMessage.value = e.toString();
-      CustomSnackbars.showError(context, "Something went wrong");
+      debugPrint(e.toString());
+
+      String message = "Something went wrong";
+      if (e.toString().contains("already been applied")) {
+        message = "Coupon already applied";
+      } else if (e.toString().contains(
+        "cannot be applied because it does not exist",
+      )) {
+        message = "Coupon is invalid";
+      }
+
+      CustomSnackbars.showError(context, message);
+      appliedCoupon.value = null;
     } finally {
       isUpdatingCart.value = false;
     }
@@ -240,7 +281,7 @@ class CartController extends GetxController {
         if (response.message != null) {
           CustomSnackbars.showSuccess(context, response.message!);
         }
-        await fetchCartItems();
+        // await fetchCartItems();
       }
     } catch (e) {
       errorMessage.value = e.toString();

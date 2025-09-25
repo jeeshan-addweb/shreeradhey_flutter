@@ -119,6 +119,7 @@ class CartRepo {
     mutation UpdateCartItem($key: ID!, $quantity: Int!) {
       updateItemQuantities(input: { items: [{ key: $key, quantity: $quantity }] }) {
         cart {
+        currencySymbol
           contents {
             nodes {
               key
@@ -205,6 +206,7 @@ class CartRepo {
     mutation RemoveCartItem($key: ID!) {
       removeItemsFromCart(input: { keys: [$key] }) {
         cart {
+        currencySymbol
           contents {
             nodes {
               key
@@ -257,6 +259,7 @@ class CartRepo {
     mutation AddToCart($productId: Int!, $quantity: Int!) {
       addToCart(input: { productId: $productId, quantity: $quantity }) {
         cart {
+        currencySymbol
           contents {
             itemCount
             nodes {
@@ -353,6 +356,7 @@ class CartRepo {
       mutation ApplyCoupon($code: String!) {
         applyCoupon(input: {code: $code}) {
           cart {
+          currencySymbol
             subtotal
             total
             discountTotal
@@ -370,7 +374,7 @@ class CartRepo {
                     name
                     ... on SimpleProduct {
                       price
-                      currencySymbol
+                      
 
                     }
                   }
@@ -419,6 +423,7 @@ class CartRepo {
         message
 
           cart {
+          currencySymbol
             subtotal
             total
             discountTotal
@@ -436,7 +441,7 @@ class CartRepo {
                     name
                     ... on SimpleProduct {
                       price
-                      currencySymbol
+                      
 
                     }
                   }
