@@ -238,7 +238,7 @@ class _AddressScreenState extends State<AddressScreen> {
         CustomDropdown(
           label: "Country",
           hintText: "Select country",
-          items: const ["India", "USA", "UK"],
+          items: ["IN", "US", "UK"],
           value: selectedCountry,
           onChanged: (val) => setState(() => selectedCountry = val),
           validator: (_) => null,
@@ -248,7 +248,7 @@ class _AddressScreenState extends State<AddressScreen> {
         CustomDropdown(
           label: "State",
           hintText: "Select state",
-          items: const ["Gujarat", "Maharashtra", "Rajasthan"],
+          items: ["Gujarat", "Maharashtra", "Delhi", "Rajasthan"],
           value: selectedState,
           onChanged: (val) => setState(() => selectedState = val),
           validator: (_) => null,

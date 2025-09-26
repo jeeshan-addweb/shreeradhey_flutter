@@ -4,6 +4,7 @@ import 'package:shree_radhey/common/components/custom_snackbar.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
+import '../../../common/components/empty_cart.dart';
 import '../../../common/components/razorpay_payment_screen.dart';
 import '../../../constants/app_colors.dart';
 import '../../accounts/controller/account_controller.dart';
@@ -22,6 +23,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final CartController cartController = Get.find<CartController>();
   final AuthController _authController = Get.put(AuthController());
   final controller = Get.put(AccountController());
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() async {
+      await controller.getAddresses();
+
+      final shipping = controller.defaultShippingAddress;
+      if (shipping != null) {
+        firstNameController.text = shipping.firstName ?? "";
+        lastNameController.text = shipping.lastName ?? "";
+        emailController.text = shipping.email ?? "";
+        phoneController.text = shipping.phone ?? "";
+        streetController.text = shipping.address1 ?? "";
+        apartmentController.text = shipping.address2 ?? "";
+        cityController.text = shipping.city ?? "";
+        pinController.text = shipping.postcode ?? "";
+        selectedState = shipping.state;
+        selectedCountry = shipping.country;
+      }
+
+      final billing = controller.defaultBillingAddress;
+      if (billing != null) {
+        billingFirstNameController.text = billing.firstName ?? "";
+        billingLastNameController.text = billing.lastName ?? "";
+        billingEmailController.text = billing.email ?? "";
+        billingPhoneController.text = billing.phone ?? "";
+        billingStreetController.text = billing.address1 ?? "";
+        billingApartmentController.text = billing.address2 ?? "";
+        billingCityController.text = billing.city ?? "";
+        billingPinController.text = billing.postcode ?? "";
+        billingSelectedState = billing.state;
+        billingSelectedCountry = billing.country;
+      }
+
+      setState(() {}); // update UI
+    });
+  }
+
   bool billToDifferent = false;
   final _shippingFormKey = GlobalKey<FormState>();
   final _billingFormKey = GlobalKey<FormState>();
@@ -105,7 +146,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 isRequired: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return "First Name is required";
+                    return "First Name of the user is required";
                   }
                   return null;
                 },
@@ -120,7 +161,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 isRequired: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return "Last Name is required";
+                    return "Last Name of the user is required";
                   }
                   return null;
                 },
@@ -141,8 +182,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 isRequired: true,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return "Email is required";
+                  }
                   final emailRegex = RegExp(
                     r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
                   );
@@ -214,7 +256,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 label: "State",
                 hint: "Select an option",
                 items: ["Gujarat", "Maharashtra", "Delhi", "Rajasthan"],
-                value: selectedState,
+                value:
+                    [
+                          "Gujarat",
+                          "Maharashtra",
+                          "Delhi",
+                          "Rajasthan",
+                        ].contains(selectedState?.capitalizeFirst)
+                        ? selectedState?.capitalizeFirst
+                        : null,
                 onChanged: onStateChanged,
                 isRequired: true,
                 validator: (value) {
@@ -280,479 +330,493 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // RichText(
-                //   text: TextSpan(
-                //     style: const TextStyle(
-                //       fontSize: 16,
-                //       fontWeight: FontWeight.w500,
-                //     ),
-                //     children: [
-                //       TextSpan(
-                //         text: "Home",
-                //         style: TextStyle(color: AppColors.black),
-                //       ),
-                //       TextSpan(
-                //         text: " / ",
-                //         style: TextStyle(color: AppColors.red_CC0003),
-                //       ),
-                //       TextSpan(
-                //         text: "Checkout",
-                //         style: TextStyle(color: AppColors.red_CC0003),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // const SizedBox(height: 32),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: billToDifferent,
-                      onChanged: (val) {
-                        setState(() {
-                          billToDifferent = val ?? false;
-                        });
-                      },
-                    ),
-                    const Text(
-                      "Bill to a different address?",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // RichText(
+                  //   text: TextSpan(
+                  //     style: const TextStyle(
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w500,
+                  //     ),
+                  //     children: [
+                  //       TextSpan(
+                  //         text: "Home",
+                  //         style: TextStyle(color: AppColors.black),
+                  //       ),
+                  //       TextSpan(
+                  //         text: " / ",
+                  //         style: TextStyle(color: AppColors.red_CC0003),
+                  //       ),
+                  //       TextSpan(
+                  //         text: "Checkout",
+                  //         style: TextStyle(color: AppColors.red_CC0003),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 32),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: billToDifferent,
+                        onChanged: (val) {
+                          setState(() {
+                            billToDifferent = val ?? false;
+                          });
+                        },
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-                const Text(
-                  "Shipping details",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Form(
-                  key: _shippingFormKey,
-                  child: _buildAddressForm(
-                    firstNameController: firstNameController,
-                    lastNameController: lastNameController,
-                    emailController: emailController,
-                    phoneController: phoneController,
-                    streetController: streetController,
-                    apartmentController: apartmentController,
-                    cityController: cityController,
-                    pinController: pinController,
-                    selectedState: selectedState,
-                    selectedCountry: selectedCountry,
-                    onStateChanged:
-                        (val) => setState(() => selectedState = val),
-                    onCountryChanged:
-                        (val) => setState(() => selectedCountry = val),
-                    showNotes: true,
-                    notesController: notesController,
+                      const Text(
+                        "Bill to a different address?",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                if (billToDifferent) ...[
-                  const SizedBox(height: 24),
+
+                  const SizedBox(height: 16),
                   const Text(
-                    "Billing details",
+                    "Shipping details",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   Form(
-                    key: _billingFormKey,
+                    key: _shippingFormKey,
                     child: _buildAddressForm(
-                      firstNameController: billingFirstNameController,
-                      lastNameController: billingLastNameController,
-                      emailController: billingEmailController,
-                      phoneController: billingPhoneController,
-                      streetController: billingStreetController,
-                      apartmentController: billingApartmentController,
-                      cityController: billingCityController,
-                      pinController: billingPinController,
-                      selectedState: billingSelectedState,
-                      selectedCountry: billingSelectedCountry,
+                      firstNameController: firstNameController,
+                      lastNameController: lastNameController,
+                      emailController: emailController,
+                      phoneController: phoneController,
+                      streetController: streetController,
+                      apartmentController: apartmentController,
+                      cityController: cityController,
+                      pinController: pinController,
+                      selectedState: selectedState,
+                      selectedCountry: selectedCountry,
                       onStateChanged:
-                          (val) => setState(() => billingSelectedState = val),
+                          (val) => setState(() => selectedState = val),
                       onCountryChanged:
-                          (val) => setState(() => billingSelectedCountry = val),
-                      showNotes: false,
+                          (val) => setState(() => selectedCountry = val),
+                      showNotes: true,
+                      notesController: notesController,
                     ),
                   ),
-                ],
-
-                // First name & Last name
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "First name",
-                //         hint: "Enter first name",
-                //         controller: firstNameController,
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12),
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "Last name",
-                //         hint: "Enter last name",
-                //         controller: lastNameController,
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "Email address",
-                //         hint: "Enter email address",
-                //         controller: emailController,
-                //         isRequired: true,
-                //         keyboardType: TextInputType.emailAddress,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12),
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "Phone",
-                //         hint: "Enter phone number",
-                //         controller: phoneController,
-                //         isRequired: true,
-                //         keyboardType: TextInputType.phone,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-
-                // CommonLabeledTextField(
-                //   label: "Street address",
-                //   hint: "House number and street name",
-                //   controller: streetController,
-                //   isRequired: true,
-                // ),
-
-                // CommonLabeledTextField(
-                //   label: "",
-                //   hint: "Apartment, suite, unit, etc. (optional)",
-                //   controller: apartmentController,
-                // ),
-                // const SizedBox(height: 16),
-
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "Town / City",
-                //         hint: "Enter town/city",
-                //         controller: cityController,
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12),
-                //     Expanded(
-                //       child: CommonLabeledDropdown(
-                //         label: "State",
-                //         hint: "Select an option",
-                //         items: ["Gujarat", "Maharashtra", "Delhi", "Rajasthan"],
-                //         value: selectedState,
-                //         onChanged: (val) {
-                //           selectedState = val;
-                //         },
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "PIN Code",
-                //         hint: "Enter postcode/zip",
-                //         controller: pinController,
-                //         isRequired: true,
-                //         keyboardType: TextInputType.number,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12),
-                //     Expanded(
-                //       child: CommonLabeledDropdown(
-                //         label: "Country / Region",
-                //         hint: "Select country",
-                //         items: ["IN", "US", "UK"],
-                //         value: selectedCountry,
-                //         onChanged: (val) {
-                //           selectedCountry = val;
-                //         },
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-
-                // CommonLabeledTextField(
-                //   label: "Order notes (optional)",
-                //   hint:
-                //       "Notes about your order, e.g. special notes for delivery.",
-                //   controller: notesController,
-                // ),
-                const SizedBox(height: 32),
-                Obx(() {
-                  final cart = cartController.cart.value?.data?.cart;
-                  final nodes = cart?.contents?.nodes ?? [];
-
-                  if (cartController.isFetchingCart.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (nodes.isEmpty) {
-                    return const Center(child: Text("Your cart is empty."));
-                  }
-                  return Card(
-                    color: AppColors.white,
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  if (billToDifferent) ...[
+                    const SizedBox(height: 24),
+                    const Text(
+                      "Billing details",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _PriceRow(
-                            title: "Subtotal",
-                            amount: "${cart?.currencySymbol}${cart?.subtotal}",
-                          ),
+                    const SizedBox(height: 16),
+                    Form(
+                      key: _billingFormKey,
+                      child: _buildAddressForm(
+                        firstNameController: billingFirstNameController,
+                        lastNameController: billingLastNameController,
+                        emailController: billingEmailController,
+                        phoneController: billingPhoneController,
+                        streetController: billingStreetController,
+                        apartmentController: billingApartmentController,
+                        cityController: billingCityController,
+                        pinController: billingPinController,
+                        selectedState: billingSelectedState,
+                        selectedCountry: billingSelectedCountry,
+                        onStateChanged:
+                            (val) => setState(() => billingSelectedState = val),
+                        onCountryChanged:
+                            (val) =>
+                                setState(() => billingSelectedCountry = val),
+                        showNotes: false,
+                      ),
+                    ),
+                  ],
 
-                          const SizedBox(height: 12),
-                          Divider(height: 24, thickness: 3),
-                          Text(
-                            "Product Overview",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
+                  // First name & Last name
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "First name",
+                  //         hint: "Enter first name",
+                  //         controller: firstNameController,
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "Last name",
+                  //         hint: "Enter last name",
+                  //         controller: lastNameController,
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "Email address",
+                  //         hint: "Enter email address",
+                  //         controller: emailController,
+                  //         isRequired: true,
+                  //         keyboardType: TextInputType.emailAddress,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "Phone",
+                  //         hint: "Enter phone number",
+                  //         controller: phoneController,
+                  //         isRequired: true,
+                  //         keyboardType: TextInputType.phone,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // CommonLabeledTextField(
+                  //   label: "Street address",
+                  //   hint: "House number and street name",
+                  //   controller: streetController,
+                  //   isRequired: true,
+                  // ),
+
+                  // CommonLabeledTextField(
+                  //   label: "",
+                  //   hint: "Apartment, suite, unit, etc. (optional)",
+                  //   controller: apartmentController,
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "Town / City",
+                  //         hint: "Enter town/city",
+                  //         controller: cityController,
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: CommonLabeledDropdown(
+                  //         label: "State",
+                  //         hint: "Select an option",
+                  //         items: ["Gujarat", "Maharashtra", "Delhi", "Rajasthan"],
+                  //         value: selectedState,
+                  //         onChanged: (val) {
+                  //           selectedState = val;
+                  //         },
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "PIN Code",
+                  //         hint: "Enter postcode/zip",
+                  //         controller: pinController,
+                  //         isRequired: true,
+                  //         keyboardType: TextInputType.number,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: CommonLabeledDropdown(
+                  //         label: "Country / Region",
+                  //         hint: "Select country",
+                  //         items: ["IN", "US", "UK"],
+                  //         value: selectedCountry,
+                  //         onChanged: (val) {
+                  //           selectedCountry = val;
+                  //         },
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // CommonLabeledTextField(
+                  //   label: "Order notes (optional)",
+                  //   hint:
+                  //       "Notes about your order, e.g. special notes for delivery.",
+                  //   controller: notesController,
+                  // ),
+                  const SizedBox(height: 32),
+                  Obx(() {
+                    final cart = cartController.cart.value?.data?.cart;
+                    final nodes = cart?.contents?.nodes ?? [];
+
+                    if (cartController.isFetchingCart.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (nodes.isEmpty) {
+                      return EmptyCartView();
+                    }
+                    return Card(
+                      color: AppColors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _PriceRow(
+                              title: "Subtotal",
+                              amount:
+                                  "${cart?.currencySymbol}${cart?.subtotal}",
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Divider(height: 24, thickness: 2),
 
-                          // Product Row
-                          ...nodes.map((item) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      "${item.product?.node?.name ?? ""}  x ${item.quantity ?? 1}",
+                            const SizedBox(height: 12),
+                            Divider(height: 24, thickness: 3),
+                            Text(
+                              "Product Overview",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Divider(height: 24, thickness: 2),
+
+                            ...nodes.map((item) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "${item.product?.node?.name ?? ""}  x ${item.quantity ?? 1}",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.grey_212121,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "${cart?.currencySymbol}${item.product?.node?.price}",
                                       style: TextStyle(
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w400,
                                         color: AppColors.grey_212121,
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    "${cart?.currencySymbol}${item.product?.node?.price}",
+                                  ],
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 12),
+                            Divider(height: 24, thickness: 2),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Shipping",
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w400,
-                                      color: AppColors.grey_212121,
                                     ),
                                   ),
-                                ],
-                              ),
-                            );
-                          }),
-                          const SizedBox(height: 12),
-                          Divider(height: 24, thickness: 2),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Shipping",
+                                ),
+                                const SizedBox(width: 8),
+
+                                Text(
+                                  "Free Shipping",
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-
-                              Text(
-                                "Free Shipping",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Divider(height: 24, thickness: 2),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Total",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Divider(height: 24, thickness: 2),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Total",
+                                const SizedBox(width: 8),
+
+                                Text(
+                                  "${cart?.currencySymbol}${cart?.total}",
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
+                              ],
+                            ),
+                            PaymentMethodCard(
+                              isLoading: controller.isCheckOutLoading.value,
+                              onPlaceOrder: (paymentMethod) async {
+                                final shippingValid =
+                                    _shippingFormKey.currentState?.validate() ??
+                                    false;
 
-                              Text(
-                                "${cart?.currencySymbol}${cart?.total}",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
-                          ),
-                          PaymentMethodCard(
-                            isLoading: controller.isLoading.value,
-                            onPlaceOrder: (paymentMethod) async {
-                              final shippingValid =
-                                  _shippingFormKey.currentState?.validate() ??
-                                  false;
+                                // 2️⃣ Validate billing only if "bill to different" is checked
+                                final billingValid =
+                                    !billToDifferent ||
+                                    (_billingFormKey.currentState?.validate() ??
+                                        false);
 
-                              // 2️⃣ Validate billing only if "bill to different" is checked
-                              final billingValid =
-                                  !billToDifferent ||
-                                  (_billingFormKey.currentState?.validate() ??
-                                      false);
+                                if (!shippingValid || !billingValid) {
+                                  CustomSnackbars.showError(
+                                    context,
+                                    "Please fill all required fields",
+                                  );
+                                  return;
+                                }
 
-                              if (!shippingValid || !billingValid) {
-                                CustomSnackbars.showError(
-                                  context,
-                                  "Please fill all required fields",
-                                );
-                                return;
-                              }
+                                if (paymentMethod == "razorpay") {
+                                  final paymentId = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) => RazorpayPaymentScreen(
+                                            amount: 500.0,
+                                            name:
+                                                "${firstNameController.text} ${lastNameController.text}",
+                                            email: emailController.text,
+                                            phone: phoneController.text,
+                                            onSuccess: (paymentId) {
+                                              // After payment, call checkout with Razorpay method
 
-                              if (paymentMethod == "razorpay") {
-                                final paymentId = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) => RazorpayPaymentScreen(
-                                          amount: 500.0,
-                                          name:
-                                              "${firstNameController.text} ${lastNameController.text}",
-                                          email: emailController.text,
-                                          phone: phoneController.text,
-                                          onSuccess: (paymentId) {
-                                            // After payment, call checkout with Razorpay method
-
-                                            controller.checkout(
-                                              customerId: int.parse(
-                                                _authController.userId
-                                                    .toString(),
-                                              ),
-                                              context: context,
-                                              firstName:
-                                                  firstNameController.text,
-                                              lastName: lastNameController.text,
-                                              email: emailController.text,
-                                              phone: phoneController.text,
-                                              address: streetController.text,
-                                              city: cityController.text,
-                                              state: selectedState ?? "",
-                                              postcode: pinController.text,
-                                              country: selectedCountry ?? "IN",
-                                              customerNote:
-                                                  notesController.text,
-                                              billToDifferent: billToDifferent,
-                                              shippingFirstName:
-                                                  billingFirstNameController
-                                                      .text,
-                                              shippingLastName:
-                                                  billingLastNameController
-                                                      .text,
-                                              shippingAddress:
-                                                  billingStreetController.text,
-                                              shippingCity:
-                                                  billingCityController.text,
-                                              shippingState:
-                                                  billingSelectedState,
-                                              shippingPostcode:
-                                                  billingPinController.text,
-                                              shippingCountry:
-                                                  billingSelectedCountry,
-                                              paymentMethod: "razorpay",
-                                            );
-                                          },
-                                        ),
-                                  ),
-                                );
-                              } else {
-                                controller.checkout(
-                                  customerId: int.parse(
-                                    _authController.userId.toString(),
-                                  ),
-                                  context: context,
-                                  firstName: firstNameController.text,
-                                  lastName: lastNameController.text,
-                                  email: emailController.text,
-                                  phone: phoneController.text,
-                                  address: streetController.text,
-                                  city: cityController.text,
-                                  state: selectedState ?? "",
-                                  postcode: pinController.text,
-                                  country: selectedCountry ?? "IN",
-                                  customerNote: notesController.text,
-                                  billToDifferent: billToDifferent,
-                                  shippingFirstName:
-                                      billingFirstNameController.text,
-                                  shippingLastName:
-                                      billingLastNameController.text,
-                                  shippingAddress: billingStreetController.text,
-                                  shippingCity: billingCityController.text,
-                                  shippingState: billingSelectedState,
-                                  shippingPostcode: billingPinController.text,
-                                  shippingCountry: billingSelectedCountry,
-                                  paymentMethod: paymentMethod,
-                                );
-                              }
-                            },
-                          ),
-                        ],
+                                              controller.checkout(
+                                                customerId: int.parse(
+                                                  _authController.userId
+                                                      .toString(),
+                                                ),
+                                                context: context,
+                                                firstName:
+                                                    firstNameController.text,
+                                                lastName:
+                                                    lastNameController.text,
+                                                email: emailController.text,
+                                                phone: phoneController.text,
+                                                address: streetController.text,
+                                                city: cityController.text,
+                                                state: selectedState ?? "",
+                                                postcode: pinController.text,
+                                                country:
+                                                    selectedCountry ?? "IN",
+                                                customerNote:
+                                                    notesController.text,
+                                                billToDifferent:
+                                                    billToDifferent,
+                                                shippingFirstName:
+                                                    billingFirstNameController
+                                                        .text,
+                                                shippingLastName:
+                                                    billingLastNameController
+                                                        .text,
+                                                shippingAddress:
+                                                    billingStreetController
+                                                        .text,
+                                                shippingCity:
+                                                    billingCityController.text,
+                                                shippingState:
+                                                    billingSelectedState,
+                                                shippingPostcode:
+                                                    billingPinController.text,
+                                                shippingCountry:
+                                                    billingSelectedCountry,
+                                                paymentMethod: "razorpay",
+                                              );
+                                            },
+                                          ),
+                                    ),
+                                  );
+                                } else {
+                                  controller.checkout(
+                                    customerId: int.parse(
+                                      _authController.userId.toString(),
+                                    ),
+                                    context: context,
+                                    firstName: firstNameController.text,
+                                    lastName: lastNameController.text,
+                                    email: emailController.text,
+                                    phone: phoneController.text,
+                                    address: streetController.text,
+                                    city: cityController.text,
+                                    state: selectedState ?? "",
+                                    postcode: pinController.text,
+                                    country: selectedCountry ?? "IN",
+                                    customerNote: notesController.text,
+                                    billToDifferent: billToDifferent,
+                                    shippingFirstName:
+                                        billingFirstNameController.text,
+                                    shippingLastName:
+                                        billingLastNameController.text,
+                                    shippingAddress:
+                                        billingStreetController.text,
+                                    shippingCity: billingCityController.text,
+                                    shippingState: billingSelectedState,
+                                    shippingPostcode: billingPinController.text,
+                                    shippingCountry: billingSelectedCountry,
+                                    paymentMethod: paymentMethod,
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }),
-              ],
+                    );
+                  }),
+                ],
+              ),
             ),
-          ),
 
-          CommonFooter(isShow: false),
-        ],
-      ),
-    );
+            CommonFooter(isShow: false),
+          ],
+        ),
+      );
+    });
   }
 }
 

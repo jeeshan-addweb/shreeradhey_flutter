@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shree_radhey/utils/routes/app_route_path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/components/common_footer.dart';
@@ -10,6 +9,7 @@ import '../../../common/components/custom_snackbar.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
+import '../../../utils/routes/app_route_path.dart';
 import '../../auth/controller/auth_controller.dart';
 import '../../cart/controller/cart_controller.dart';
 import '../../home/controller/home_controller.dart';
@@ -23,7 +23,6 @@ import 'components/product_detail_review_section.dart';
 import 'components/variant_card.dart';
 import 'widgets/additional_info_widget.dart';
 import 'widgets/description_widget.dart';
-import 'widgets/related_product_section.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String slug;
@@ -39,6 +38,8 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _reviewSectionKey = GlobalKey();
   final cartController = Get.find<CartController>();
   final HomeController homecontroller = Get.put(
     HomeController(),
@@ -95,6 +96,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       productVariantController.fetchProductVariants(widget.category);
       Get.find<ShopController>().resetDelivery();
     });
+  }
+
+  void _scrollToReviews() {
+    final context = _reviewSectionKey.currentContext;
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
@@ -172,16 +184,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    if (auth.isGuest) {
-                      CustomSnackbars.showError(
-                        context,
-                        "Login Required ! Please login to add items to cart",
-                      );
+                    // if (auth.isGuest) {
+                    //   CustomSnackbars.showError(
+                    //     context,
+                    //     "Login Required ! Please login to add items to cart",
+                    //   );
 
-                      // Navigate to login with go_router
-                      context.push(AppRoutePath.login);
-                      return;
-                    }
+                    //   // Navigate to login with go_router
+                    //   context.push(AppRoutePath.login);
+                    //   return;
+                    // }
                     final detail =
                         controller.productDetail.value?.data?.product;
                     if (detail?.isInCart == true) {
@@ -263,16 +275,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             Expanded(
               child: OutlinedButton(
                 onPressed: () {
-                  if (auth.isGuest) {
-                    CustomSnackbars.showError(
-                      context,
-                      "Login Required ! Please login to add items to cart",
-                    );
+                  // if (auth.isGuest) {
+                  //   CustomSnackbars.showError(
+                  //     context,
+                  //     "Login Required ! Please login to add items to cart",
+                  //   );
 
-                    // Navigate to login with go_router
-                    context.push(AppRoutePath.login);
-                    return;
-                  }
+                  //   // Navigate to login with go_router
+                  //   context.push(AppRoutePath.login);
+                  //   return;
+                  // }
                   final detail = controller.productDetail.value?.data?.product;
                   cartController.addProductToCart(
                     detail?.databaseId ?? 0,
@@ -350,6 +362,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         final variants = productVariantController.productVariants;
 
         return SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -445,29 +458,29 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     : AppColors.red_CC0003,
 
                             onTap: () async {
-                              if (auth.isGuest) {
-                                CustomSnackbars.showError(
-                                  context,
-                                  "Login Required ! Please login to add items to wishlist.",
-                                );
+                              // if (auth.isGuest) {
+                              //   CustomSnackbars.showError(
+                              //     context,
+                              //     "Login Required ! Please login to add items to wishlist.",
+                              //   );
 
-                                // Navigate to login with go_router
-                                context.push(AppRoutePath.login);
-                                return;
-                              }
+                              //   // Navigate to login with go_router
+                              //   context.push(AppRoutePath.login);
+                              //   return;
+                              // }
                               final response = await wishlistController
                                   .toggleWishlist(detail.databaseId ?? 0);
-                              if (response["success"] == true) {
-                                CustomSnackbars.showSuccess(
-                                  context,
-                                  response["message"],
-                                );
-                              } else {
-                                CustomSnackbars.showError(
-                                  context,
-                                  response["message"],
-                                );
-                              }
+                              // if (response["success"] == true) {
+                              //   CustomSnackbars.showSuccess(
+                              //     context,
+                              //     response["message"],
+                              //   );
+                              // } else {
+                              //   CustomSnackbars.showError(
+                              //     context,
+                              //     response["message"],
+                              //   );
+                              // }
                             },
                           );
                         }),
@@ -591,9 +604,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       children: [
                         ..._buildStarRating(detail.averageRating ?? 0.0),
                         const SizedBox(width: 4),
-                        Text(
-                          "${detail.averageRating.toString()} | ${detail.reviewCount.toString()} Reviews",
-                          style: TextStyle(fontSize: 14, color: AppColors.grey),
+                        GestureDetector(
+                          onTap: () {
+                            debugPrint("tapppppsndnddnd");
+                            _scrollToReviews();
+                          },
+                          child: Text(
+                            "${detail.averageRating.toString()} | ${detail.reviewCount.toString()} Reviews",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.grey,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -786,7 +808,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     const SizedBox(height: 20),
                     Obx(() {
                       if (controller.isLoading.value) {
-                        return const CircularProgressIndicator();
+                        return Center(child: const CircularProgressIndicator());
                       }
 
                       if (controller.error.isNotEmpty) {
@@ -805,8 +827,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       if (data == null) return const SizedBox();
 
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
                             "${data['city']}- ${data['postcode']}, ${data['state']}, ${data['country']}",
@@ -837,7 +859,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ] else ...[
                       Text(
-                        "Reviews ${(detail.reviewCount)}",
+                        "Reviews (${detail.reviewCount})",
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w600,
@@ -846,6 +868,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                       const SizedBox(height: 20),
                       ProductDetailReviewSection(
+                        key: _reviewSectionKey,
                         averageRating: (detail.averageRating ?? 0).toDouble(),
                         totalReviews: detail.reviewCount ?? 0,
                         ratingDistribution: ratingDistribution,
@@ -862,7 +885,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         detail.faqContent!.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       const Text(
-                        "FAQ",
+                        "FAQ's",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -930,15 +953,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     for (int i = 1; i <= maxStars; i++) {
       if (i <= rating.floor()) {
-        // Full star
         stars.add(Icon(Icons.star, color: AppColors.orange_f29102, size: 18));
       } else if (i - rating <= 0.5) {
-        // Half star
         stars.add(
           Icon(Icons.star_half, color: AppColors.orange_f29102, size: 18),
         );
       } else {
-        // Empty star
         stars.add(
           Icon(Icons.star_border, color: AppColors.orange_f29102, size: 18),
         );
@@ -963,8 +983,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     }
 
     // Show only first 3 if longer
-    final showAll = variants.length <= 3 || showFullVariants;
-    final displayVariants = showAll ? variants : variants.take(3).toList();
+    final showAll = variants.length <= 4 || showFullVariants;
+    final displayVariants = showAll ? variants : variants.take(4).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1050,6 +1070,7 @@ void showShareOptions(
   // String productUrl,
 ) {
   showModalBottomSheet(
+    backgroundColor: AppColors.white,
     context: context,
     builder: (_) {
       return Padding(
@@ -1058,7 +1079,11 @@ void showShareOptions(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: Icon(Icons.whatshot, color: Colors.green, size: 30),
+              icon: Icon(
+                Icons.phone_callback_outlined,
+                color: Colors.green,
+                size: 30,
+              ),
               onPressed: () => _shareWhatsApp(productName),
             ),
             IconButton(
@@ -1070,7 +1095,11 @@ void showShareOptions(
               onPressed: () => _shareEmail(productName),
             ),
             IconButton(
-              icon: Icon(Icons.share, color: Colors.lightBlue, size: 30),
+              icon: Icon(
+                Icons.cancel_presentation_sharp,
+                color: Colors.black,
+                size: 30,
+              ),
               onPressed: () => _shareTwitter(productName),
             ),
           ],

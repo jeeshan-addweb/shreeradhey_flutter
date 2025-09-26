@@ -7,17 +7,16 @@ import '../../constants/app_colors.dart';
 import '../../constants/app_images.dart';
 import '../../features/auth/controller/auth_controller.dart';
 import '../../utils/routes/app_route_path.dart';
-import 'custom_snackbar.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
-  final VoidCallback? onMenuTap; // new
+  // final VoidCallback? onMenuTap; // new
   final VoidCallback? onTabTap;
 
   CustomBottomNavigationBar({
     super.key,
     required this.currentIndex,
-    this.onMenuTap,
+    // this.onMenuTap,
     this.onTabTap,
   });
 
@@ -26,10 +25,16 @@ class CustomBottomNavigationBar extends StatelessWidget {
     AppImages.shopping,
     AppImages.deals,
     AppImages.cart,
-    AppImages.menu,
+    AppImages.profile,
   ];
 
-  final List<String> labels = const ["Home", "Shop", "Deals", "Cart", "Menu"];
+  final List<String> labels = const [
+    "Home",
+    "Shop",
+    "Deals",
+    "Cart",
+    "Account",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +61,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          if (index != 4) {
-            onTabTap?.call();
-          }
+          // if (index != 4) {
+          //   onTabTap?.call();
+          // }
           switch (index) {
             case 0:
               context.push(AppRoutePath.homeScreen);
@@ -70,22 +75,29 @@ class CustomBottomNavigationBar extends StatelessWidget {
               context.push(AppRoutePath.dealsScreen); // All
               break;
             case 3:
-              final auth = Get.find<AuthController>();
-              if (auth.isGuest) {
-                CustomSnackbars.showError(
-                  context,
-                  "Login Required ! Please login to use wishlist.",
-                );
+              // final auth = Get.find<AuthController>();
+              // if (auth.isGuest) {
+              //   CustomSnackbars.showError(
+              //     context,
+              //     "Login Required ! Please login to use wishlist.",
+              //   );
 
-                // Navigate to login with go_router
-                context.push(AppRoutePath.login);
-                return;
-              }
+              //   // Navigate to login with go_router
+              //   context.push(AppRoutePath.login);
+              //   return;
+              // }
               context.go(AppRoutePath.cartPage);
               break;
             case 4:
-              if (onMenuTap != null) onMenuTap!();
-              break;
+              final auth = Get.find<AuthController>();
+              if (auth.isGuest) {
+                context.push(AppRoutePath.login);
+                return;
+              }
+              context.push(AppRoutePath.accountPage);
+
+            // if (onMenuTap != null) onMenuTap!();
+            // break;
           }
         },
         child: Container(

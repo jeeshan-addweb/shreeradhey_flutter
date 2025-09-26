@@ -9,7 +9,8 @@ import '../../../constants/app_images.dart';
 import '../controller/shop_controller.dart';
 
 class ShopPage extends StatefulWidget {
-  const ShopPage({super.key});
+  int selectedIndex;
+  ShopPage({super.key, this.selectedIndex = 0});
 
   @override
   State<ShopPage> createState() => _ShopPageState();
@@ -17,7 +18,7 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   final ShopController controller = Get.put(ShopController());
-  int selectedIndex = 0;
+  // int selectedIndex = 0;
 
   final List<Map<String, String>> categories = [
     {"title": "All", "image": AppImages.shree},
@@ -32,7 +33,8 @@ class _ShopPageState extends State<ShopPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchProducts("All");
+      final categoryTitle = categories[widget.selectedIndex]['title'] ?? 'All';
+      controller.fetchProducts(categoryTitle);
     });
   }
 
@@ -55,12 +57,12 @@ class _ShopPageState extends State<ShopPage> {
               separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final category = categories[index];
-                final bool isSelected = selectedIndex == index;
+                final bool isSelected = widget.selectedIndex == index;
 
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedIndex = index;
+                      widget.selectedIndex = index;
                       controller.fetchProducts(categories[index]['title']!);
                     });
                   },

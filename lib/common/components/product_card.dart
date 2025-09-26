@@ -33,7 +33,7 @@ class _ProductCardState extends State<ProductCard> {
           AppRoutePath.productDetail,
           // pathParameters: {'slug': widget.model.slug ?? ""},
           extra: {
-            'hideNav': true,
+            'hideNav': false,
             'slug': widget.model.slug,
             'category': widget.model.category,
           },
@@ -168,30 +168,30 @@ class _ProductCardState extends State<ProductCard> {
 
                         GestureDetector(
                           onTap: () async {
-                            if (auth.isGuest) {
-                              CustomSnackbars.showError(
-                                context,
-                                "Login Required ! Please login to add items to wishlist.",
-                              );
+                            // if (auth.isGuest) {
+                            //   CustomSnackbars.showError(
+                            //     context,
+                            //     "Login Required ! Please login to add items to wishlist.",
+                            //   );
 
-                              // Navigate to login with go_router
-                              context.push(AppRoutePath.login);
-                              return;
-                            }
+                            //   // Navigate to login with go_router
+                            //   context.push(AppRoutePath.login);
+                            //   return;
+                            // }
 
                             final response = await wishlistController
                                 .toggleWishlist(widget.model.productId);
-                            if (response["success"] == true) {
-                              CustomSnackbars.showSuccess(
-                                context,
-                                response["message"],
-                              );
-                            } else {
-                              CustomSnackbars.showError(
-                                context,
-                                response["message"],
-                              );
-                            }
+                            // if (response["success"] == true) {
+                            //   CustomSnackbars.showSuccess(
+                            //     context,
+                            //     response["message"],
+                            //   );
+                            // } else {
+                            //   CustomSnackbars.showError(
+                            //     context,
+                            //     response["message"],
+                            //   );
+                            // }
                           },
                           child: Obx(() {
                             final isWishlisted =
@@ -314,24 +314,13 @@ class _ProductCardState extends State<ProductCard> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (auth.isGuest) {
-                      CustomSnackbars.showError(
-                        context,
-                        "Login Required ! Please login to add items to cart.",
-                      );
-                      context.push(AppRoutePath.login);
-                      return;
-                    }
-
                     final inCart = cartController.isInCart(
                       widget.model.productId,
                     );
 
                     if (inCart) {
-                      // ✅ Only navigate, no re-add
                       context.go(AppRoutePath.cartPage);
                     } else {
-                      // ✅ Add only once
                       cartController.addProductToCart(
                         widget.model.productId,
                         1,
@@ -377,9 +366,20 @@ class _ProductCardState extends State<ProductCard> {
                                 .model
                                 .productId] ??
                             false;
-                        final inCart = cartController.isInCart(
-                          widget.model.productId,
-                        );
+                        final inCart =
+                            cartController
+                                .cart
+                                .value
+                                ?.data
+                                ?.cart
+                                ?.contents
+                                ?.nodes
+                                ?.any(
+                                  (node) =>
+                                      node.product?.node?.databaseId ==
+                                      widget.model.productId,
+                                ) ??
+                            false;
 
                         if (isAdding) {
                           return const SizedBox(

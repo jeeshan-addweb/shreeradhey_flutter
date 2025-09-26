@@ -91,7 +91,9 @@ class AppRouter {
             name: 'shop',
             path: AppRoutePath.shopScreen,
             builder: (BuildContext context, GoRouterState state) {
-              return ShopPage();
+              final selectedIndex =
+                  (state.extra is int) ? state.extra as int : 0;
+              return ShopPage(selectedIndex: selectedIndex);
             },
           ),
           GoRoute(

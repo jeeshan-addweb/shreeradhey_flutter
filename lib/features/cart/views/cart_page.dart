@@ -4,6 +4,7 @@ import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
 import '../../../common/components/common_footer.dart';
+import '../../../common/components/empty_cart.dart';
 import '../../../constants/app_colors.dart';
 import '../../home/views/widgets/product_section_widget.dart';
 import 'components/cart_summary_section.dart';
@@ -170,12 +171,13 @@ class _CartPageState extends State<CartPage> {
                                 "0",
                           ),
                       ] else ...[
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Text("Your cart is empty."),
-                          ),
-                        ),
+                        EmptyCartView(),
+                        // const Center(
+                        //   child: Padding(
+                        //     padding: EdgeInsets.all(20),
+                        //     child: Text("Your cart is empty."),
+                        //   ),
+                        // ),
                       ],
                     ],
                   ),

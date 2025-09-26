@@ -30,6 +30,7 @@ class CartController extends GetxController {
   var cartCount = 0.obs;
 
   // Shipping Method
+  var isShippingLoading = false.obs;
   var shippingMethod = <AvailableShippingMethodCart>[].obs;
   @override
   void onInit() {
@@ -138,8 +139,6 @@ class CartController extends GetxController {
       if (response != null) {
         cart.value = response;
         updateCartCount();
-        // force sync from backend
-        // await fetchCartItems();
       }
 
       debugPrint('[CartController] updateQuantity - success key:$key');
@@ -179,6 +178,7 @@ class CartController extends GetxController {
       final result = await _repo.addToCart(productId, quantity);
       if (result != null) {
         cart.value = result; // refresh cart
+        await fetchCartItems();
         updateCartCount();
         debugPrint("[CartController] Added product $productId ✅");
         // await fetchCartItems();
@@ -293,14 +293,14 @@ class CartController extends GetxController {
 
   Future<void> fetchAvailableShippingMethod() async {
     try {
-      isLoading.value = true;
+      isShippingLoading.value = true;
       errorMessage.value = '';
       final result = await _repo.getAvailableShippingMethod();
       shippingMethod.assignAll(result);
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isShippingLoading.value = false;
     }
   }
 }

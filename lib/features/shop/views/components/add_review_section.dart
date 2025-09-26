@@ -124,16 +124,6 @@ class _AddReviewSectionState extends State<AddReviewSection> {
               alignment: Alignment.centerLeft,
               child: ElevatedButton(
                 onPressed: () {
-                  if (auth.isGuest) {
-                    CustomSnackbars.showError(
-                      context,
-                      "Login Required ! Please login to submit review",
-                    );
-
-                    // Navigate to login with go_router
-                    context.push(AppRoutePath.login);
-                    return;
-                  }
                   shopController.isLoading.value
                       ? null
                       : () {

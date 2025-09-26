@@ -80,7 +80,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ),
 
               // Logo (hidden if searching)
-              if (!isSearching) Image.asset(AppImages.logo, height: 40),
+              if (!isSearching)
+                GestureDetector(
+                  onTap: () {
+                    context.push(AppRoutePath.homeScreen);
+                  },
+                  child: Image.asset(AppImages.logo, height: 40),
+                ),
 
               if (!isSearching) const Spacer(),
 
@@ -125,17 +131,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    final auth = Get.find<AuthController>();
-                    if (auth.isGuest) {
-                      CustomSnackbars.showError(
-                        context,
-                        "Login Required ! Please login to access wishlist.",
-                      );
+                    // final auth = Get.find<AuthController>();
+                    // if (auth.isGuest) {
+                    //   CustomSnackbars.showError(
+                    //     context,
+                    //     "Login Required ! Please login to access wishlist.",
+                    //   );
 
-                      // Navigate to login with go_router
-                      context.push(AppRoutePath.login);
-                      return;
-                    }
+                    //   // Navigate to login with go_router
+                    //   context.push(AppRoutePath.login);
+                    //   return;
+                    // }
                     context.push(AppRoutePath.wishlistScreen);
                   },
                   child: Padding(
@@ -147,37 +153,37 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     ),
                   ),
                 ),
+                // GestureDetector(
+                //   onTap: () {
+                //     if (auth.isGuest) {
+                //       // Navigate to login with go_router
+                //       context.push(AppRoutePath.login);
+                //       return;
+                //     }
+                //     context.push(AppRoutePath.accountPage);
+                //   },
+                //   child: Padding(
+                //     padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                //     child: Image.asset(
+                //       AppImages.profile,
+                //       color: AppColors.black,
+                //       height: 30,
+                //     ),
+                //   ),
+                // ),
                 GestureDetector(
                   onTap: () {
-                    if (auth.isGuest) {
-                      // Navigate to login with go_router
-                      context.push(AppRoutePath.login);
-                      return;
-                    }
-                    context.push(AppRoutePath.accountPage);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Image.asset(
-                      AppImages.profile,
-                      color: AppColors.black,
-                      height: 30,
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    final auth = Get.find<AuthController>();
-                    if (auth.isGuest) {
-                      CustomSnackbars.showError(
-                        context,
-                        "Login Required ! Please login to use cart.",
-                      );
+                    // final auth = Get.find<AuthController>();
+                    // if (auth.isGuest) {
+                    //   CustomSnackbars.showError(
+                    //     context,
+                    //     "Login Required ! Please login to use cart.",
+                    //   );
 
-                      // Navigate to login with go_router
-                      context.push(AppRoutePath.login);
-                      return;
-                    }
+                    //   // Navigate to login with go_router
+                    //   context.push(AppRoutePath.login);
+                    //   return;
+                    // }
                     context.push(AppRoutePath.cartPage);
                   },
                   child: Stack(

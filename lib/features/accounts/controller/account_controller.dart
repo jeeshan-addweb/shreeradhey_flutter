@@ -14,6 +14,7 @@ class AccountController extends GetxController {
   final AccountRepo _accountrepo = AccountRepo();
 
   var isLoading = false.obs;
+  var isCheckOutLoading = false.obs;
   var errorMessage = ''.obs;
   var orders = <OrdersNode>[].obs;
   var orderDetail = Rxn<OrderDetailModel>();
@@ -25,6 +26,44 @@ class AccountController extends GetxController {
   void onInit() {
     super.onInit();
     getAddresses();
+
+    // 👇 This will run every time your `addresses` list changes
+    ever(addresses, (_) {
+      debugPrint("📦 Addresses loaded: ${addresses.length}");
+      for (var a in addresses) {
+        debugPrint(
+          "- id: ${a.id}, type: ${a.addressType}, isDefault: ${a.isDefault}",
+        );
+      }
+      debugPrint("👉 Default shipping: $defaultShippingAddress");
+      debugPrint("👉 Default billing: $defaultBillingAddress");
+    });
+  }
+
+  CustomerAddress? get defaultShippingAddress {
+    try {
+      return addresses.firstWhere(
+        (a) => (a.addressType?.toLowerCase() == "shipping") && a.isDefault == 1,
+      );
+    } catch (_) {
+      // fallback: return first shipping address if exists
+      return addresses.firstWhereOrNull(
+        (a) => a.addressType?.toLowerCase() == "shipping",
+      );
+    }
+  }
+
+  CustomerAddress? get defaultBillingAddress {
+    try {
+      return addresses.firstWhere(
+        (a) => (a.addressType?.toLowerCase() == "billing") && a.isDefault == 1,
+      );
+    } catch (_) {
+      // fallback: return first billing address if exists
+      return addresses.firstWhereOrNull(
+        (a) => a.addressType?.toLowerCase() == "billing",
+      );
+    }
   }
 
   Future<void> fetchOrders({int first = 10, String? after}) async {
@@ -83,23 +122,32 @@ class AccountController extends GetxController {
     required BuildContext context,
   }) async {
     try {
-      isLoading.value = true;
+      isCheckOutLoading.value = true;
 
       final cartController = Get.find<CartController>();
+      await cartController.fetchCartItems();
 
       final items =
           cartController.cart.value?.data?.cart?.contents?.nodes ?? [];
+
       final lineItems =
           items
+              .where(
+                (n) => n.product?.node?.databaseId != null,
+              ) // skip invalid products
               .map(
                 (n) => {
-                  "productId": int.tryParse(
-                    n.product?.node?.databaseId.toString() ?? "0",
-                  ),
-                  "quantity": n.quantity,
+                  "productId": n.product?.node!.databaseId!,
+                  "quantity": n.quantity ?? 1,
                 },
               )
               .toList();
+
+      if (lineItems.isEmpty) {
+        CustomSnackbars.showError(context, "Cart has no valid products");
+        isCheckOutLoading.value = false;
+        return;
+      }
 
       final input = {
         "customerId": customerId,
@@ -161,9 +209,11 @@ class AccountController extends GetxController {
       );
     } catch (e) {
       debugPrint("[CartController] Checkout failed: $e");
-      CustomSnackbars.showError(context, "Error ${e.toString()}");
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        CustomSnackbars.showError(context, "Checkout failed:");
+      });
     } finally {
-      isLoading.value = false;
+      isCheckOutLoading.value = false;
     }
   }
 

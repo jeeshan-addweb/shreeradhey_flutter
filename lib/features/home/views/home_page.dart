@@ -157,10 +157,11 @@ class _HomePageState extends State<HomePage> {
             ),
 
             const SizedBox(height: 40),
-            const CoreValuedSection(),
-            const SizedBox(height: 40),
+            // const CoreValuedSection(),
+            // const SizedBox(height: 40),
             const FeatureSlider(),
-            BlogSection(),
+
+            // BlogSection(),
             const CommonFooter(),
           ],
         ),

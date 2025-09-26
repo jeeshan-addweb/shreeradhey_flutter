@@ -4,6 +4,7 @@ import 'package:shree_radhey/common/components/product_shimmer.dart';
 import 'package:shree_radhey/features/home/controller/wishlist_controller.dart';
 
 import '../../../common/components/common_footer.dart';
+import '../../../common/components/empty_wishlist.dart';
 import '../../../constants/app_colors.dart';
 import '../../cart/controller/cart_controller.dart';
 import '../../home/controller/home_controller.dart';
@@ -77,7 +78,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
             }
 
             if (wishlistController.wishlist.isEmpty) {
-              return Center(child: const Text("No items in wishlist"));
+              return EmptyWishlistView();
             }
 
             return ListView.separated(

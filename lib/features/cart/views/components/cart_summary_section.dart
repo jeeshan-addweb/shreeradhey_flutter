@@ -204,19 +204,19 @@ class _CartSummarySectionState extends State<CartSummarySection> {
             ),
             Expanded(
               child: Obx(() {
-                if (cartController.isLoading.value) {
+                if (cartController.isShippingLoading.value) {
                   return const Text(
                     "Loading shipping options...",
                     style: TextStyle(fontSize: 12, color: Colors.black54),
                   );
                 }
 
-                if (cartController.errorMessage.isNotEmpty) {
-                  return Text(
-                    cartController.errorMessage.value,
-                    style: const TextStyle(fontSize: 12, color: Colors.red),
-                  );
-                }
+                // if (cartController.errorMessage.isNotEmpty) {
+                //   return Text(
+                //     cartController.errorMessage.value,
+                //     style: const TextStyle(fontSize: 12, color: Colors.red),
+                //   );
+                // }
 
                 if (cartController.shippingMethod.isEmpty ||
                     cartController.shippingMethod.first.rates == null ||

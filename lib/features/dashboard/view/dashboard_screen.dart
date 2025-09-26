@@ -27,7 +27,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (location.startsWith('/shop')) return 1;
     if (location.startsWith('/deals')) return 2;
     if (location.startsWith('/cart')) return 3;
-    if (location.startsWith('/menu')) return 4;
+    if (location.startsWith('/account')) return 4;
     return -1; // default to Home
   }
 
@@ -83,10 +83,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     },
                   ),
                   _drawerItem(context, AppImages.ghee, "A2 Ghee", () {
-                    context.push(AppRoutePath.gheeScreen);
+                    context.push(AppRoutePath.shopScreen, extra: 2);
                   }),
                   _drawerItem(context, AppImages.oil, "Wood Pressed Oils", () {
-                    context.push(AppRoutePath.oilScreen);
+                    context.push(AppRoutePath.shopScreen, extra: 3);
                   }),
                   _drawerItem(context, AppImages.shop, "Shop", () {
                     context.push(AppRoutePath.shopScreen);
@@ -106,7 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 currentIndex: _getIndexFromLocation(
                   GoRouterState.of(context).uri.toString(),
                 ),
-                onMenuTap: _toggleDrawer,
+                // onMenuTap: _toggleDrawer,
                 onTabTap: () {
                   if (_isDrawerOpen) setState(() => _isDrawerOpen = false);
                 },
