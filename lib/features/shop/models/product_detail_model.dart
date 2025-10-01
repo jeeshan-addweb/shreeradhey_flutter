@@ -42,6 +42,7 @@ class Product {
   String? slug;
   String? description;
   String? shortDescription;
+  String? uri;
   String? type;
   String? productSubtitle;
   bool? isInWishlist;
@@ -80,6 +81,7 @@ class Product {
     this.slug,
     this.description,
     this.shortDescription,
+    this.uri,
     this.type,
     this.productSubtitle,
     this.isInWishlist,
@@ -119,6 +121,7 @@ class Product {
     slug: json["slug"],
     description: json["description"],
     shortDescription: json["shortDescription"],
+    uri: json["uri"],
     type: json["type"],
     productSubtitle: json["productSubtitle"],
     isInWishlist: json["isInWishlist"],
@@ -177,6 +180,7 @@ class Product {
     "slug": slug,
     "description": description,
     "shortDescription": shortDescription,
+    "uri": uri,
     "type": type,
     "productSubtitle": productSubtitle,
     "isInWishlist": isInWishlist,

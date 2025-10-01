@@ -152,15 +152,17 @@ class _ProductOverviewCardState extends State<ProductOverviewCard> {
                     ],
                   ),
                 ),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: widget.onRemove,
-                  icon: Icon(
-                    Icons.close,
-                    size: 22,
-                    color: AppColors.red_CC0003,
-                  ),
-                ),
+                widget.isLoading
+                    ? CircularProgressIndicator()
+                    : IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: widget.onRemove,
+                      icon: Icon(
+                        Icons.close,
+                        size: 22,
+                        color: AppColors.red_CC0003,
+                      ),
+                    ),
               ],
             ),
 

@@ -226,6 +226,7 @@ currencySymbol
     slug
     description
     shortDescription
+    uri
     type
     ... on SimpleProduct {
       productSubtitle

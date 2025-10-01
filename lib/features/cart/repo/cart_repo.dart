@@ -77,7 +77,6 @@ class CartRepo {
       debugPrint('[CartRepo] getCartItems - starting query...');
       final stopwatch = Stopwatch()..start();
 
-      // give it a longer timeout than default (5s)
       final result = await client
           .query(
             QueryOptions(

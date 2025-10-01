@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/utils/routes/app_route_path.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
@@ -80,12 +82,17 @@ class _DealsScreenState extends State<DealsScreen> {
 
                 return GestureDetector(
                   onTap: () {
+                    final selectedCategory = categories[index]['title']!;
+
                     setState(() {
                       selectedIndex = index;
                       _scrollToSelected();
                       controller.fetchProducts(categories[index]['title']!);
                       // Trigger product list update here
                     });
+                    if (selectedCategory != "On Sale") {
+                      context.push(AppRoutePath.shopScreen, extra: index);
+                    }
                   },
                   child: Column(
                     children: [

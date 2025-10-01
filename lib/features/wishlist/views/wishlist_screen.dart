@@ -74,7 +74,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
           ),
           Obx(() {
             if (wishlistController.isLoading.value) {
-              return ProductCardShimmer(height: 500);
+              return ProductCardShimmer();
             }
 
             if (wishlistController.wishlist.isEmpty) {

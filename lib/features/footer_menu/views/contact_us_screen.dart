@@ -134,8 +134,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       label: "Phone Number*",
                       controller: phoneController,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Phone number required";
+                        if (value == null || value.trim().isEmpty) {
+                          return "Please enter phone number";
+                        } else if (!RegExp(
+                          r'^\d{10}$',
+                        ).hasMatch(value.trim())) {
+                          return "Enter a valid 10-digit phone number";
                         }
                         return null;
                       },

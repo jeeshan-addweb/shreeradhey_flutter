@@ -150,8 +150,24 @@ class _AddressScreenState extends State<AddressScreen> {
                       }
                     },
                     onSetDefault: () async {
+                      final selected = _accountController.addresses[index];
+
+                      // Unset default only for addresses of the SAME type
+                      for (var addr in _accountController.addresses) {
+                        if (addr.id != selected.id &&
+                            addr.addressType == selected.addressType &&
+                            addr.isDefault == 1) {
+                          await _accountController.saveOrUpdateAddress({
+                            "id": addr.id,
+                            "is_default":
+                                0, // unset previous default of same type
+                          }, context);
+                        }
+                      }
+
+                      // Set new one as default
                       await _accountController.saveOrUpdateAddress({
-                        "id": addr.id,
+                        "id": selected.id,
                         "is_default": 1,
                       }, context);
                     },
@@ -184,7 +200,6 @@ class _AddressScreenState extends State<AddressScreen> {
           label: "Address Label",
           hint: "e.g. Home / Office",
           controller: addressLabelCtrl,
-          isRequired: true,
         ),
         const SizedBox(height: 16),
 
@@ -196,6 +211,12 @@ class _AddressScreenState extends State<AddressScreen> {
                 hint: "Enter first name",
                 controller: firstNameCtrl,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "First Name is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -205,6 +226,12 @@ class _AddressScreenState extends State<AddressScreen> {
                 hint: "Enter last name",
                 controller: lastNameCtrl,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Last Name is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
@@ -217,6 +244,14 @@ class _AddressScreenState extends State<AddressScreen> {
           controller: phoneCtrl,
           isRequired: true,
           keyboardType: TextInputType.phone,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return "Please enter phone number";
+            } else if (!RegExp(r'^\d{10}$').hasMatch(value.trim())) {
+              return "Enter a valid 10-digit phone number";
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 16),
 
@@ -225,6 +260,15 @@ class _AddressScreenState extends State<AddressScreen> {
           hint: "Enter email address",
           controller: emailCtrl,
           keyboardType: TextInputType.emailAddress,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Email is required";
+            }
+            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+              return "Enter valid email";
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 16),
 
@@ -260,6 +304,12 @@ class _AddressScreenState extends State<AddressScreen> {
           hint: "House number and street name",
           controller: addressLine1Ctrl,
           isRequired: true,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Address Line 1 is required";
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 16),
 
@@ -278,6 +328,12 @@ class _AddressScreenState extends State<AddressScreen> {
                 hint: "Enter city",
                 controller: cityCtrl,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "City is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -288,6 +344,12 @@ class _AddressScreenState extends State<AddressScreen> {
                 controller: postcodeCtrl,
                 isRequired: true,
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Postcode is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],

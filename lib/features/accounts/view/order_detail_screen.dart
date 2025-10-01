@@ -89,8 +89,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         Text(
                           style: TextStyle(fontWeight: FontWeight.bold),
                           DateFormat(
-                            "EEEE dd'th' of MMMM yyyy, hh:mma",
-                          ).format(order.date!),
+                            "EEEE MMMM dd,yyyy 'at' hh:mm a",
+                          ).format(order.date!.toLocal()),
                         ),
                         SizedBox(height: 5),
                         Text("Order is ${order.status}"),

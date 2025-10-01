@@ -156,7 +156,7 @@ class CartController extends GetxController {
       isUpdatingCart.value = true;
       cart.value = await _repo.removeCartItem(key);
       updateCartCount();
-      await fetchCartItems();
+      // await fetchCartItems();
       final shopController = Get.find<ShopController>();
       shopController.fetchProducts("all");
     } catch (e) {
@@ -234,8 +234,12 @@ class CartController extends GetxController {
           "cannot be applied because it does not exist",
         )) {
           message = "Coupon is invalid";
+        } else if (errorMsg.contains("has expired")) {
+          message = "Coupon is expired";
         } else {
-          message = e.graphqlErrors.first.message;
+          message = e.graphqlErrors.first.message
+              .replaceAll("&quot;", '"')
+              .replaceAll("&amp;", "&");
         }
       }
 

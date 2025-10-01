@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
 import '../../../common/components/product_shimmer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
+import '../../../utils/routes/app_route_path.dart';
 import '../controller/shop_controller.dart';
 
 class ShopPage extends StatefulWidget {
@@ -61,10 +63,15 @@ class _ShopPageState extends State<ShopPage> {
 
                 return GestureDetector(
                   onTap: () {
+                    final selectedCategory = categories[index]['title']!;
+
                     setState(() {
                       widget.selectedIndex = index;
                       controller.fetchProducts(categories[index]['title']!);
                     });
+                    if (selectedCategory == "On Sale") {
+                      context.push(AppRoutePath.dealsScreen);
+                    }
                   },
                   child: Column(
                     children: [

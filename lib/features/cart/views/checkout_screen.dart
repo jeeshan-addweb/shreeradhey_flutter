@@ -691,118 +691,244 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 ),
                               ],
                             ),
-                            PaymentMethodCard(
-                              isLoading: controller.isCheckOutLoading.value,
-                              onPlaceOrder: (paymentMethod) async {
-                                final shippingValid =
-                                    _shippingFormKey.currentState?.validate() ??
-                                    false;
+                            Obx(() {
+                              if (controller.paymentGateways.isEmpty) {
+                                return const Center(
+                                  child: Text("No Gateway available"),
+                                );
+                              }
+                              return PaymentMethodCard(
+                                gateways: controller.paymentGateways,
+                                isLoading: controller.isCheckOutLoading.value,
+                                onPlaceOrder: (paymentMethodId) async {
+                                  final shippingValid =
+                                      _shippingFormKey.currentState
+                                          ?.validate() ??
+                                      false;
 
-                                // 2️⃣ Validate billing only if "bill to different" is checked
-                                final billingValid =
-                                    !billToDifferent ||
-                                    (_billingFormKey.currentState?.validate() ??
-                                        false);
+                                  // 2️⃣ Validate billing only if "bill to different" is checked
+                                  final billingValid =
+                                      !billToDifferent ||
+                                      (_billingFormKey.currentState
+                                              ?.validate() ??
+                                          false);
 
-                                if (!shippingValid || !billingValid) {
-                                  CustomSnackbars.showError(
-                                    context,
-                                    "Please fill all required fields",
-                                  );
-                                  return;
-                                }
+                                  if (!shippingValid || !billingValid) {
+                                    CustomSnackbars.showError(
+                                      context,
+                                      "Please fill all required fields",
+                                    );
+                                    return;
+                                  }
+                                  final selectedGateway = controller
+                                      .paymentGateways
+                                      .firstWhere(
+                                        (g) => g.id == paymentMethodId,
+                                      );
 
-                                if (paymentMethod == "razorpay") {
-                                  final paymentId = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (_) => RazorpayPaymentScreen(
-                                            amount: 500.0,
-                                            name:
-                                                "${firstNameController.text} ${lastNameController.text}",
-                                            email: emailController.text,
-                                            phone: phoneController.text,
-                                            onSuccess: (paymentId) {
-                                              // After payment, call checkout with Razorpay method
-
-                                              controller.checkout(
-                                                customerId: int.parse(
-                                                  _authController.userId
-                                                      .toString(),
-                                                ),
-                                                context: context,
-                                                firstName:
-                                                    firstNameController.text,
-                                                lastName:
-                                                    lastNameController.text,
+                                  switch (selectedGateway.id) {
+                                    case 'razorpay':
+                                      final paymentId = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => RazorpayPaymentScreen(
+                                                amount: 500.0,
+                                                name:
+                                                    "${firstNameController.text} ${lastNameController.text}",
                                                 email: emailController.text,
                                                 phone: phoneController.text,
-                                                address: streetController.text,
-                                                city: cityController.text,
-                                                state: selectedState ?? "",
-                                                postcode: pinController.text,
-                                                country:
-                                                    selectedCountry ?? "IN",
-                                                customerNote:
-                                                    notesController.text,
-                                                billToDifferent:
-                                                    billToDifferent,
-                                                shippingFirstName:
-                                                    billingFirstNameController
-                                                        .text,
-                                                shippingLastName:
-                                                    billingLastNameController
-                                                        .text,
-                                                shippingAddress:
-                                                    billingStreetController
-                                                        .text,
-                                                shippingCity:
-                                                    billingCityController.text,
-                                                shippingState:
-                                                    billingSelectedState,
-                                                shippingPostcode:
-                                                    billingPinController.text,
-                                                shippingCountry:
-                                                    billingSelectedCountry,
-                                                paymentMethod: "razorpay",
-                                              );
-                                            },
-                                          ),
-                                    ),
-                                  );
-                                } else {
-                                  controller.checkout(
-                                    customerId: int.parse(
-                                      _authController.userId.toString(),
-                                    ),
-                                    context: context,
-                                    firstName: firstNameController.text,
-                                    lastName: lastNameController.text,
-                                    email: emailController.text,
-                                    phone: phoneController.text,
-                                    address: streetController.text,
-                                    city: cityController.text,
-                                    state: selectedState ?? "",
-                                    postcode: pinController.text,
-                                    country: selectedCountry ?? "IN",
-                                    customerNote: notesController.text,
-                                    billToDifferent: billToDifferent,
-                                    shippingFirstName:
-                                        billingFirstNameController.text,
-                                    shippingLastName:
-                                        billingLastNameController.text,
-                                    shippingAddress:
-                                        billingStreetController.text,
-                                    shippingCity: billingCityController.text,
-                                    shippingState: billingSelectedState,
-                                    shippingPostcode: billingPinController.text,
-                                    shippingCountry: billingSelectedCountry,
-                                    paymentMethod: paymentMethod,
-                                  );
-                                }
-                              },
-                            ),
+                                                onSuccess: (paymentId) {
+                                                  controller.checkout(
+                                                    customerId: int.parse(
+                                                      _authController.userId
+                                                          .toString(),
+                                                    ),
+                                                    context: context,
+                                                    firstName:
+                                                        firstNameController
+                                                            .text,
+                                                    lastName:
+                                                        lastNameController.text,
+                                                    email: emailController.text,
+                                                    phone: phoneController.text,
+                                                    address:
+                                                        streetController.text,
+                                                    city: cityController.text,
+                                                    state: selectedState ?? "",
+                                                    postcode:
+                                                        pinController.text,
+                                                    country:
+                                                        selectedCountry ?? "IN",
+                                                    customerNote:
+                                                        notesController.text,
+                                                    billToDifferent:
+                                                        billToDifferent,
+                                                    shippingFirstName:
+                                                        billingFirstNameController
+                                                            .text,
+                                                    shippingLastName:
+                                                        billingLastNameController
+                                                            .text,
+                                                    shippingAddress:
+                                                        billingStreetController
+                                                            .text,
+                                                    shippingCity:
+                                                        billingCityController
+                                                            .text,
+                                                    shippingState:
+                                                        billingSelectedState,
+                                                    shippingPostcode:
+                                                        billingPinController
+                                                            .text,
+                                                    shippingCountry:
+                                                        billingSelectedCountry,
+                                                    paymentMethod:
+                                                        selectedGateway.id!,
+                                                  );
+                                                },
+                                              ),
+                                        ),
+                                      );
+                                      break;
+
+                                    case 'cod':
+                                      controller.checkout(
+                                        customerId: int.parse(
+                                          _authController.userId.toString(),
+                                        ),
+                                        context: context,
+                                        firstName: firstNameController.text,
+                                        lastName: lastNameController.text,
+                                        email: emailController.text,
+                                        phone: phoneController.text,
+                                        address: streetController.text,
+                                        city: cityController.text,
+                                        state: selectedState ?? "",
+                                        postcode: pinController.text,
+                                        country: selectedCountry ?? "IN",
+                                        customerNote: notesController.text,
+                                        billToDifferent: billToDifferent,
+                                        shippingFirstName:
+                                            billingFirstNameController.text,
+                                        shippingLastName:
+                                            billingLastNameController.text,
+                                        shippingAddress:
+                                            billingStreetController.text,
+                                        shippingCity:
+                                            billingCityController.text,
+                                        shippingState: billingSelectedState,
+                                        shippingPostcode:
+                                            billingPinController.text,
+                                        shippingCountry: billingSelectedCountry,
+                                        paymentMethod: selectedGateway.id!,
+                                      );
+                                      break;
+
+                                    case 'paypal':
+                                      // You can implement a PayPal flow here
+                                      break;
+
+                                    default:
+                                      CustomSnackbars.showError(
+                                        context,
+                                        "Payment method not supported",
+                                      );
+                                  }
+
+                                  // if (paymentMethod == "razorpay") {
+                                  //   final paymentId = await Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder:
+                                  //           (_) => RazorpayPaymentScreen(
+                                  //             amount: 500.0,
+                                  //             name:
+                                  //                 "${firstNameController.text} ${lastNameController.text}",
+                                  //             email: emailController.text,
+                                  //             phone: phoneController.text,
+                                  //             onSuccess: (paymentId) {
+                                  //               controller.checkout(
+                                  //                 customerId: int.parse(
+                                  //                   _authController.userId
+                                  //                       .toString(),
+                                  //                 ),
+                                  //                 context: context,
+                                  //                 firstName:
+                                  //                     firstNameController.text,
+                                  //                 lastName:
+                                  //                     lastNameController.text,
+                                  //                 email: emailController.text,
+                                  //                 phone: phoneController.text,
+                                  //                 address:
+                                  //                     streetController.text,
+                                  //                 city: cityController.text,
+                                  //                 state: selectedState ?? "",
+                                  //                 postcode: pinController.text,
+                                  //                 country:
+                                  //                     selectedCountry ?? "IN",
+                                  //                 customerNote:
+                                  //                     notesController.text,
+                                  //                 billToDifferent:
+                                  //                     billToDifferent,
+                                  //                 shippingFirstName:
+                                  //                     billingFirstNameController
+                                  //                         .text,
+                                  //                 shippingLastName:
+                                  //                     billingLastNameController
+                                  //                         .text,
+                                  //                 shippingAddress:
+                                  //                     billingStreetController
+                                  //                         .text,
+                                  //                 shippingCity:
+                                  //                     billingCityController
+                                  //                         .text,
+                                  //                 shippingState:
+                                  //                     billingSelectedState,
+                                  //                 shippingPostcode:
+                                  //                     billingPinController.text,
+                                  //                 shippingCountry:
+                                  //                     billingSelectedCountry,
+                                  //                 paymentMethod: "razorpay",
+                                  //               );
+                                  //             },
+                                  //           ),
+                                  //     ),
+                                  //   );
+                                  // } else {
+                                  //   controller.checkout(
+                                  //     customerId: int.parse(
+                                  //       _authController.userId.toString(),
+                                  //     ),
+                                  //     context: context,
+                                  //     firstName: firstNameController.text,
+                                  //     lastName: lastNameController.text,
+                                  //     email: emailController.text,
+                                  //     phone: phoneController.text,
+                                  //     address: streetController.text,
+                                  //     city: cityController.text,
+                                  //     state: selectedState ?? "",
+                                  //     postcode: pinController.text,
+                                  //     country: selectedCountry ?? "IN",
+                                  //     customerNote: notesController.text,
+                                  //     billToDifferent: billToDifferent,
+                                  //     shippingFirstName:
+                                  //         billingFirstNameController.text,
+                                  //     shippingLastName:
+                                  //         billingLastNameController.text,
+                                  //     shippingAddress:
+                                  //         billingStreetController.text,
+                                  //     shippingCity: billingCityController.text,
+                                  //     shippingState: billingSelectedState,
+                                  //     shippingPostcode:
+                                  //         billingPinController.text,
+                                  //     shippingCountry: billingSelectedCountry,
+                                  //     paymentMethod: paymentMethod,
+                                  //   );
+                                  // }
+                                },
+                              );
+                            }),
                           ],
                         ),
                       ),

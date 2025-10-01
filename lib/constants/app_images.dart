@@ -12,6 +12,8 @@ class AppImages {
   static String instagram = "assets/icons/instagram.png";
   static String facebook = "assets/icons/facebook.png";
   static String twitter = "assets/icons/twitter.png";
+  static String whatsapp = "assets/icons/whatsapp.png";
+  static String email = "assets/icons/email.png";
 
   // Botoom nav bar
   static String home = "assets/icons/home.png";

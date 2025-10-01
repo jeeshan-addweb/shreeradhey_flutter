@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../../constants/app_colors.dart';
+import '../../../accounts/model/payment_gateway_model.dart';
 
 class PaymentMethodCard extends StatefulWidget {
   final Function(String paymentMethod)? onPlaceOrder;
   final bool isLoading;
+  final List<WcPaymentGateway> gateways;
   const PaymentMethodCard({
     super.key,
     this.onPlaceOrder,
     this.isLoading = false,
+    required this.gateways,
   });
 
   @override
@@ -15,9 +18,17 @@ class PaymentMethodCard extends StatefulWidget {
 }
 
 class _PaymentMethodCardState extends State<PaymentMethodCard> {
-  String _selectedPayment = "cod";
+  String? _selectedPayment;
   bool _termsAccepted = false;
   bool _captcha = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.gateways.isNotEmpty) {
+      _selectedPayment = widget.gateways.first.id;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,56 +44,20 @@ class _PaymentMethodCardState extends State<PaymentMethodCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Razorpay
-            RadioListTile<String>(
-              dense: true,
-              visualDensity: const VisualDensity(horizontal: -4, vertical: -2),
-              contentPadding: EdgeInsets.zero,
-              value: "razorpay",
-              groupValue: _selectedPayment,
-              onChanged: (val) {
-                setState(() => _selectedPayment = val!);
-              },
-              title: const Text("Razorpay Payment"),
-            ),
-
-            Row(
-              children: [
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: Icon(Icons.account_balance_wallet),
-                  color: Colors.blue,
-                  onPressed: () {},
+            ...widget.gateways.map(
+              (gateway) => RadioListTile<String>(
+                dense: true,
+                visualDensity: const VisualDensity(
+                  horizontal: -4,
+                  vertical: -2,
                 ),
-                SizedBox(width: 8),
-                Text("Pay by Razorpay"),
-              ],
+                contentPadding: EdgeInsets.zero,
+                value: gateway.id!,
+                groupValue: _selectedPayment,
+                onChanged: (val) => setState(() => _selectedPayment = val),
+                title: Text(gateway.title ?? ""),
+              ),
             ),
-
-            // Cash on Delivery
-            RadioListTile<String>(
-              dense: true,
-              visualDensity: const VisualDensity(horizontal: -4, vertical: -2),
-              contentPadding: EdgeInsets.zero,
-              value: "cod",
-              groupValue: _selectedPayment,
-              onChanged: (val) {
-                setState(() => _selectedPayment = val!);
-              },
-              title: const Text("Cash on delivery"),
-            ),
-
-            // Divider
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Divider(thickness: 1, height: 20),
-            ),
-
-            // Info text
-            Text(
-              "Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.",
-              style: TextStyle(fontSize: 13, color: AppColors.grey_212121),
-            ),
-
             const SizedBox(height: 12),
 
             // Terms & conditions
@@ -153,7 +128,7 @@ class _PaymentMethodCardState extends State<PaymentMethodCard> {
                 onPressed:
                     (_termsAccepted && _captcha)
                         ? () {
-                          widget.onPlaceOrder?.call(_selectedPayment);
+                          widget.onPlaceOrder?.call(_selectedPayment!);
                         }
                         : null,
                 child:

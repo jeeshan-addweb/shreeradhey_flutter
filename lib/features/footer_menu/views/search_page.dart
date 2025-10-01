@@ -33,7 +33,21 @@ class _SearchPageState extends State<SearchPage> {
       backgroundColor: AppColors.white,
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const ProductCardShimmer();
+          return ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: 5,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final screenWidth = MediaQuery.of(context).size.width;
+              final cardWidth = screenWidth * 0.7;
+              return SizedBox(
+                width: cardWidth,
+                child: const ProductCardShimmer(),
+              );
+            },
+          );
         }
 
         // if (controller.searchResults.isEmpty) {

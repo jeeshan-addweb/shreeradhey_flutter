@@ -8,6 +8,7 @@ import '../../cart/controller/cart_controller.dart';
 import '../model/get_address_model.dart';
 import '../model/order_detail_model.dart';
 import '../model/order_history_model.dart';
+import '../model/payment_gateway_model.dart';
 import '../repo/account_repo.dart';
 
 class AccountController extends GetxController {
@@ -22,10 +23,14 @@ class AccountController extends GetxController {
   var addresses = <CustomerAddress>[].obs;
 
   var updateMessage = ''.obs;
+
+  var paymentGateways = <WcPaymentGateway>[].obs;
   @override
   void onInit() {
     super.onInit();
     getAddresses();
+    fetchOrders();
+    fetchPaymentGateways();
 
     // 👇 This will run every time your `addresses` list changes
     ever(addresses, (_) {
@@ -320,6 +325,15 @@ class AccountController extends GetxController {
       updateMessage.value = "Error: $e";
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchPaymentGateways() async {
+    try {
+      final result = await _accountrepo.getPaymentGateways();
+      paymentGateways.assignAll(result.where((g) => g.enabled == true));
+    } catch (e) {
+      debugPrint("Payment gateways fetch failed: $e");
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:shree_radhey/features/accounts/model/order_history_model.dart';
 import '../../../data/network/api_client.dart';
 import '../model/create_order_model.dart';
 import '../model/order_detail_model.dart';
+import '../model/payment_gateway_model.dart';
 
 class AccountRepo {
   final _client = ApiClient().graphQLClient;
@@ -193,9 +194,15 @@ query GetOrderDetails($orderId: ID!) {
         }
       }
     ''';
+    debugPrint('[Account repo ] checkout - starting query...');
+    final stopwatch = Stopwatch()..start();
 
     final result = await _client.mutate(
       MutationOptions(document: gql(mutation), variables: {"input": input}),
+    );
+
+    debugPrint(
+      '[Account repo] checkout - completed in ${stopwatch.elapsedMilliseconds} ms',
     );
 
     if (result.hasException) {
@@ -347,5 +354,34 @@ query GetOrderDetails($orderId: ID!) {
       print("Error in updateCustomer: $e");
       return null;
     }
+  }
+
+  Future<List<WcPaymentGateway>> getPaymentGateways() async {
+    const query = r'''
+    query {
+      wcPaymentGateways(available: true, adminOnly: true) {
+        id
+        title
+        enabled
+        settings { key value }
+      }
+    }
+  ''';
+
+    final QueryOptions options = QueryOptions(
+      document: gql(query),
+      fetchPolicy: FetchPolicy.networkOnly,
+    );
+
+    final result = await _client.query(options);
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final data = result.data?['wcPaymentGateways'] as List?;
+    if (data == null) return [];
+
+    return data.map((json) => WcPaymentGateway.fromJson(json)).toList();
   }
 }

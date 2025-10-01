@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/common/components/product_shimmer.dart';
 import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
@@ -82,16 +83,17 @@ class _CartPageState extends State<CartPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (cartController.isFetchingCart.value) ...[
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: SizedBox(
-                              height: 36,
-                              width: 36,
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                        ),
+                        ProductCardShimmer(),
+                        // const Center(
+                        //   child: Padding(
+                        //     padding: EdgeInsets.all(20),
+                        //     child: SizedBox(
+                        //       height: 36,
+                        //       width: 36,
+                        //       child: CircularProgressIndicator(),
+                        //     ),
+                        //   ),
+                        // ),
                       ] else if (nodes.isNotEmpty) ...[
                         ...nodes
                             .map(

@@ -491,7 +491,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         _buildCircleIcon(
                           Icons.ios_share_outlined,
                           onTap: () {
-                            showShareOptions(context, detail.name ?? "");
+                            showShareOptions(
+                              context,
+                              detail.name ?? "",
+                              detail.uri ?? "",
+                            );
                           },
                         ),
                       ],
@@ -1067,7 +1071,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 void showShareOptions(
   BuildContext context,
   String productName,
-  // String productUrl,
+  String productUrl,
 ) {
   showModalBottomSheet(
     backgroundColor: AppColors.white,
@@ -1078,29 +1082,24 @@ void showShareOptions(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(
-              icon: Icon(
-                Icons.phone_callback_outlined,
-                color: Colors.green,
-                size: 30,
-              ),
-              onPressed: () => _shareWhatsApp(productName),
+            GestureDetector(
+              onTap: () {
+                debugPrint("Name $productName , Url $productUrl");
+                _shareWhatsApp(productName, productUrl);
+              },
+              child: Image.asset(AppImages.whatsapp, width: 30, height: 30),
             ),
-            IconButton(
-              icon: Icon(Icons.facebook, color: Colors.blue, size: 30),
-              onPressed: () => _shareFacebook(productName),
+            GestureDetector(
+              onTap: () => _shareFacebook(productName, productUrl),
+              child: Image.asset(AppImages.facebook, width: 30, height: 30),
             ),
-            IconButton(
-              icon: Icon(Icons.email, color: Colors.red, size: 30),
-              onPressed: () => _shareEmail(productName),
+            GestureDetector(
+              onTap: () => _shareEmail(productName, productUrl),
+              child: Image.asset(AppImages.email, width: 30, height: 30),
             ),
-            IconButton(
-              icon: Icon(
-                Icons.cancel_presentation_sharp,
-                color: Colors.black,
-                size: 30,
-              ),
-              onPressed: () => _shareTwitter(productName),
+            GestureDetector(
+              onTap: () => _shareTwitter(productName, productUrl),
+              child: Image.asset(AppImages.twitter, width: 30, height: 30),
             ),
           ],
         ),
@@ -1109,35 +1108,41 @@ void showShareOptions(
   );
 }
 
-void _shareWhatsApp(String productName) async {
-  final message = Uri.encodeComponent("Check out this product: $productName\n");
+void _shareWhatsApp(String productName, String productUrl) async {
+  final message = Uri.encodeComponent(
+    "Check out this product: $productName\n$productUrl",
+  );
   final url = "https://wa.me/?text=$message";
   if (await canLaunchUrl(Uri.parse(url))) {
-    await launchUrl(Uri.parse(url));
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 }
 
-void _shareFacebook(String productName) async {
-  final url = "https://www.facebook.com/sharer/sharer.php?u=${(productName)}";
+/// Facebook
+void _shareFacebook(String productName, String productUrl) async {
+  final encodedUrl = Uri.encodeComponent(productUrl);
+  final url = "https://www.facebook.com/sharer/sharer.php?u=$encodedUrl";
   if (await canLaunchUrl(Uri.parse(url))) {
-    await launchUrl(Uri.parse(url));
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 }
 
-void _shareEmail(String productName) async {
+/// Email
+void _shareEmail(String productName, String productUrl) async {
   final subject = Uri.encodeComponent("Check out this product: $productName");
-  // final body = Uri.encodeComponent("Here is the product link: $productUrl");
-  final url = "mailto:?subject=$subject";
+  final body = Uri.encodeComponent("Here is the product link: $productUrl");
+  final url = "mailto:?subject=$subject&body=$body";
   if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(Uri.parse(url));
   }
 }
 
-void _shareTwitter(String productName) async {
+/// Twitter (X)
+void _shareTwitter(String productName, String productUrl) async {
   final text = Uri.encodeComponent("Check out this product: $productName");
-  final url =
-      "https://twitter.com/intent/tweet?text=$text&url=${(productName)}";
+  final encodedUrl = Uri.encodeComponent(productUrl);
+  final url = "https://twitter.com/intent/tweet?text=$text&url=$encodedUrl";
   if (await canLaunchUrl(Uri.parse(url))) {
-    await launchUrl(Uri.parse(url));
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 }

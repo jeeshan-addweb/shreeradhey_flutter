@@ -31,11 +31,7 @@ class _OrderPageState extends State<OrderPage> {
     return Scaffold(
       body: Obx(() {
         if (accountController.isLoading.value) {
-          return ListView.builder(
-            itemBuilder: (context, index) {
-              return ProductCardShimmer();
-            },
-          );
+          return ProductCardShimmer();
         }
 
         if (accountController.errorMessage.isNotEmpty) {

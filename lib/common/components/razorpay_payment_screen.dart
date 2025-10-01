@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class RazorpayPaymentScreen extends StatefulWidget {
-  final double amount; // in INR (Razorpay expects paise, so multiply by 100)
+  final double amount;
   final String name;
   final String email;
   final String phone;
-  final Function(String paymentId)? onSuccess; // callback after success
+  final Function(String paymentId)? onSuccess;
 
   const RazorpayPaymentScreen({
     super.key,
@@ -38,10 +38,10 @@ class _RazorpayPaymentScreenState extends State<RazorpayPaymentScreen> {
 
   void _openCheckout() {
     var options = {
-      'key': 'rzp_test_xxxxxxxxxxxx', // replace with your Razorpay key
-      'amount': (widget.amount * 100).toInt(), // Razorpay expects paise
-      'name': 'Your Shop',
-      'description': 'Order Payment',
+      'key': 'rzp_test_xxxxxxxxxxxx',
+      'amount': (widget.amount * 100).toInt(),
+      'name': widget.name,
+      'description': "Order Payment of ₹${widget.amount}",
       'prefill': {'contact': widget.phone, 'email': widget.email},
       'external': {
         'wallets': ['paytm'],
@@ -56,9 +56,8 @@ class _RazorpayPaymentScreenState extends State<RazorpayPaymentScreen> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    // Payment successful
     widget.onSuccess?.call(response.paymentId ?? "");
-    Navigator.pop(context, response.paymentId); // return to previous screen
+    Navigator.pop(context, response.paymentId);
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -78,13 +77,12 @@ class _RazorpayPaymentScreenState extends State<RazorpayPaymentScreen> {
 
   @override
   void dispose() {
-    _razorpay.clear(); // clear all listeners
+    _razorpay.clear();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // No UI needed, Razorpay popup will open directly
     return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
