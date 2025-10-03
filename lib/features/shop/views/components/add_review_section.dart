@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shree_radhey/features/shop/controller/shop_controller.dart';
 
 import '../../../../common/components/custom_snackbar.dart';
 import '../../../../constants/app_colors.dart';
-import '../../../../utils/routes/app_route_path.dart';
 import '../../../auth/controller/auth_controller.dart';
 
 class AddReviewSection extends StatefulWidget {
@@ -124,46 +122,44 @@ class _AddReviewSectionState extends State<AddReviewSection> {
               alignment: Alignment.centerLeft,
               child: ElevatedButton(
                 onPressed: () {
-                  shopController.isLoading.value
-                      ? null
-                      : () {
-                        if (overallRating == 0) {
-                          CustomSnackbars.showError(
-                            context,
-                            "Please give an overall rating",
-                          );
-                          return;
-                        }
-                        if (reviewController.text.trim().isEmpty) {
-                          CustomSnackbars.showError(
-                            context,
-                            "Please write your review",
-                          );
-                          return;
-                        }
+                  debugPrint("tapped");
 
-                        final userName = "John Doe";
-                        final userEmail = "john@example.com";
-                        debugPrint(
-                          "Product Id is ${widget.productId} and content is ${reviewController.text.trim()} and rating is ${overallRating.toInt()}",
-                        );
+                  if (overallRating == 0) {
+                    CustomSnackbars.showError(
+                      context,
+                      "Please give an overall rating",
+                    );
+                    return;
+                  }
+                  if (reviewController.text.trim().isEmpty) {
+                    CustomSnackbars.showError(
+                      context,
+                      "Please write your review",
+                    );
+                    return;
+                  }
 
-                        shopController.submitReview(
-                          context: context,
-                          productId: widget.productId.toString(),
-                          author: userName,
-                          email: userEmail,
-                          content: reviewController.text.trim(),
-                          rating: overallRating.toInt(),
-                        );
+                  final userName = "John Doe";
+                  final userEmail = "john@example.com";
+                  debugPrint(
+                    "Product Id is ${widget.productId} and content is ${reviewController.text.trim()} and rating is ${overallRating.toInt()}",
+                  );
 
-                        // Clear inputs after submit
-                        reviewController.clear();
-                        setState(() {
-                          overallRating = 0;
-                          productRating = 0;
-                        });
-                      };
+                  shopController.submitReview(
+                    context: context,
+                    productId: widget.productId.toString(),
+                    author: userName,
+                    email: userEmail,
+                    content: reviewController.text.trim(),
+                    rating: overallRating.toInt(),
+                  );
+
+                  // Clear inputs after submit
+                  reviewController.clear();
+                  setState(() {
+                    overallRating = 0;
+                    productRating = 0;
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[700],
@@ -179,7 +175,7 @@ class _AddReviewSectionState extends State<AddReviewSection> {
                   ),
                 ),
                 child:
-                    shopController.isLoading.value
+                    shopController.isSubmitting.value
                         ? const SizedBox(
                           width: 16,
                           height: 16,

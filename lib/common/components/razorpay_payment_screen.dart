@@ -33,12 +33,14 @@ class _RazorpayPaymentScreenState extends State<RazorpayPaymentScreen> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
 
-    _openCheckout();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openCheckout();
+    });
   }
 
   void _openCheckout() {
     var options = {
-      'key': 'rzp_test_xxxxxxxxxxxx',
+      'key': 'rzp_test_ROvWxWrNZH8K21',
       'amount': (widget.amount * 100).toInt(),
       'name': widget.name,
       'description': "Order Payment of ₹${widget.amount}",
@@ -51,20 +53,27 @@ class _RazorpayPaymentScreenState extends State<RazorpayPaymentScreen> {
     try {
       _razorpay.open(options);
     } catch (e) {
-      debugPrint("Error: $e");
+      debugPrint("Razorpay open error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Payment could not start. Try again.")),
+      );
+      Navigator.pop(context);
     }
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     widget.onSuccess?.call(response.paymentId ?? "");
-    Navigator.pop(context, response.paymentId);
+    Navigator.pop(context, {
+      'status': 'success',
+      'paymentId': response.paymentId,
+    });
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Payment failed: ${response.message}")),
     );
-    Navigator.pop(context);
+    Navigator.pop(context, {'status': 'error', 'message': response.message});
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {

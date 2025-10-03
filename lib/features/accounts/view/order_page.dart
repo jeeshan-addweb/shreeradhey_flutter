@@ -55,7 +55,12 @@ class _OrderPageState extends State<OrderPage> {
                     extra: order.databaseId.toString(),
                   );
                 },
-                onInvoice: () {},
+                onInvoice: () {
+                  accountController.generateAndOpenInvoice(
+                    order.databaseId ?? 0,
+                    context,
+                  );
+                },
               );
             }).toList(),
             const SizedBox(height: 40),

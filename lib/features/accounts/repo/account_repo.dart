@@ -384,4 +384,24 @@ query GetOrderDetails($orderId: ID!) {
 
     return data.map((json) => WcPaymentGateway.fromJson(json)).toList();
   }
+
+  Future<String?> generateInvoice(int orderId) async {
+    const String query = r'''
+      query GenerateInvoice($orderId: Int!) {
+        generateInvoice(orderId: $orderId) {
+          url
+        }
+      }
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(document: gql(query), variables: {'orderId': orderId}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['generateInvoice']?['url'];
+  }
 }

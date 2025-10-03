@@ -79,10 +79,9 @@ class ShopController extends GetxController {
       final detail = await _repo.getProductDetail(slug);
       productDetail.value = detail;
 
-      // 🔑 Auto-select the matching variant
       final variants = Get.find<ProductVariantController>().productVariants;
       final index = variants.indexWhere(
-        (v) => v.slug == detail.data?.product?.slug, // or databaseId
+        (v) => v.slug == detail.data?.product?.slug,
       );
       if (index != -1) {
         Get.find<ProductVariantController>().setSelectedVariant(index);
@@ -110,7 +109,6 @@ class ShopController extends GetxController {
 
       reviews.addAll(result);
 
-      // handle pagination
       final pageInfo = result.isNotEmpty ? result.last : null;
     } catch (e) {
       print("Review fetch error: $e");

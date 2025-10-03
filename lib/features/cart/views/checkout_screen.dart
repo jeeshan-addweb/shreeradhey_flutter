@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:get/get.dart';
 import 'package:shree_radhey/common/components/custom_snackbar.dart';
 
@@ -27,6 +28,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cartController.fetchCartItems();
+    });
 
     Future.microtask(() async {
       await controller.getAddresses();
@@ -92,7 +96,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   void dispose() {
-    // Shipping
+    // Shipping Address Here
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
@@ -103,7 +107,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     pinController.dispose();
     notesController.dispose();
 
-    // Billing
+    // Billing Address Here
     billingFirstNameController.dispose();
     billingLastNameController.dispose();
     billingEmailController.dispose();
@@ -706,7 +710,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                           ?.validate() ??
                                       false;
 
-                                  // 2️⃣ Validate billing only if "bill to different" is checked
+                                  // Validate billing only if "bill to different" is checked
                                   final billingValid =
                                       !billToDifferent ||
                                       (_billingFormKey.currentState
@@ -720,6 +724,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     );
                                     return;
                                   }
+
+                                  // final items =
+                                  //     cartController
+                                  //         .cart
+                                  //         .value
+                                  //         ?.data
+                                  //         ?.cart
+                                  //         ?.contents
+                                  //         ?.nodes ??
+                                  //     [];
+                                  // if (items.isEmpty) {
+                                  //   CustomSnackbars.showError(
+                                  //     context,
+                                  //     "Cart has no valid products",
+                                  //   );
+                                  //   return;
+                                  // }
+
                                   final selectedGateway = controller
                                       .paymentGateways
                                       .firstWhere(
@@ -728,12 +750,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                                   switch (selectedGateway.id) {
                                     case 'razorpay':
+                                      final totalString =
+                                          "${cart?.currencySymbol}${cart?.total}";
+
+                                      // Remove non-numeric characters except dot
+                                      final numericString = totalString
+                                          .replaceAll(RegExp(r'[^\d.]'), '');
                                       final paymentId = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder:
                                               (_) => RazorpayPaymentScreen(
-                                                amount: 500.0,
+                                                amount:
+                                                    double.tryParse(
+                                                      numericString,
+                                                    ) ??
+                                                    0.0,
                                                 name:
                                                     "${firstNameController.text} ${lastNameController.text}",
                                                 email: emailController.text,
@@ -744,6 +776,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                       _authController.userId
                                                           .toString(),
                                                     ),
+                                                    coupons:
+                                                        cart?.appliedCoupons
+                                                            ?.map(
+                                                              (c) =>
+                                                                  c.code ?? "",
+                                                            )
+                                                            .toList(),
                                                     context: context,
                                                     firstName:
                                                         firstNameController
@@ -764,24 +803,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                         notesController.text,
                                                     billToDifferent:
                                                         billToDifferent,
-                                                    shippingFirstName:
+                                                    billingFirstName:
                                                         billingFirstNameController
                                                             .text,
-                                                    shippingLastName:
+                                                    billingLastName:
                                                         billingLastNameController
                                                             .text,
-                                                    shippingAddress:
+                                                    billingAddress:
                                                         billingStreetController
                                                             .text,
-                                                    shippingCity:
+                                                    billingCity:
                                                         billingCityController
                                                             .text,
-                                                    shippingState:
+                                                    billingState:
                                                         billingSelectedState,
-                                                    shippingPostcode:
+                                                    billingPostcode:
                                                         billingPinController
                                                             .text,
-                                                    shippingCountry:
+                                                    billingCountry:
                                                         billingSelectedCountry,
                                                     paymentMethod:
                                                         selectedGateway.id!,
@@ -798,6 +837,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                           _authController.userId.toString(),
                                         ),
                                         context: context,
+                                        coupons:
+                                            cart?.appliedCoupons
+                                                ?.map((c) => c.code ?? "")
+                                                .toList(),
                                         firstName: firstNameController.text,
                                         lastName: lastNameController.text,
                                         email: emailController.text,
@@ -809,30 +852,175 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         country: selectedCountry ?? "IN",
                                         customerNote: notesController.text,
                                         billToDifferent: billToDifferent,
-                                        shippingFirstName:
+                                        billingFirstName:
                                             billingFirstNameController.text,
-                                        shippingLastName:
+                                        billingLastName:
                                             billingLastNameController.text,
-                                        shippingAddress:
+                                        billingAddress:
                                             billingStreetController.text,
-                                        shippingCity:
-                                            billingCityController.text,
-                                        shippingState: billingSelectedState,
-                                        shippingPostcode:
+                                        billingCity: billingCityController.text,
+                                        billingState: billingSelectedState,
+                                        billingPostcode:
                                             billingPinController.text,
-                                        shippingCountry: billingSelectedCountry,
+                                        billingCountry: billingSelectedCountry,
                                         paymentMethod: selectedGateway.id!,
                                       );
                                       break;
 
                                     case 'paypal':
-                                      // You can implement a PayPal flow here
+                                      // Make sure totalAmount is a string
+                                      final totalAmount =
+                                          (cart?.total ?? 0.0).toString();
+
+                                      debugPrint("Total Amt is $totalAmount");
+
+                                      // Map items, ensuring everything is string
+                                      double subtotal = 0;
+                                      final items =
+                                          cart?.contents?.nodes?.map((item) {
+                                            final price =
+                                                double.tryParse(
+                                                  item.product?.node?.price ??
+                                                      '0',
+                                                ) ??
+                                                0.0;
+                                            final quantity = item.quantity ?? 1;
+                                            subtotal += price * quantity;
+
+                                            return {
+                                              "name":
+                                                  item.product?.node?.name ??
+                                                  "Item",
+                                              "quantity": quantity.toString(),
+                                              "price": price.toStringAsFixed(2),
+                                              "currency": "USD",
+                                            };
+                                          }).toList() ??
+                                          [
+                                            {
+                                              "name": "Item",
+                                              "quantity": "1",
+                                              "price": totalAmount,
+                                              "currency": "USD",
+                                            },
+                                          ];
+
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => PaypalCheckoutView(
+                                                sandboxMode: true,
+                                                clientId:
+                                                    "AaE3QzP9f-5zDRU7DgmMBHYiivdozkV_GSr8WxLvqhwynxK3SsNZgZy65KDfFMTPgIfBPgBg_7HpEDrW",
+                                                secretKey:
+                                                    "EDCpmYAP_1gLIxxLg9VPX3_TFRXIouF9VQU8Hr-JyVjCX0qRJGjmQB_LrClG_cVf1n4yxNByMdjSHfA2",
+                                                transactions: [
+                                                  {
+                                                    "amount": {
+                                                      "total": subtotal
+                                                          .toStringAsFixed(2),
+                                                      "currency": "USD",
+                                                      "details": {
+                                                        "subtotal": subtotal
+                                                            .toStringAsFixed(2),
+                                                        "shipping": "0",
+                                                        "shipping_discount":
+                                                            "0",
+                                                      },
+                                                    },
+                                                    "description":
+                                                        "Order Payment",
+                                                    "item_list": {
+                                                      "items": items,
+                                                    },
+                                                  },
+                                                ],
+                                                note:
+                                                    "Contact us for any questions on your order.",
+                                                onSuccess: (params) async {
+                                                  final transactionId =
+                                                      params["paymentId"]
+                                                          ?.toString() ??
+                                                      "";
+
+                                                  controller.checkout(
+                                                    customerId: int.parse(
+                                                      _authController.userId
+                                                          .toString(),
+                                                    ),
+                                                    coupons:
+                                                        cart?.appliedCoupons
+                                                            ?.map(
+                                                              (c) =>
+                                                                  c.code ?? "",
+                                                            )
+                                                            .toList(),
+                                                    context: context,
+                                                    firstName:
+                                                        firstNameController
+                                                            .text,
+                                                    lastName:
+                                                        lastNameController.text,
+                                                    email: emailController.text,
+                                                    phone: phoneController.text,
+                                                    address:
+                                                        streetController.text,
+                                                    city: cityController.text,
+                                                    state: selectedState ?? "",
+                                                    postcode:
+                                                        pinController.text,
+                                                    country:
+                                                        selectedCountry ?? "IN",
+                                                    customerNote:
+                                                        notesController.text,
+                                                    billToDifferent:
+                                                        billToDifferent,
+                                                    billingFirstName:
+                                                        billingFirstNameController
+                                                            .text,
+                                                    billingLastName:
+                                                        billingLastNameController
+                                                            .text,
+                                                    billingAddress:
+                                                        billingStreetController
+                                                            .text,
+                                                    billingCity:
+                                                        billingCityController
+                                                            .text,
+                                                    billingState:
+                                                        billingSelectedState,
+                                                    billingPostcode:
+                                                        billingPinController
+                                                            .text,
+                                                    billingCountry:
+                                                        billingSelectedCountry,
+                                                    paymentMethod:
+                                                        selectedGateway.id!,
+                                                  );
+                                                },
+                                                onError: (error) {
+                                                  debugPrint(error.toString());
+                                                  CustomSnackbars.showError(
+                                                    context,
+                                                    "PayPal Payment Failed: $error",
+                                                  );
+                                                  Navigator.pop(context);
+                                                },
+                                                onCancel: () {
+                                                  CustomSnackbars.showError(
+                                                    context,
+                                                    "PayPal Payment Cancelled",
+                                                  );
+                                                },
+                                              ),
+                                        ),
+                                      );
                                       break;
 
                                     default:
                                       CustomSnackbars.showError(
                                         context,
-                                        "Payment method not supported",
+                                        "Payment method not supported here",
                                       );
                                   }
 

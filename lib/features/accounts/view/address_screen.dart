@@ -139,42 +139,20 @@ class _AddressScreenState extends State<AddressScreen> {
                     },
 
                     onDelete: () async {
-                      if (mounted) {
-                        await _accountController.deleteAddress(
-                          addr.id!,
-                          int.parse(
-                            _authController.userId.toString(),
-                          ), // convert to int
-                          context,
-                        );
-                      }
+                      await _accountController.deleteAddress(
+                        addr.id!,
+                        int.parse(_authController.userId.toString()),
+                        context,
+                      );
                     },
                     onSetDefault: () async {
-                      final selected = _accountController.addresses[index];
-
-                      // Unset default only for addresses of the SAME type
-                      for (var addr in _accountController.addresses) {
-                        if (addr.id != selected.id &&
-                            addr.addressType == selected.addressType &&
-                            addr.isDefault == 1) {
-                          await _accountController.saveOrUpdateAddress({
-                            "id": addr.id,
-                            "is_default":
-                                0, // unset previous default of same type
-                          }, context);
-                        }
-                      }
-
-                      // Set new one as default
-                      await _accountController.saveOrUpdateAddress({
-                        "id": selected.id,
-                        "is_default": 1,
-                      }, context);
+                      await _accountController.setDefaultAddress(addr, context);
                     },
                   );
                 },
               );
             }),
+            const SizedBox(height: 40),
             const CommonFooter(),
           ],
         ),

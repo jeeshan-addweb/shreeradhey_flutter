@@ -1031,8 +1031,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   // Update controller instead of local state
                   productVariantController.setSelectedVariant(index);
 
-                  // Call product detail API again for the selected variant
-                  final slug = v.slug; // assuming variant has slug
+                  final slug = v.slug;
                   Get.find<ShopController>().fetchProductDetail(context, slug);
                 },
               );

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/components/custom_snackbar.dart';
 import '../../cart/controller/cart_controller.dart';
@@ -25,6 +26,7 @@ class AccountController extends GetxController {
   var updateMessage = ''.obs;
 
   var paymentGateways = <WcPaymentGateway>[].obs;
+  var invoiceUrl = RxnString();
   @override
   void onInit() {
     super.onInit();
@@ -101,7 +103,7 @@ class AccountController extends GetxController {
   }
 
   Future<void> checkout({
-    // Billing
+    // Shipping
     required int customerId,
     required String firstName,
     required String lastName,
@@ -114,23 +116,24 @@ class AccountController extends GetxController {
     required String country,
     // Optional note
     String? customerNote,
-    // Shipping (only if different)
-    String? shippingFirstName,
-    String? shippingLastName,
-    String? shippingAddress,
-    String? shippingCity,
-    String? shippingState,
-    String? shippingPostcode,
-    String? shippingCountry,
+    // Billing (only if different)
+    String? billingFirstName,
+    String? billingLastName,
+    String? billingAddress,
+    String? billingCity,
+    String? billingState,
+    String? billingPostcode,
+    String? billingCountry,
     bool billToDifferent = false,
     String? paymentMethod,
+    List<String>? coupons,
     required BuildContext context,
   }) async {
     try {
       isCheckOutLoading.value = true;
 
       final cartController = Get.find<CartController>();
-      await cartController.fetchCartItems();
+      // await cartController.fetchCartItems();
 
       final items =
           cartController.cart.value?.data?.cart?.contents?.nodes ?? [];
@@ -162,8 +165,8 @@ class AccountController extends GetxController {
             paymentMethod == "cod" ? "Cash on Delivery" : "Razorpay",
         "isPaid": paymentMethod != "cod",
         "status": "PROCESSING",
-        "coupons": [],
-        "billing": {
+        "coupons": coupons ?? [],
+        "shipping": {
           "firstName": firstName,
           "lastName": lastName,
           "email": email,
@@ -174,16 +177,16 @@ class AccountController extends GetxController {
           "postcode": postcode,
           "country": country,
         },
-        "shipping":
+        "billing":
             billToDifferent
                 ? {
-                  "firstName": shippingFirstName ?? firstName,
-                  "lastName": shippingLastName ?? lastName,
-                  "address1": shippingAddress ?? address,
-                  "city": shippingCity ?? city,
-                  "state": shippingState ?? state,
-                  "postcode": shippingPostcode ?? postcode,
-                  "country": shippingCountry ?? country,
+                  "firstName": billingFirstName ?? firstName,
+                  "lastName": billingLastName ?? lastName,
+                  "address1": billingAddress ?? address,
+                  "city": billingCity ?? city,
+                  "state": billingState ?? state,
+                  "postcode": billingPostcode ?? postcode,
+                  "country": billingCountry ?? country,
                 }
                 : {
                   "firstName": firstName,
@@ -222,14 +225,102 @@ class AccountController extends GetxController {
     }
   }
 
+  // Future<void> saveOrUpdateAddress(
+  //   Map<String, dynamic> address,
+  //   BuildContext context,
+  // ) async {
+  //   try {
+  //     isLoading.value = true;
+  //     final response = await _accountrepo.saveAddress(address);
+
+  //     if (response['success'] == true) {
+  //       if (context.mounted) {
+  //         CustomSnackbars.showSuccess(
+  //           context,
+  //           response['message'] ?? "Address saved",
+  //         );
+  //       }
+  //       await getAddresses();
+  //     } else {
+  //       if (context.mounted) {
+  //         CustomSnackbars.showError(
+  //           context,
+  //           response['message'] ?? "Could not save address",
+  //         );
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint("SaveOrUpdateAddress  Error: $e");
+  //     if (context.mounted) {
+  //       CustomSnackbars.showError(context, "Something went wrong");
+  //     }
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+
+  // Future<void> getAddresses() async {
+  //   try {
+  //     isLoading.value = true;
+  //     final response = await _accountrepo.fetchCustomerAddresses();
+  //     addresses.value = response?.data?.customerAddresses ?? [];
+  //   } catch (e) {
+  //     debugPrint("Error, ${e.toString()}");
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+
+  // Future<void> deleteAddress(int id, int userId, BuildContext context) async {
+  //   try {
+  //     isLoading.value = true;
+  //     final response = await _accountrepo.deleteAddress(id, userId);
+
+  //     if (response['success'] == true) {
+  //       if (context.mounted) {
+  //         CustomSnackbars.showSuccess(
+  //           context,
+  //           response['message'] ?? "Address deleted",
+  //         );
+  //       }
+  //       await getAddresses();
+  //     } else {
+  //       if (context.mounted) {
+  //         CustomSnackbars.showError(
+  //           context,
+  //           response['message'] ?? "Could not delete",
+  //         );
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint("DeleteAddress Error: $e");
+  //     if (context.mounted) {
+  //       CustomSnackbars.showError(context, "Something went wrong");
+  //     }
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+
+  Future<void> getAddresses() async {
+    try {
+      isLoading.value = true;
+      final response = await _accountrepo.fetchCustomerAddresses();
+      addresses.value = response?.data?.customerAddresses ?? [];
+    } catch (e) {
+      debugPrint("Error fetching addresses: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Add or update address (form save)
   Future<void> saveOrUpdateAddress(
     Map<String, dynamic> address,
     BuildContext context,
   ) async {
     try {
-      isLoading.value = true;
       final response = await _accountrepo.saveAddress(address);
-
       if (response['success'] == true) {
         if (context.mounted) {
           CustomSnackbars.showSuccess(
@@ -247,32 +338,20 @@ class AccountController extends GetxController {
         }
       }
     } catch (e) {
-      debugPrint("SaveOrUpdateAddress  Error: $e");
+      debugPrint("SaveOrUpdateAddress Error: $e");
       if (context.mounted) {
         CustomSnackbars.showError(context, "Something went wrong");
       }
-    } finally {
-      isLoading.value = false;
     }
   }
 
-  Future<void> getAddresses() async {
-    try {
-      isLoading.value = true;
-      final response = await _accountrepo.fetchCustomerAddresses();
-      addresses.value = response?.data?.customerAddresses ?? [];
-    } catch (e) {
-      debugPrint("Error, ${e.toString()}");
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
+  /// Delete with optimistic update
   Future<void> deleteAddress(int id, int userId, BuildContext context) async {
-    try {
-      isLoading.value = true;
-      final response = await _accountrepo.deleteAddress(id, userId);
+    final oldList = List<CustomerAddress>.from(addresses);
+    addresses.removeWhere((a) => a.id == id);
 
+    try {
+      final response = await _accountrepo.deleteAddress(id, userId);
       if (response['success'] == true) {
         if (context.mounted) {
           CustomSnackbars.showSuccess(
@@ -280,8 +359,9 @@ class AccountController extends GetxController {
             response['message'] ?? "Address deleted",
           );
         }
-        await getAddresses();
       } else {
+        // rollback
+        addresses.assignAll(oldList);
         if (context.mounted) {
           CustomSnackbars.showError(
             context,
@@ -290,12 +370,41 @@ class AccountController extends GetxController {
         }
       }
     } catch (e) {
-      debugPrint("DeleteAddress Error: $e");
+      addresses.assignAll(oldList); // rollback
       if (context.mounted) {
         CustomSnackbars.showError(context, "Something went wrong");
       }
-    } finally {
-      isLoading.value = false;
+    }
+  }
+
+  /// Set default address (optimistic update)
+  Future<void> setDefaultAddress(
+    CustomerAddress selected,
+    BuildContext context,
+  ) async {
+    final oldList = List<CustomerAddress>.from(addresses);
+
+    // Optimistic UI update
+    for (var a in addresses) {
+      if (a.addressType == selected.addressType) {
+        a.isDefault = (a.id == selected.id) ? 1 : 0;
+      }
+    }
+    addresses.refresh();
+
+    try {
+      // Persist both old default + new default
+      for (var a in addresses.where(
+        (e) => e.addressType == selected.addressType,
+      )) {
+        await _accountrepo.saveAddress({"id": a.id, "is_default": a.isDefault});
+      }
+    } catch (e) {
+      // rollback if API fails
+      addresses.assignAll(oldList);
+      if (context.mounted) {
+        CustomSnackbars.showError(context, "Failed to set default");
+      }
     }
   }
 
@@ -334,6 +443,25 @@ class AccountController extends GetxController {
       paymentGateways.assignAll(result.where((g) => g.enabled == true));
     } catch (e) {
       debugPrint("Payment gateways fetch failed: $e");
+    }
+  }
+
+  Future<void> generateAndOpenInvoice(int orderId, BuildContext context) async {
+    try {
+      isLoading.value = true;
+      final url = await _accountrepo.generateInvoice(orderId);
+      invoiceUrl.value = url;
+
+      if (url != null && await canLaunch(url)) {
+        await launch(url);
+      } else {
+        CustomSnackbars.showError(context, 'Cannot open invoice URL');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      CustomSnackbars.showError(context, e.toString());
+    } finally {
+      isLoading.value = false;
     }
   }
 }
