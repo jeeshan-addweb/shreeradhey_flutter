@@ -151,6 +151,73 @@ class CartController extends GetxController {
     }
   }
 
+  //   Future<void> updateQuantity(String key, int newQty) async {
+  //   if (key.isEmpty) return;
+
+  //   final nodes = cart.value?.data?.cart?.contents?.nodes;
+  //   if (nodes == null) return;
+
+  //   final index = nodes.indexWhere((item) => item.key == key);
+  //   if (index == -1) return;
+
+  //   // -----------------------------
+  //   // Step 1: Save old quantity for rollback
+  //   // -----------------------------
+  //   final oldQty = nodes[index].quantity;
+
+  //   // -----------------------------
+  //   // Step 2: Optimistic UI update
+  //   // -----------------------------
+  //   nodes[index].quantity = newQty;
+  //   _recalculateCartTotals(); // update subtotal/total immediately
+  //   cart.refresh(); // triggers Obx rebuild
+
+  //   try {
+  //     debugPrint('[CartController] updateQuantity - start key:$key qty:$newQty');
+
+  //     // You can still use updatingItems to show spinner if needed
+  //     // updatingItems[key] = true;
+  //     // updatingItems.refresh();
+
+  //     final response = await _repo.updateCartItem(key, newQty);
+
+  //     if (response != null) {
+  //       cart.value = response; // sync with server response
+  //       updateCartCount();
+  //     }
+
+  //     debugPrint('[CartController] updateQuantity - success key:$key');
+  //   } catch (e, st) {
+  //     debugPrint('[CartController] updateQuantity - error: $e\n$st');
+
+  //     // -----------------------------
+  //     // Step 3: Rollback on error
+  //     // -----------------------------
+  //     nodes[index].quantity = oldQty;
+  //     _recalculateCartTotals();
+  //     cart.refresh();
+  //   } finally {
+  //     // updatingItems[key] = false;
+  //     // updatingItems.refresh();
+  //     debugPrint('[CartController] updateQuantity - finished key:$key');
+  //   }
+  // }
+
+  /// Optional: instant cart total calculation
+  void _recalculateCartTotals() {
+    final nodes = cart.value?.data?.cart?.contents?.nodes;
+    if (nodes == null) return;
+
+    double subtotal = 0;
+    for (var item in nodes) {
+      final price = double.tryParse(item.product?.node?.price ?? "0") ?? 0;
+      subtotal += price * (item.quantity ?? 1);
+    }
+
+    cart.value?.data?.cart?.subtotal = subtotal.toStringAsFixed(2);
+    cart.value?.data?.cart?.total = subtotal.toStringAsFixed(2);
+  }
+
   Future<void> removeItem(String key) async {
     try {
       isUpdatingCart.value = true;

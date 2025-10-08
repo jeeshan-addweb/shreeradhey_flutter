@@ -18,7 +18,7 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  int selectedIndex = 0;
+  int selectedIndex = 1;
 
   final List<Map<String, dynamic>> accountTabs = [
     {"title": "Dashboard", "icon": Icons.dashboard},

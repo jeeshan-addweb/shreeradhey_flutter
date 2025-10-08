@@ -154,12 +154,15 @@ class CartRepo {
       }
     }
     ''';
-
+    final stopwatch = Stopwatch()..start();
     final result = await client.mutate(
       MutationOptions(
         document: gql(mutation),
         variables: {"key": key, "quantity": quantity},
       ),
+    );
+    debugPrint(
+      '[Cart repo] update quantity - completed in ${stopwatch.elapsedMilliseconds} ms',
     );
 
     try {
@@ -303,12 +306,15 @@ class CartRepo {
       }
     }
     ''';
-
+    final stopwatch = Stopwatch()..start();
     final result = await client.mutate(
       MutationOptions(
         document: gql(mutation),
         variables: {"productId": productId, "quantity": quantity},
       ),
+    );
+    debugPrint(
+      '[Cart repo] add cart  - completed in ${stopwatch.elapsedMilliseconds} ms',
     );
 
     if (result.hasException) {
@@ -336,11 +342,13 @@ class CartRepo {
         }
       }
     ''';
-
+    final stopwatch = Stopwatch()..start();
     final result = await client.mutate(
       MutationOptions(document: gql(mutation)),
     );
-
+    debugPrint(
+      '[Cart repo] empty cart  - completed in ${stopwatch.elapsedMilliseconds} ms',
+    );
     if (result.hasException) {
       throw Exception(result.exception.toString());
     }
@@ -389,9 +397,12 @@ class CartRepo {
         }
       }
     ''';
-
+    final stopwatch = Stopwatch()..start();
     final result = await client.mutate(
       MutationOptions(document: gql(mutation), variables: {"code": code}),
+    );
+    debugPrint(
+      '[Cart repo] apply coupon  - completed in ${stopwatch.elapsedMilliseconds} ms',
     );
 
     if (result.hasException) {
@@ -451,7 +462,7 @@ class CartRepo {
         }
       }
     ''';
-
+    final stopwatch = Stopwatch()..start();
     final result = await client.mutate(
       MutationOptions(
         document: gql(mutation),
@@ -459,6 +470,9 @@ class CartRepo {
           "codes": [code],
         },
       ),
+    );
+    debugPrint(
+      '[Cart repo] remove coupon  - completed in ${stopwatch.elapsedMilliseconds} ms',
     );
 
     if (result.hasException) {

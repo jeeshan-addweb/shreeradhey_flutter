@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/custom_snackbar.dart';
+import '../../../common/model/ui_product_model.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
@@ -917,6 +918,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       sectionBgColor: AppColors.white,
                       tagText: "Best Seller",
                       products: homecontroller.allProducts,
+                      // (detail.related?.nodes ?? [])
+                      //     .map(
+                      //       (node) =>
+                      //           UiProductModelMapper.fromRelatedNode(node),
+                      //     )
+                      //     .toList(),
                     ),
                     // RelatedProductSection(
                     //   firstText: "",

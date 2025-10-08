@@ -171,55 +171,55 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 //     ),
                 //   ),
                 // ),
-                GestureDetector(
-                  onTap: () {
-                    // final auth = Get.find<AuthController>();
-                    // if (auth.isGuest) {
-                    //   CustomSnackbars.showError(
-                    //     context,
-                    //     "Login Required ! Please login to use cart.",
-                    //   );
+                // GestureDetector(
+                //   onTap: () {
+                //     // final auth = Get.find<AuthController>();
+                //     // if (auth.isGuest) {
+                //     //   CustomSnackbars.showError(
+                //     //     context,
+                //     //     "Login Required ! Please login to use cart.",
+                //     //   );
 
-                    //   // Navigate to login with go_router
-                    //   context.push(AppRoutePath.login);
-                    //   return;
-                    // }
-                    context.push(AppRoutePath.cartPage);
-                  },
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Image.asset(
-                          AppImages.cart,
-                          color: AppColors.black,
-                          height: 30,
-                        ),
-                      ),
-                      Obx(() {
-                        final count =
-                            Get.find<CartController>().cartCount.value;
-                        if (count == 0) return const SizedBox.shrink();
+                //     //   // Navigate to login with go_router
+                //     //   context.push(AppRoutePath.login);
+                //     //   return;
+                //     // }
+                //     context.push(AppRoutePath.cartPage);
+                //   },
+                //   child: Stack(
+                //     children: [
+                //       Padding(
+                //         padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                //         child: Image.asset(
+                //           AppImages.cart,
+                //           color: AppColors.black,
+                //           height: 30,
+                //         ),
+                //       ),
+                //       Obx(() {
+                //         final count =
+                //             Get.find<CartController>().cartCount.value;
+                //         if (count == 0) return const SizedBox.shrink();
 
-                        return Positioned(
-                          right: 4,
-                          top: 0,
-                          child: CircleAvatar(
-                            radius: 8,
-                            backgroundColor: AppColors.green_5b9d0b,
-                            child: Text(
-                              count.toString(),
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
+                //         return Positioned(
+                //           right: 4,
+                //           top: 0,
+                //           child: CircleAvatar(
+                //             radius: 8,
+                //             backgroundColor: AppColors.green_5b9d0b,
+                //             child: Text(
+                //               count.toString(),
+                //               style: const TextStyle(
+                //                 fontSize: 10,
+                //                 color: Colors.white,
+                //               ),
+                //             ),
+                //           ),
+                //         );
+                //       }),
+                //     ],
+                //   ),
+                // ),
               ],
             ],
           ),

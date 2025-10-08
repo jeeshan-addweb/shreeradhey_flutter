@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:shree_radhey/features/accounts/controller/account_controller.dart';
 
 class RazorpayPaymentScreen extends StatefulWidget {
   final double amount;
@@ -23,6 +25,7 @@ class RazorpayPaymentScreen extends StatefulWidget {
 
 class _RazorpayPaymentScreenState extends State<RazorpayPaymentScreen> {
   late Razorpay _razorpay;
+  final AccountController _accountController = Get.put(AccountController());
 
   @override
   void initState() {
@@ -53,25 +56,40 @@ class _RazorpayPaymentScreenState extends State<RazorpayPaymentScreen> {
     try {
       _razorpay.open(options);
     } catch (e) {
-      debugPrint("Razorpay open error: $e");
+      debugPrint("Razorpay open error print: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Payment could not start. Try again.")),
+        SnackBar(
+          content: Text("Payment could not start. Try again after some time"),
+        ),
       );
       Navigator.pop(context);
     }
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    widget.onSuccess?.call(response.paymentId ?? "");
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    final paymentId = response.paymentId ?? "";
+    widget.onSuccess?.call(paymentId);
+
+    final result = await _accountController.verifyTransaction(
+      context,
+      transactionId: paymentId,
+      provider: "razorpay",
+    );
+
     Navigator.pop(context, {
       'status': 'success',
       'paymentId': response.paymentId,
+      // 'verification': result,
     });
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Payment failed: ${response.message}")),
+      SnackBar(
+        content: Text(
+          "Payment failed due to technical issues: ${response.message}",
+        ),
+      ),
     );
     Navigator.pop(context, {'status': 'error', 'message': response.message});
   }
@@ -79,7 +97,7 @@ class _RazorpayPaymentScreenState extends State<RazorpayPaymentScreen> {
   void _handleExternalWallet(ExternalWalletResponse response) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("External wallet selected: ${response.walletName}"),
+        content: Text("External wallet selected as :) ${response.walletName}"),
       ),
     );
   }

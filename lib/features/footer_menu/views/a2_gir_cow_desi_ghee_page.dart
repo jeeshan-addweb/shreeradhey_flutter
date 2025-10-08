@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
 import '../../../common/components/awards_and_certification_section.dart';
 import '../../../common/components/bullet_point.dart';
 import '../../../common/components/common_footer.dart';
 import '../../../constants/app_colors.dart';
 import '../../home/views/components/feature_slider_component.dart';
+import '../../home/views/widgets/product_section_widget.dart';
 import '../../shop/views/components/faq_section.dart';
 import '../controller/footer_controller.dart';
 import 'component/aspect_section.dart';
@@ -22,6 +24,7 @@ class A2GirCowDesiGheePage extends StatefulWidget {
 
 class _A2GirCowDesiGheePageState extends State<A2GirCowDesiGheePage> {
   final controller = Get.put(FooterController());
+  final homeController = Get.put(HomeController());
 
   bool _awardsRendered = false;
 
@@ -93,7 +96,7 @@ class _A2GirCowDesiGheePageState extends State<A2GirCowDesiGheePage> {
                   );
 
                 case "faq":
-                  return FAQSection(
+                  final faqWidget = FAQSection(
                     faqColor: AppColors.grey_65758b,
                     faqs:
                         section.faqItems
@@ -105,6 +108,24 @@ class _A2GirCowDesiGheePageState extends State<A2GirCowDesiGheePage> {
                             )
                             .toList() ??
                         [],
+                  );
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      faqWidget,
+                      const SizedBox(height: 20),
+
+                      // 🛒 your ProductSection widget here
+                      ProductSection(
+                        firstText: "",
+                        firstTextColor: AppColors.black,
+                        secondTextColor: AppColors.black,
+                        secondText: "You May Also Like",
+                        sectionBgColor: AppColors.white,
+                        tagText: "Recommended",
+                        products: homeController.allProducts,
+                      ),
+                    ],
                   );
 
                 case "aspects":

@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 import '../../../common/components/awards_and_certification_section.dart';
 import '../../../common/components/common_footer.dart';
@@ -27,66 +31,54 @@ class _AboutUsPageState extends State<AboutUsPage> {
     });
   }
 
-  // Helper method to get content by block type
-  String getBlockContent(List<Block>? blocks, String blockName) {
+  String getHeadingContent(List<Block>? blocks, String keyword) {
     if (blocks == null) return '';
-
     for (var block in blocks) {
-      if (block.name == Name.CORE_PARAGRAPH &&
-          blocks.indexOf(block) > 0 &&
-          blocks[blocks.indexOf(block) - 1].name == Name.CORE_HEADING) {
-        var headingIndex = blocks.indexOf(block) - 1;
-        var heading = blocks[headingIndex].content ?? '';
+      if ((block.name?.toLowerCase().contains("heading") ?? false) &&
+          (block.content ?? '').toLowerCase().contains(keyword.toLowerCase())) {
+        return block.content ?? '';
+      }
+    }
+    return keyword;
+  }
 
-        if (heading.toLowerCase().contains(blockName.toLowerCase())) {
-          return block.content ?? '';
+  String getBlockContent(List<Block>? blocks, String headingKeyword) {
+    if (blocks == null) return '';
+    for (var i = 0; i < blocks.length; i++) {
+      final block = blocks[i];
+      if ((block.name?.toLowerCase().contains("heading") ?? false) &&
+          (block.content ?? '').toLowerCase().contains(
+            headingKeyword.toLowerCase(),
+          )) {
+        if (i + 1 < blocks.length && blocks[i + 1].name == "core/paragraph") {
+          return blocks[i + 1].content ?? '';
         }
       }
     }
     return '';
   }
 
-  // Helper method to get heading content
-  String getHeadingContent(List<Block>? blocks, String headingName) {
-    if (blocks == null) return '';
-
-    for (var block in blocks) {
-      if (block.name == Name.CORE_HEADING &&
-          (block.content ?? '').toLowerCase().contains(
-            headingName.toLowerCase(),
-          )) {
-        return block.content ?? '';
-      }
-    }
-    return headingName; // fallback
-  }
-
-  // Helper method to get the first paragraph (story content)
   String getStoryContent(List<Block>? blocks) {
     if (blocks == null) return '';
-
     for (var block in blocks) {
-      if (block.name == Name.CORE_PARAGRAPH) {
-        return block.content ?? '';
-      }
+      if (block.name == "core/paragraph") return block.content ?? '';
     }
     return '';
   }
 
-  // Helper method to get award items from blocks
   List<AwardItem> getAwardItems(List<Block>? blocks) {
     List<AwardItem> awards = [];
     if (blocks == null) return awards;
 
     bool inAwardsSection = false;
     for (var block in blocks) {
-      if (block.name == Name.CORE_HEADING &&
-          (block.content ?? '').toLowerCase().contains('award')) {
+      if ((block.name?.toLowerCase().contains("heading") ?? false) &&
+          (block.content ?? '').toLowerCase().contains("award")) {
         inAwardsSection = true;
         continue;
       }
 
-      if (inAwardsSection && block.name == Name.CORE_PARAGRAPH) {
+      if (inAwardsSection && block.name == "core/paragraph") {
         awards.add(
           AwardItem(
             imageUrl:
@@ -96,33 +88,54 @@ class _AboutUsPageState extends State<AboutUsPage> {
         );
       }
 
-      // Stop when we hit another heading (not awards related)
       if (inAwardsSection &&
-          block.name == Name.CORE_HEADING &&
-          !(block.content ?? '').toLowerCase().contains('award')) {
+          (block.name?.toLowerCase().contains("heading") ?? false) &&
+          !(block.content ?? '').toLowerCase().contains("award")) {
         break;
       }
-    }
-
-    // Fallback awards if none found
-    if (awards.isEmpty) {
-      awards = [
-        AwardItem(
-          imageUrl:
-              "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
-          title: "ISO 9001 Certification",
-        ),
-        AwardItem(
-          imageUrl:
-              "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800",
-          title: "Best Organic Brand 2024",
-        ),
-      ];
     }
 
     return awards;
   }
 
+  List<String> getGalleryImages(List<Block>? blocks) {
+    List<String> images = [];
+    if (blocks == null) return images;
+
+    bool inGallerySection = false;
+    for (var block in blocks) {
+      final nameLower = block.name?.toLowerCase() ?? '';
+      final contentLower = (block.content ?? '').toLowerCase();
+
+      // Check if this is a gallery heading
+      if ((nameLower.contains("heading") ||
+              nameLower.contains("heading-title")) &&
+          contentLower.contains("gallery")) {
+        inGallerySection = true;
+        continue;
+      }
+
+      if (inGallerySection) {
+        // Extract image URL from core/image blocks
+        if (block.name == "core/image" &&
+            block.content != null &&
+            block.content!.isNotEmpty) {
+          images.add(block.content!);
+        }
+
+        // Check if we've left the gallery section
+        if ((nameLower.contains("heading") ||
+                nameLower.contains("heading-title")) &&
+            !contentLower.contains("gallery")) {
+          break;
+        }
+      }
+    }
+
+    return images;
+  }
+
+  // ---------------- UI ----------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,31 +161,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Breadcrumb
-                    // RichText(
-                    //   text: TextSpan(
-                    //     style: const TextStyle(
-                    //       fontSize: 16,
-                    //       fontWeight: FontWeight.w500,
-                    //     ),
-                    //     children: [
-                    //       TextSpan(
-                    //         text: "Home",
-                    //         style: TextStyle(color: AppColors.black),
-                    //       ),
-                    //       TextSpan(
-                    //         text: " / ",
-                    //         style: TextStyle(color: AppColors.red_CC0003),
-                    //       ),
-                    //       TextSpan(
-                    //         text: aboutUs?.title ?? "About Us",
-                    //         style: TextStyle(color: AppColors.red_CC0003),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-
-                    // Main About Us Card
                     Padding(
                       padding: const EdgeInsets.all(30.0),
                       child: AboutUsCard(
@@ -182,7 +170,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       ),
                     ),
 
-                    // Dynamic Info List Section
                     AboutUsInfoListSection(
                       items: [
                         AboutUsInfoItem(
@@ -203,14 +190,17 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       ],
                     ),
 
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Image.asset(AppImages.hand_churned, fit: BoxFit.contain),
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
-                    // Dynamic Awards Section
                     AwardsAndCertificationsSection(
                       awards: getAwardItems(blocks),
                     ),
+                    const SizedBox(height: 24),
+
+                    // ---------------- Gallery ----------------
+                    GallerySection(images: getGalleryImages(blocks)),
                   ],
                 ),
               ),
@@ -253,7 +243,6 @@ class AboutUsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Top Image
           ClipRRect(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(12),
@@ -266,8 +255,6 @@ class AboutUsCard extends StatelessWidget {
               width: double.infinity,
             ),
           ),
-
-          // Inner container with Title & Description
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -294,6 +281,174 @@ class AboutUsCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class GallerySection extends StatelessWidget {
+  final List<String> images;
+
+  const GallerySection({super.key, required this.images});
+
+  @override
+  Widget build(BuildContext context) {
+    if (images.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Gallery",
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 120,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: images.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              return GalleryImageItem(imageUrl: images[index]);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class GalleryImageItem extends StatelessWidget {
+  final String imageUrl;
+
+  const GalleryImageItem({super.key, required this.imageUrl});
+
+  Future<Uint8List> _downloadSvg(String url) async {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to load SVG: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isSvg = imageUrl.toLowerCase().endsWith('.svg');
+
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey[100],
+        border: Border.all(color: Colors.grey[300]!, width: 1),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child:
+            isSvg
+                ? FutureBuilder<Uint8List>(
+                  future: _downloadSvg(imageUrl),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        color: Colors.grey[200],
+                        child: const Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (snapshot.hasError || !snapshot.hasData) {
+                      print("Error loading SVG: ${snapshot.error}");
+                      return Container(
+                        color: Colors.grey[200],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.broken_image,
+                              size: 32,
+                              color: Colors.grey[600],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Failed to load',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    // Load SVG from bytes
+                    return SvgPicture.memory(
+                      snapshot.data!,
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.contain,
+                    );
+                  },
+                )
+                : Image.network(
+                  imageUrl,
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            value:
+                                loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (_, error, __) {
+                    print("Error loading image: $error");
+                    return Container(
+                      color: Colors.grey[200],
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.broken_image,
+                            size: 32,
+                            color: Colors.grey[600],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Failed to load',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
       ),
     );
   }

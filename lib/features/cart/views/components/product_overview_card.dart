@@ -72,7 +72,6 @@ class _ProductOverviewCardState extends State<ProductOverviewCard> {
         widget.onQuantityChanged(quantity);
       });
     } else {
-      // 👇 instead of going to 0, remove from cart
       widget.onRemove();
     }
   }

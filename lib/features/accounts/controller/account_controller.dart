@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/utils/routes/app_route_path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/components/custom_snackbar.dart';
@@ -27,6 +29,10 @@ class AccountController extends GetxController {
 
   var paymentGateways = <WcPaymentGateway>[].obs;
   var invoiceUrl = RxnString();
+
+  RxBool isVerifying = false.obs;
+  RxString verifyStatus = ''.obs;
+  RxString verifyMessage = ''.obs;
   @override
   void onInit() {
     super.onInit();
@@ -207,6 +213,7 @@ class AccountController extends GetxController {
       await cartController.emptyCart();
 
       CustomSnackbars.showSuccess(context, "Order created!");
+      context.push(AppRoutePath.accountPage, extra: 1);
     } on TimeoutException {
       debugPrint(
         "[CartController] Order likely created but response timed out",
@@ -462,6 +469,41 @@ class AccountController extends GetxController {
       CustomSnackbars.showError(context, e.toString());
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> verifyTransaction(
+    BuildContext context, {
+    required String transactionId,
+    required String provider,
+  }) async {
+    try {
+      isVerifying.value = true;
+      verifyMessage.value = '';
+      final response = await _accountrepo.verifyTransaction(
+        transactionId: transactionId,
+        provider: provider,
+      );
+
+      verifyStatus.value = response['status'] ?? 'unknown';
+      verifyMessage.value = response['error'] ?? '';
+
+      if (verifyStatus.value == 'success' ||
+          verifyStatus.value == 'completed') {
+        CustomSnackbars.showSuccess(context, 'Transaction successful');
+      } else {
+        CustomSnackbars.showError(
+          context,
+          verifyMessage.value.isNotEmpty
+              ? verifyMessage.value
+              : 'Unable to verify payment',
+        );
+      }
+    } catch (e) {
+      debugPrint("Payment verify error $e");
+      CustomSnackbars.showError(context, e.toString());
+    } finally {
+      isVerifying.value = false;
     }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../../features/shop/models/product_detail_model.dart';
+
 class UiProductModel {
   final int productId;
   final RxBool isWishlisted; // <-- reactive
@@ -80,6 +82,37 @@ class UiProductModel {
       isWishlisted: isWishlisted ?? this.isWishlisted.value,
       isInCart: isInCart ?? this.isInCart.value,
       category: category ?? this.category,
+    );
+  }
+}
+
+extension UiProductModelMapper on UiProductModel {
+  static UiProductModel fromRelatedNode(RelatedNode node) {
+    return UiProductModel(
+      productId: node.databaseId ?? 0,
+      imageUrl: node.image?.sourceUrl ?? '',
+      title: node.name ?? '',
+      subtitle: node.productSubtitle ?? '',
+      rating: node.averageRating ?? 0.0,
+      reviewCount: node.reviewCount ?? 0,
+      price: node.price ?? '',
+      oldPrice: node.regularPrice ?? '',
+      couponPrice: node.bestPrice ?? '',
+      isWishlisted: node.isInWishlist ?? false,
+      isInCart: node.isInCart ?? false,
+      tagText:
+          node.productLabels?.nodes!.isNotEmpty == true
+              ? node.productLabels!.nodes!.first.name ?? "Best Seller"
+              : "Best Seller",
+      discountPercent: node.discountPercentage,
+      slug: node.slug,
+      currencySymbol: node.currencySymbol ?? "",
+      productLabels:
+          node.productLabels?.nodes!.map((e) => e.name ?? "").toList() ?? [],
+      category:
+          node.productCategories?.nodes!.isNotEmpty == true
+              ? node.productCategories!.nodes!.first.name ?? ""
+              : "",
     );
   }
 }

@@ -404,4 +404,36 @@ query GetOrderDetails($orderId: ID!) {
 
     return result.data?['generateInvoice']?['url'];
   }
+
+  Future<Map<String, dynamic>> verifyTransaction({
+    required String transactionId,
+    required String provider,
+  }) async {
+    const query = r'''
+      query VerifyTransaction($transactionId: String!, $provider: String!) {
+        verifyTransaction(transactionId: $transactionId, provider: $provider) {
+          id
+          status
+          amount
+          currency
+          raw
+          error
+        }
+      }
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(query),
+        variables: {"transactionId": transactionId, "provider": provider},
+        fetchPolicy: FetchPolicy.noCache,
+      ),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['verifyTransaction'] ?? {};
+  }
 }

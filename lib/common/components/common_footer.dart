@@ -125,7 +125,7 @@ class _CommonFooterState extends State<CommonFooter> {
                           footerLink(
                             'Contact',
                             onTap: () {
-                              context.push(AppRoutePath.dealershipFormScreen);
+                              context.push(AppRoutePath.contactUsScreen);
                             },
                           ),
                           footerLink(

@@ -143,36 +143,12 @@ class _WishlistProductCardState extends State<WishlistProductCard> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      // horizontal: 12,
+                      horizontal: 12,
                       vertical: 6,
                     ),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 18,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 18,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 18,
-                        ),
-                        Icon(
-                          Icons.star_half,
-                          color: AppColors.orange_f29102,
-                          size: 18,
-                        ),
-                        Icon(
-                          Icons.star_border,
-                          color: AppColors.orange_f29102,
-                          size: 18,
-                        ),
+                        ..._buildStarRating(widget.model.averageRating ?? 0.0),
                         const SizedBox(width: 4),
                         Text(
                           '${widget.model.averageRating} | ${widget.model.reviewCount} Reviews',
@@ -373,4 +349,28 @@ class _WishlistProductCardState extends State<WishlistProductCard> {
       ),
     );
   }
+}
+
+List<Widget> _buildStarRating(double rating) {
+  const maxStars = 5;
+  List<Widget> stars = [];
+
+  for (int i = 1; i <= maxStars; i++) {
+    if (i <= rating.floor()) {
+      // Full star
+      stars.add(Icon(Icons.star, color: AppColors.orange_f29102, size: 18));
+    } else if (i - rating <= 0.5) {
+      // Half star
+      stars.add(
+        Icon(Icons.star_half, color: AppColors.orange_f29102, size: 18),
+      );
+    } else {
+      // Empty star
+      stars.add(
+        Icon(Icons.star_border, color: AppColors.orange_f29102, size: 18),
+      );
+    }
+  }
+
+  return stars;
 }

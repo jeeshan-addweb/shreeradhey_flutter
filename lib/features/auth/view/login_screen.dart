@@ -18,8 +18,34 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late TapGestureRecognizer _tcRecognizer;
+  late TapGestureRecognizer _ppRecognizer;
+
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _tcRecognizer =
+        TapGestureRecognizer()
+          ..onTap = () {
+            context.pushReplacement(AppRoutePath.termsAndConditionsPage);
+          };
+
+    _ppRecognizer =
+        TapGestureRecognizer()
+          ..onTap = () {
+            context.pushReplacement(AppRoutePath.privacyPolicyPage);
+          };
+  }
+
+  @override
+  void dispose() {
+    _tcRecognizer.dispose();
+    _ppRecognizer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -313,13 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
                             ),
-                            recognizer:
-                                TapGestureRecognizer()
-                                  ..onTap = () {
-                                    context.push(
-                                      AppRoutePath.termsAndConditionsPage,
-                                    );
-                                  },
+                            recognizer: _tcRecognizer,
                           ),
                           const TextSpan(text: " and "),
                           TextSpan(
@@ -328,13 +348,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
                             ),
-                            recognizer:
-                                TapGestureRecognizer()
-                                  ..onTap = () {
-                                    context.push(
-                                      AppRoutePath.privacyPolicyPage,
-                                    );
-                                  },
+                            recognizer: _ppRecognizer,
                           ),
                         ],
                       ),

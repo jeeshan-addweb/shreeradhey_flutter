@@ -870,7 +870,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     case 'paypal':
                                       // Make sure totalAmount is a string
                                       final totalAmount =
-                                          (cart?.total ?? 0.0).toString();
+                                          cart?.total?.toString().replaceAll(
+                                            RegExp(r'[^\d.]'),
+                                            '',
+                                          ) ??
+                                          "0";
 
                                       debugPrint("Total Amt is $totalAmount");
 
@@ -878,11 +882,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       double subtotal = 0;
                                       final items =
                                           cart?.contents?.nodes?.map((item) {
+                                            final rawPrice =
+                                                item.product?.node?.price ??
+                                                "0";
+                                            final cleanPrice = rawPrice
+                                                .replaceAll(
+                                                  RegExp(r'[^\d.]'),
+                                                  '',
+                                                );
                                             final price =
-                                                double.tryParse(
-                                                  item.product?.node?.price ??
-                                                      '0',
-                                                ) ??
+                                                double.tryParse(cleanPrice) ??
                                                 0.0;
                                             final quantity = item.quantity ?? 1;
                                             subtotal += price * quantity;
@@ -904,6 +913,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                               "currency": "USD",
                                             },
                                           ];
+
+                                      debugPrint("PayPal Subtotal: $subtotal");
+                                      debugPrint(
+                                        "PayPal Total Amount: ${subtotal.toStringAsFixed(2)}",
+                                      );
 
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
