@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/common/components/custom_snackbar.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
+import '../../../common/components/empty_cart.dart';
 import '../../../common/components/razorpay_payment_screen.dart';
 import '../../../constants/app_colors.dart';
 import '../../accounts/controller/account_controller.dart';
+import '../../auth/controller/auth_controller.dart';
 import '../controller/cart_controller.dart';
 import 'components/payment_method_card.dart';
 
@@ -18,7 +22,54 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final CartController cartController = Get.find<CartController>();
+  final AuthController _authController = Get.put(AuthController());
+  final controller = Get.put(AccountController());
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cartController.fetchCartItems();
+    });
+
+    Future.microtask(() async {
+      await controller.getAddresses();
+
+      final shipping = controller.defaultShippingAddress;
+      if (shipping != null) {
+        firstNameController.text = shipping.firstName ?? "";
+        lastNameController.text = shipping.lastName ?? "";
+        emailController.text = shipping.email ?? "";
+        phoneController.text = shipping.phone ?? "";
+        streetController.text = shipping.address1 ?? "";
+        apartmentController.text = shipping.address2 ?? "";
+        cityController.text = shipping.city ?? "";
+        pinController.text = shipping.postcode ?? "";
+        selectedState = shipping.state;
+        selectedCountry = shipping.country;
+      }
+
+      final billing = controller.defaultBillingAddress;
+      if (billing != null) {
+        billingFirstNameController.text = billing.firstName ?? "";
+        billingLastNameController.text = billing.lastName ?? "";
+        billingEmailController.text = billing.email ?? "";
+        billingPhoneController.text = billing.phone ?? "";
+        billingStreetController.text = billing.address1 ?? "";
+        billingApartmentController.text = billing.address2 ?? "";
+        billingCityController.text = billing.city ?? "";
+        billingPinController.text = billing.postcode ?? "";
+        billingSelectedState = billing.state;
+        billingSelectedCountry = billing.country;
+      }
+
+      setState(() {}); // update UI
+    });
+  }
+
   bool billToDifferent = false;
+  final _shippingFormKey = GlobalKey<FormState>();
+  final _billingFormKey = GlobalKey<FormState>();
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -31,6 +82,43 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final notesController = TextEditingController();
   String? selectedState;
   String? selectedCountry = "IN";
+
+  final billingFirstNameController = TextEditingController();
+  final billingLastNameController = TextEditingController();
+  final billingEmailController = TextEditingController();
+  final billingPhoneController = TextEditingController();
+  final billingStreetController = TextEditingController();
+  final billingApartmentController = TextEditingController();
+  final billingCityController = TextEditingController();
+  final billingPinController = TextEditingController();
+  String? billingSelectedState;
+  String? billingSelectedCountry = "IN";
+
+  @override
+  void dispose() {
+    // Shipping Address Here
+    firstNameController.dispose();
+    lastNameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    streetController.dispose();
+    apartmentController.dispose();
+    cityController.dispose();
+    pinController.dispose();
+    notesController.dispose();
+
+    // Billing Address Here
+    billingFirstNameController.dispose();
+    billingLastNameController.dispose();
+    billingEmailController.dispose();
+    billingPhoneController.dispose();
+    billingStreetController.dispose();
+    billingApartmentController.dispose();
+    billingCityController.dispose();
+    billingPinController.dispose();
+
+    super.dispose();
+  }
 
   Widget _buildAddressForm({
     required TextEditingController firstNameController,
@@ -60,6 +148,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 hint: "Enter first name",
                 controller: firstNameController,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "First Name of the user is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -69,6 +163,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 hint: "Enter last name",
                 controller: lastNameController,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Last Name of the user is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
@@ -85,6 +185,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 controller: emailController,
                 isRequired: true,
                 keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Email is required";
+                  }
+                  final emailRegex = RegExp(
+                    r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+                  );
+                  if (!emailRegex.hasMatch(value)) return "Enter a valid email";
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -95,6 +205,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 controller: phoneController,
                 isRequired: true,
                 keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty)
+                    return "Phone is required";
+                  if (!RegExp(r'^[0-9]{10}$').hasMatch(value))
+                    return "Enter a valid 10-digit phone number";
+                  return null;
+                },
               ),
             ),
           ],
@@ -106,6 +223,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           hint: "House number and street name",
           controller: streetController,
           isRequired: true,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Street Address is required";
+            }
+            return null;
+          },
         ),
         CommonLabeledTextField(
           label: "",
@@ -123,6 +246,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 hint: "Enter town/city",
                 controller: cityController,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Town is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -131,9 +260,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 label: "State",
                 hint: "Select an option",
                 items: ["Gujarat", "Maharashtra", "Delhi", "Rajasthan"],
-                value: selectedState,
+                value:
+                    [
+                          "Gujarat",
+                          "Maharashtra",
+                          "Delhi",
+                          "Rajasthan",
+                        ].contains(selectedState?.capitalizeFirst)
+                        ? selectedState?.capitalizeFirst
+                        : null,
                 onChanged: onStateChanged,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please Select State is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
@@ -150,6 +293,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 controller: pinController,
                 isRequired: true,
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "PIN Code is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -161,16 +310,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 value: selectedCountry,
                 onChanged: onCountryChanged,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please Select Country is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
         ),
-        if (showNotes) ...[
+        if (showNotes && notesController != null) ...[
           const SizedBox(height: 16),
           CommonLabeledTextField(
             label: "Order notes (optional)",
             hint: "Notes about your order, e.g. special notes for delivery.",
-            controller: notesController!,
+            controller: notesController,
           ),
         ],
       ],
@@ -179,420 +334,817 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // RichText(
+                  //   text: TextSpan(
+                  //     style: const TextStyle(
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w500,
+                  //     ),
+                  //     children: [
+                  //       TextSpan(
+                  //         text: "Home",
+                  //         style: TextStyle(color: AppColors.black),
+                  //       ),
+                  //       TextSpan(
+                  //         text: " / ",
+                  //         style: TextStyle(color: AppColors.red_CC0003),
+                  //       ),
+                  //       TextSpan(
+                  //         text: "Checkout",
+                  //         style: TextStyle(color: AppColors.red_CC0003),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 32),
+                  Row(
                     children: [
-                      TextSpan(
-                        text: "Home",
-                        style: TextStyle(color: AppColors.black),
+                      Checkbox(
+                        value: billToDifferent,
+                        onChanged: (val) {
+                          setState(() {
+                            billToDifferent = val ?? false;
+                          });
+                        },
                       ),
-                      TextSpan(
-                        text: " / ",
-                        style: TextStyle(color: AppColors.red_CC0003),
-                      ),
-                      TextSpan(
-                        text: "Checkout",
-                        style: TextStyle(color: AppColors.red_CC0003),
+                      const Text(
+                        "Bill to a different address?",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 32),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: billToDifferent,
-                      onChanged: (val) {
-                        setState(() {
-                          billToDifferent = val ?? false;
-                        });
-                      },
-                    ),
-                    const Text(
-                      "Bill to a different address?",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
 
-                const SizedBox(height: 16),
-                const Text(
-                  "Shipping details",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                _buildAddressForm(
-                  firstNameController: firstNameController,
-                  lastNameController: lastNameController,
-                  emailController: emailController,
-                  phoneController: phoneController,
-                  streetController: streetController,
-                  apartmentController: apartmentController,
-                  cityController: cityController,
-                  pinController: pinController,
-                  selectedState: selectedState,
-                  selectedCountry: selectedCountry,
-                  onStateChanged: (val) => setState(() => selectedState = val),
-                  onCountryChanged:
-                      (val) => setState(() => selectedCountry = val),
-                  showNotes: true,
-                  notesController: notesController,
-                ),
-                if (billToDifferent) ...[
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   const Text(
-                    "Billing details",
+                    "Shipping details",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  _buildAddressForm(
-                    firstNameController: TextEditingController(),
-                    lastNameController: TextEditingController(),
-                    emailController: TextEditingController(),
-                    phoneController: TextEditingController(),
-                    streetController: TextEditingController(),
-                    apartmentController: TextEditingController(),
-                    cityController: TextEditingController(),
-                    pinController: TextEditingController(),
-                    selectedState: null,
-                    selectedCountry: "IN",
-                    onStateChanged: (val) {},
-                    onCountryChanged: (val) {},
-                    showNotes: false,
-                  ),
-                ],
-
-                // First name & Last name
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "First name",
-                //         hint: "Enter first name",
-                //         controller: firstNameController,
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12),
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "Last name",
-                //         hint: "Enter last name",
-                //         controller: lastNameController,
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "Email address",
-                //         hint: "Enter email address",
-                //         controller: emailController,
-                //         isRequired: true,
-                //         keyboardType: TextInputType.emailAddress,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12),
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "Phone",
-                //         hint: "Enter phone number",
-                //         controller: phoneController,
-                //         isRequired: true,
-                //         keyboardType: TextInputType.phone,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-
-                // CommonLabeledTextField(
-                //   label: "Street address",
-                //   hint: "House number and street name",
-                //   controller: streetController,
-                //   isRequired: true,
-                // ),
-
-                // CommonLabeledTextField(
-                //   label: "",
-                //   hint: "Apartment, suite, unit, etc. (optional)",
-                //   controller: apartmentController,
-                // ),
-                // const SizedBox(height: 16),
-
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "Town / City",
-                //         hint: "Enter town/city",
-                //         controller: cityController,
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12),
-                //     Expanded(
-                //       child: CommonLabeledDropdown(
-                //         label: "State",
-                //         hint: "Select an option",
-                //         items: ["Gujarat", "Maharashtra", "Delhi", "Rajasthan"],
-                //         value: selectedState,
-                //         onChanged: (val) {
-                //           selectedState = val;
-                //         },
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: CommonLabeledTextField(
-                //         label: "PIN Code",
-                //         hint: "Enter postcode/zip",
-                //         controller: pinController,
-                //         isRequired: true,
-                //         keyboardType: TextInputType.number,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 12),
-                //     Expanded(
-                //       child: CommonLabeledDropdown(
-                //         label: "Country / Region",
-                //         hint: "Select country",
-                //         items: ["IN", "US", "UK"],
-                //         value: selectedCountry,
-                //         onChanged: (val) {
-                //           selectedCountry = val;
-                //         },
-                //         isRequired: true,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-
-                // CommonLabeledTextField(
-                //   label: "Order notes (optional)",
-                //   hint:
-                //       "Notes about your order, e.g. special notes for delivery.",
-                //   controller: notesController,
-                // ),
-                const SizedBox(height: 32),
-                Obx(() {
-                  final cart = cartController.cart.value?.data?.cart;
-                  final nodes = cart?.contents?.nodes ?? [];
-
-                  if (cartController.isFetchingCart.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (nodes.isEmpty) {
-                    return const Center(child: Text("Your cart is empty."));
-                  }
-                  return Card(
-                    color: AppColors.white,
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  Form(
+                    key: _shippingFormKey,
+                    child: _buildAddressForm(
+                      firstNameController: firstNameController,
+                      lastNameController: lastNameController,
+                      emailController: emailController,
+                      phoneController: phoneController,
+                      streetController: streetController,
+                      apartmentController: apartmentController,
+                      cityController: cityController,
+                      pinController: pinController,
+                      selectedState: selectedState,
+                      selectedCountry: selectedCountry,
+                      onStateChanged:
+                          (val) => setState(() => selectedState = val),
+                      onCountryChanged:
+                          (val) => setState(() => selectedCountry = val),
+                      showNotes: true,
+                      notesController: notesController,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _PriceRow(
-                            title: "Subtotal",
-                            amount: cart?.subtotal ?? "0",
-                          ),
+                  ),
+                  if (billToDifferent) ...[
+                    const SizedBox(height: 24),
+                    const Text(
+                      "Billing details",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Form(
+                      key: _billingFormKey,
+                      child: _buildAddressForm(
+                        firstNameController: billingFirstNameController,
+                        lastNameController: billingLastNameController,
+                        emailController: billingEmailController,
+                        phoneController: billingPhoneController,
+                        streetController: billingStreetController,
+                        apartmentController: billingApartmentController,
+                        cityController: billingCityController,
+                        pinController: billingPinController,
+                        selectedState: billingSelectedState,
+                        selectedCountry: billingSelectedCountry,
+                        onStateChanged:
+                            (val) => setState(() => billingSelectedState = val),
+                        onCountryChanged:
+                            (val) =>
+                                setState(() => billingSelectedCountry = val),
+                        showNotes: false,
+                      ),
+                    ),
+                  ],
 
-                          const SizedBox(height: 12),
-                          Divider(height: 24, thickness: 3),
-                          Text(
-                            "Product Overview",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
+                  // First name & Last name
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "First name",
+                  //         hint: "Enter first name",
+                  //         controller: firstNameController,
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "Last name",
+                  //         hint: "Enter last name",
+                  //         controller: lastNameController,
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "Email address",
+                  //         hint: "Enter email address",
+                  //         controller: emailController,
+                  //         isRequired: true,
+                  //         keyboardType: TextInputType.emailAddress,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "Phone",
+                  //         hint: "Enter phone number",
+                  //         controller: phoneController,
+                  //         isRequired: true,
+                  //         keyboardType: TextInputType.phone,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // CommonLabeledTextField(
+                  //   label: "Street address",
+                  //   hint: "House number and street name",
+                  //   controller: streetController,
+                  //   isRequired: true,
+                  // ),
+
+                  // CommonLabeledTextField(
+                  //   label: "",
+                  //   hint: "Apartment, suite, unit, etc. (optional)",
+                  //   controller: apartmentController,
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "Town / City",
+                  //         hint: "Enter town/city",
+                  //         controller: cityController,
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: CommonLabeledDropdown(
+                  //         label: "State",
+                  //         hint: "Select an option",
+                  //         items: ["Gujarat", "Maharashtra", "Delhi", "Rajasthan"],
+                  //         value: selectedState,
+                  //         onChanged: (val) {
+                  //           selectedState = val;
+                  //         },
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: CommonLabeledTextField(
+                  //         label: "PIN Code",
+                  //         hint: "Enter postcode/zip",
+                  //         controller: pinController,
+                  //         isRequired: true,
+                  //         keyboardType: TextInputType.number,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: CommonLabeledDropdown(
+                  //         label: "Country / Region",
+                  //         hint: "Select country",
+                  //         items: ["IN", "US", "UK"],
+                  //         value: selectedCountry,
+                  //         onChanged: (val) {
+                  //           selectedCountry = val;
+                  //         },
+                  //         isRequired: true,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // CommonLabeledTextField(
+                  //   label: "Order notes (optional)",
+                  //   hint:
+                  //       "Notes about your order, e.g. special notes for delivery.",
+                  //   controller: notesController,
+                  // ),
+                  const SizedBox(height: 32),
+                  Obx(() {
+                    final cart = cartController.cart.value?.data?.cart;
+                    final nodes = cart?.contents?.nodes ?? [];
+
+                    if (cartController.isFetchingCart.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (nodes.isEmpty) {
+                      return EmptyCartView();
+                    }
+                    return Card(
+                      color: AppColors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _PriceRow(
+                              title: "Subtotal",
+                              amount:
+                                  "${cart?.currencySymbol}${cart?.subtotal}",
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Divider(height: 24, thickness: 2),
 
-                          // Product Row
-                          ...nodes.map((item) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      "${item.product?.node?.name ?? ""}  x${item.quantity ?? 1}",
+                            const SizedBox(height: 12),
+                            Divider(height: 24, thickness: 3),
+                            Text(
+                              "Product Overview",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Divider(height: 24, thickness: 2),
+
+                            ...nodes.map((item) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "${item.product?.node?.name ?? ""}  x ${item.quantity ?? 1}",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.grey_212121,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "${cart?.currencySymbol}${item.product?.node?.price}",
                                       style: TextStyle(
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w400,
                                         color: AppColors.grey_212121,
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    item.product?.node?.price ?? "0",
+                                  ],
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 12),
+                            Divider(height: 24, thickness: 2),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Shipping",
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w400,
-                                      color: AppColors.grey_212121,
                                     ),
                                   ),
-                                ],
-                              ),
-                            );
-                          }),
-                          const SizedBox(height: 12),
-                          Divider(height: 24, thickness: 2),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Shipping",
+                                ),
+                                const SizedBox(width: 8),
+
+                                Text(
+                                  "Free Shipping",
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-
-                              Text(
-                                "Free Shipping",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Divider(height: 24, thickness: 2),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Total",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Divider(height: 24, thickness: 2),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Total",
+                                const SizedBox(width: 8),
+
+                                Text(
+                                  "${cart?.currencySymbol}${cart?.total}",
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-
-                              Text(
-                                cart?.total ?? "0",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
-                          ),
-                          PaymentMethodCard(
-                            onPlaceOrder: (paymentMethod) async {
-                              final controller = Get.put(AccountController());
-                              if (paymentMethod == "razorpay") {
-                                // Navigate to Razorpay screen
-                                final paymentId = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) => RazorpayPaymentScreen(
-                                          amount: 500.0,
-                                          name:
-                                              "${firstNameController.text} ${lastNameController.text}",
-                                          email: emailController.text,
-                                          phone: phoneController.text,
-                                          onSuccess: (paymentId) {
-                                            // After payment, call checkout with Razorpay method
-                                            controller.checkout(
-                                              context: context,
-                                              firstName:
-                                                  firstNameController.text,
-                                              lastName: lastNameController.text,
-                                              email: emailController.text,
-                                              phone: phoneController.text,
-                                              address: streetController.text,
-                                              city: cityController.text,
-                                              state: selectedState ?? "",
-                                              postcode: pinController.text,
-                                              country: selectedCountry ?? "IN",
-                                              customerNote:
-                                                  notesController.text,
-                                              billToDifferent: false,
-                                              paymentMethod: "razorpay",
-                                            );
-                                          },
-                                        ),
-                                  ),
-                                );
-                              } else {
-                                controller.checkout(
-                                  context: context,
-                                  firstName: firstNameController.text,
-                                  lastName: lastNameController.text,
-                                  email: emailController.text,
-                                  phone: phoneController.text,
-                                  address: streetController.text,
-                                  city: cityController.text,
-                                  state: selectedState ?? "",
-                                  postcode: pinController.text,
-                                  country: selectedCountry ?? "IN",
-                                  customerNote: notesController.text,
-                                  billToDifferent: false,
-                                  paymentMethod: paymentMethod,
+                              ],
+                            ),
+                            Obx(() {
+                              if (controller.paymentGateways.isEmpty) {
+                                return const Center(
+                                  child: Text("No Gateway available"),
                                 );
                               }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ),
+                              return PaymentMethodCard(
+                                gateways: controller.paymentGateways,
+                                isLoading: controller.isCheckOutLoading.value,
+                                onPlaceOrder: (paymentMethodId) async {
+                                  final shippingValid =
+                                      _shippingFormKey.currentState
+                                          ?.validate() ??
+                                      false;
 
-          CommonFooter(isShow: false),
-        ],
-      ),
-    );
+                                  // Validate billing only if "bill to different" is checked
+                                  final billingValid =
+                                      !billToDifferent ||
+                                      (_billingFormKey.currentState
+                                              ?.validate() ??
+                                          false);
+
+                                  if (!shippingValid || !billingValid) {
+                                    CustomSnackbars.showError(
+                                      context,
+                                      "Please fill all required fields",
+                                    );
+                                    return;
+                                  }
+
+                                  // final items =
+                                  //     cartController
+                                  //         .cart
+                                  //         .value
+                                  //         ?.data
+                                  //         ?.cart
+                                  //         ?.contents
+                                  //         ?.nodes ??
+                                  //     [];
+                                  // if (items.isEmpty) {
+                                  //   CustomSnackbars.showError(
+                                  //     context,
+                                  //     "Cart has no valid products",
+                                  //   );
+                                  //   return;
+                                  // }
+
+                                  final selectedGateway = controller
+                                      .paymentGateways
+                                      .firstWhere(
+                                        (g) => g.id == paymentMethodId,
+                                      );
+
+                                  switch (selectedGateway.id) {
+                                    case 'razorpay':
+                                      final totalString =
+                                          "${cart?.currencySymbol}${cart?.total}";
+
+                                      // Remove non-numeric characters except dot
+                                      final numericString = totalString
+                                          .replaceAll(RegExp(r'[^\d.]'), '');
+                                      final paymentId = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => RazorpayPaymentScreen(
+                                                amount:
+                                                    double.tryParse(
+                                                      numericString,
+                                                    ) ??
+                                                    0.0,
+                                                name:
+                                                    "${firstNameController.text} ${lastNameController.text}",
+                                                email: emailController.text,
+                                                phone: phoneController.text,
+                                                onSuccess: (paymentId) {
+                                                  controller.checkout(
+                                                    customerId: int.parse(
+                                                      _authController.userId
+                                                          .toString(),
+                                                    ),
+                                                    coupons:
+                                                        cart?.appliedCoupons
+                                                            ?.map(
+                                                              (c) =>
+                                                                  c.code ?? "",
+                                                            )
+                                                            .toList(),
+                                                    context: context,
+                                                    firstName:
+                                                        firstNameController
+                                                            .text,
+                                                    lastName:
+                                                        lastNameController.text,
+                                                    email: emailController.text,
+                                                    phone: phoneController.text,
+                                                    address:
+                                                        streetController.text,
+                                                    city: cityController.text,
+                                                    state: selectedState ?? "",
+                                                    postcode:
+                                                        pinController.text,
+                                                    country:
+                                                        selectedCountry ?? "IN",
+                                                    customerNote:
+                                                        notesController.text,
+                                                    billToDifferent:
+                                                        billToDifferent,
+                                                    billingFirstName:
+                                                        billingFirstNameController
+                                                            .text,
+                                                    billingLastName:
+                                                        billingLastNameController
+                                                            .text,
+                                                    billingAddress:
+                                                        billingStreetController
+                                                            .text,
+                                                    billingCity:
+                                                        billingCityController
+                                                            .text,
+                                                    billingState:
+                                                        billingSelectedState,
+                                                    billingPostcode:
+                                                        billingPinController
+                                                            .text,
+                                                    billingCountry:
+                                                        billingSelectedCountry,
+                                                    paymentMethod:
+                                                        selectedGateway.id!,
+                                                  );
+                                                },
+                                              ),
+                                        ),
+                                      );
+                                      break;
+
+                                    case 'cod':
+                                      controller.checkout(
+                                        customerId: int.parse(
+                                          _authController.userId.toString(),
+                                        ),
+                                        context: context,
+                                        coupons:
+                                            cart?.appliedCoupons
+                                                ?.map((c) => c.code ?? "")
+                                                .toList(),
+                                        firstName: firstNameController.text,
+                                        lastName: lastNameController.text,
+                                        email: emailController.text,
+                                        phone: phoneController.text,
+                                        address: streetController.text,
+                                        city: cityController.text,
+                                        state: selectedState ?? "",
+                                        postcode: pinController.text,
+                                        country: selectedCountry ?? "IN",
+                                        customerNote: notesController.text,
+                                        billToDifferent: billToDifferent,
+                                        billingFirstName:
+                                            billingFirstNameController.text,
+                                        billingLastName:
+                                            billingLastNameController.text,
+                                        billingAddress:
+                                            billingStreetController.text,
+                                        billingCity: billingCityController.text,
+                                        billingState: billingSelectedState,
+                                        billingPostcode:
+                                            billingPinController.text,
+                                        billingCountry: billingSelectedCountry,
+                                        paymentMethod: selectedGateway.id!,
+                                      );
+                                      break;
+
+                                    case 'paypal':
+                                      // Make sure totalAmount is a string
+                                      final totalAmount =
+                                          cart?.total?.toString().replaceAll(
+                                            RegExp(r'[^\d.]'),
+                                            '',
+                                          ) ??
+                                          "0";
+
+                                      debugPrint("Total Amt is $totalAmount");
+
+                                      // Map items, ensuring everything is string
+                                      double subtotal = 0;
+                                      final items =
+                                          cart?.contents?.nodes?.map((item) {
+                                            final rawPrice =
+                                                item.product?.node?.price ??
+                                                "0";
+                                            final cleanPrice = rawPrice
+                                                .replaceAll(
+                                                  RegExp(r'[^\d.]'),
+                                                  '',
+                                                );
+                                            final price =
+                                                double.tryParse(cleanPrice) ??
+                                                0.0;
+                                            final quantity = item.quantity ?? 1;
+                                            subtotal += price * quantity;
+
+                                            return {
+                                              "name":
+                                                  item.product?.node?.name ??
+                                                  "Item",
+                                              "quantity": quantity.toString(),
+                                              "price": price.toStringAsFixed(2),
+                                              "currency": "USD",
+                                            };
+                                          }).toList() ??
+                                          [
+                                            {
+                                              "name": "Item",
+                                              "quantity": "1",
+                                              "price": totalAmount,
+                                              "currency": "USD",
+                                            },
+                                          ];
+
+                                      debugPrint("PayPal Subtotal: $subtotal");
+                                      debugPrint(
+                                        "PayPal Total Amount: ${subtotal.toStringAsFixed(2)}",
+                                      );
+
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => PaypalCheckoutView(
+                                                sandboxMode: true,
+                                                clientId:
+                                                    "AaE3QzP9f-5zDRU7DgmMBHYiivdozkV_GSr8WxLvqhwynxK3SsNZgZy65KDfFMTPgIfBPgBg_7HpEDrW",
+                                                secretKey:
+                                                    "EDCpmYAP_1gLIxxLg9VPX3_TFRXIouF9VQU8Hr-JyVjCX0qRJGjmQB_LrClG_cVf1n4yxNByMdjSHfA2",
+                                                transactions: [
+                                                  {
+                                                    "amount": {
+                                                      "total": subtotal
+                                                          .toStringAsFixed(2),
+                                                      "currency": "USD",
+                                                      "details": {
+                                                        "subtotal": subtotal
+                                                            .toStringAsFixed(2),
+                                                        "shipping": "0",
+                                                        "shipping_discount":
+                                                            "0",
+                                                      },
+                                                    },
+                                                    "description":
+                                                        "Order Payment",
+                                                    "item_list": {
+                                                      "items": items,
+                                                    },
+                                                  },
+                                                ],
+                                                note:
+                                                    "Contact us for any questions on your order.",
+                                                onSuccess: (params) async {
+                                                  final transactionId =
+                                                      params["paymentId"]
+                                                          ?.toString() ??
+                                                      "";
+
+                                                  controller.checkout(
+                                                    customerId: int.parse(
+                                                      _authController.userId
+                                                          .toString(),
+                                                    ),
+                                                    coupons:
+                                                        cart?.appliedCoupons
+                                                            ?.map(
+                                                              (c) =>
+                                                                  c.code ?? "",
+                                                            )
+                                                            .toList(),
+                                                    context: context,
+                                                    firstName:
+                                                        firstNameController
+                                                            .text,
+                                                    lastName:
+                                                        lastNameController.text,
+                                                    email: emailController.text,
+                                                    phone: phoneController.text,
+                                                    address:
+                                                        streetController.text,
+                                                    city: cityController.text,
+                                                    state: selectedState ?? "",
+                                                    postcode:
+                                                        pinController.text,
+                                                    country:
+                                                        selectedCountry ?? "IN",
+                                                    customerNote:
+                                                        notesController.text,
+                                                    billToDifferent:
+                                                        billToDifferent,
+                                                    billingFirstName:
+                                                        billingFirstNameController
+                                                            .text,
+                                                    billingLastName:
+                                                        billingLastNameController
+                                                            .text,
+                                                    billingAddress:
+                                                        billingStreetController
+                                                            .text,
+                                                    billingCity:
+                                                        billingCityController
+                                                            .text,
+                                                    billingState:
+                                                        billingSelectedState,
+                                                    billingPostcode:
+                                                        billingPinController
+                                                            .text,
+                                                    billingCountry:
+                                                        billingSelectedCountry,
+                                                    paymentMethod:
+                                                        selectedGateway.id!,
+                                                  );
+                                                },
+                                                onError: (error) {
+                                                  debugPrint(error.toString());
+                                                  CustomSnackbars.showError(
+                                                    context,
+                                                    "PayPal Payment Failed: $error",
+                                                  );
+                                                  Navigator.pop(context);
+                                                },
+                                                onCancel: () {
+                                                  CustomSnackbars.showError(
+                                                    context,
+                                                    "PayPal Payment Cancelled",
+                                                  );
+                                                },
+                                              ),
+                                        ),
+                                      );
+                                      break;
+
+                                    default:
+                                      CustomSnackbars.showError(
+                                        context,
+                                        "Payment method not supported here",
+                                      );
+                                  }
+
+                                  // if (paymentMethod == "razorpay") {
+                                  //   final paymentId = await Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder:
+                                  //           (_) => RazorpayPaymentScreen(
+                                  //             amount: 500.0,
+                                  //             name:
+                                  //                 "${firstNameController.text} ${lastNameController.text}",
+                                  //             email: emailController.text,
+                                  //             phone: phoneController.text,
+                                  //             onSuccess: (paymentId) {
+                                  //               controller.checkout(
+                                  //                 customerId: int.parse(
+                                  //                   _authController.userId
+                                  //                       .toString(),
+                                  //                 ),
+                                  //                 context: context,
+                                  //                 firstName:
+                                  //                     firstNameController.text,
+                                  //                 lastName:
+                                  //                     lastNameController.text,
+                                  //                 email: emailController.text,
+                                  //                 phone: phoneController.text,
+                                  //                 address:
+                                  //                     streetController.text,
+                                  //                 city: cityController.text,
+                                  //                 state: selectedState ?? "",
+                                  //                 postcode: pinController.text,
+                                  //                 country:
+                                  //                     selectedCountry ?? "IN",
+                                  //                 customerNote:
+                                  //                     notesController.text,
+                                  //                 billToDifferent:
+                                  //                     billToDifferent,
+                                  //                 shippingFirstName:
+                                  //                     billingFirstNameController
+                                  //                         .text,
+                                  //                 shippingLastName:
+                                  //                     billingLastNameController
+                                  //                         .text,
+                                  //                 shippingAddress:
+                                  //                     billingStreetController
+                                  //                         .text,
+                                  //                 shippingCity:
+                                  //                     billingCityController
+                                  //                         .text,
+                                  //                 shippingState:
+                                  //                     billingSelectedState,
+                                  //                 shippingPostcode:
+                                  //                     billingPinController.text,
+                                  //                 shippingCountry:
+                                  //                     billingSelectedCountry,
+                                  //                 paymentMethod: "razorpay",
+                                  //               );
+                                  //             },
+                                  //           ),
+                                  //     ),
+                                  //   );
+                                  // } else {
+                                  //   controller.checkout(
+                                  //     customerId: int.parse(
+                                  //       _authController.userId.toString(),
+                                  //     ),
+                                  //     context: context,
+                                  //     firstName: firstNameController.text,
+                                  //     lastName: lastNameController.text,
+                                  //     email: emailController.text,
+                                  //     phone: phoneController.text,
+                                  //     address: streetController.text,
+                                  //     city: cityController.text,
+                                  //     state: selectedState ?? "",
+                                  //     postcode: pinController.text,
+                                  //     country: selectedCountry ?? "IN",
+                                  //     customerNote: notesController.text,
+                                  //     billToDifferent: billToDifferent,
+                                  //     shippingFirstName:
+                                  //         billingFirstNameController.text,
+                                  //     shippingLastName:
+                                  //         billingLastNameController.text,
+                                  //     shippingAddress:
+                                  //         billingStreetController.text,
+                                  //     shippingCity: billingCityController.text,
+                                  //     shippingState: billingSelectedState,
+                                  //     shippingPostcode:
+                                  //         billingPinController.text,
+                                  //     shippingCountry: billingSelectedCountry,
+                                  //     paymentMethod: paymentMethod,
+                                  //   );
+                                  // }
+                                },
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+
+            CommonFooter(isShow: false),
+          ],
+        ),
+      );
+    });
   }
 }
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shree_radhey/common/components/line_shimmer.dart';
-import 'package:shree_radhey/common/components/product_shimmer.dart';
 import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 
 import '../../../../constants/app_colors.dart';
@@ -33,7 +32,9 @@ class _CartSummarySectionState extends State<CartSummarySection> {
   @override
   void initState() {
     super.initState();
-    cartController.fetchAvailableShippingMethod();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cartController.fetchAvailableShippingMethod();
+    });
   }
 
   @override
@@ -117,6 +118,7 @@ class _CartSummarySectionState extends State<CartSummarySection> {
                               cartController.couponControllerText.text.trim();
                           if (code.isNotEmpty) {
                             cartController.applyCoupon(code, context);
+                            cartController.appliedCoupon.value = code;
                           }
                         }
                       },
@@ -134,56 +136,46 @@ class _CartSummarySectionState extends State<CartSummarySection> {
 
         const SizedBox(height: 12),
 
-        // Obx(() {
-        //   final appliedCoupons =
-        //       cartController.cart.value?.data?.cart?.appliedCoupons;
-        //   if (appliedCoupons == null || appliedCoupons.isEmpty) {
-        //     return const SizedBox.shrink();
-        //   }
-
-        //   return Column(
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     children:
-        //         appliedCoupons.map((c) {
-        //           return Row(
-        //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //             children: [
-        //               Text(
-        //                 "Applied Coupon: ${c['code']} - ₹${c['discountAmount']}",
-        //               ),
-        //               TextButton(
-        //                 onPressed: () => cartController.removeCoupon(c['code']),
-        //                 child: const Text("Remove"),
-        //               ),
-        //             ],
-        //           );
-        //         }).toList(),
-        //   );
-        // }),
         Obx(() {
           if (couponController.isLoading.value) {
             return const LineShimmer(height: 30);
           }
+
           if (couponController.errorMessage.isNotEmpty) {
             return Text("Error: ${couponController.errorMessage.value}");
           }
+
           if (couponController.coupons.isEmpty) {
             return const Text("No coupons available");
           }
 
+          // Build items list
+          final items =
+              couponController.coupons.map((coupon) {
+                return DropdownMenuItem<String>(
+                  value: coupon.code,
+                  child: Text(coupon.code ?? ""),
+                );
+              }).toList();
+
+          // Ensure applied coupon is in the items, or set value to null
+          final currentValue =
+              couponController.coupons.any(
+                    (c) => c.code == cartController.appliedCoupon.value,
+                  )
+                  ? cartController.appliedCoupon.value
+                  : null;
+
           return DropdownButtonFormField<String>(
+            value: currentValue, // safe value
             hint: const Text("Available Coupons"),
-            items:
-                couponController.coupons.map((coupon) {
-                  return DropdownMenuItem(
-                    value: coupon.code,
-                    child: Text(
-                      "${coupon.code} ",
-                      // - ${coupon.amount}${coupon.discountType == "percent" ? "%" : "₹"}",
-                    ),
-                  );
-                }).toList(),
+            items: items,
             onChanged: (value) {
+              if (value != null) {
+                cartController.applyCoupon(value, context);
+                cartController.couponControllerText.text = value;
+                cartController.appliedCoupon.value = value;
+              }
               debugPrint("Selected coupon: $value");
             },
             decoration: InputDecoration(
@@ -212,19 +204,19 @@ class _CartSummarySectionState extends State<CartSummarySection> {
             ),
             Expanded(
               child: Obx(() {
-                if (cartController.isLoading.value) {
+                if (cartController.isShippingLoading.value) {
                   return const Text(
                     "Loading shipping options...",
                     style: TextStyle(fontSize: 12, color: Colors.black54),
                   );
                 }
 
-                if (cartController.errorMessage.isNotEmpty) {
-                  return Text(
-                    cartController.errorMessage.value,
-                    style: const TextStyle(fontSize: 12, color: Colors.red),
-                  );
-                }
+                // if (cartController.errorMessage.isNotEmpty) {
+                //   return Text(
+                //     cartController.errorMessage.value,
+                //     style: const TextStyle(fontSize: 12, color: Colors.red),
+                //   );
+                // }
 
                 if (cartController.shippingMethod.isEmpty ||
                     cartController.shippingMethod.first.rates == null ||
@@ -247,21 +239,15 @@ class _CartSummarySectionState extends State<CartSummarySection> {
                         color: Colors.black54,
                       ),
                     ),
-                    // Text(
-                    //   rate.cost != null
-                    //       ? "₹${rate.cost}" // if cost present
-                    //       : "Shipping options will be\nupdated during checkout.",
-                    //   textAlign: TextAlign.right,
-                    //   style: const TextStyle(fontSize: 12, color: Colors.black54),
+
+                    // const Text(
+                    //   "Calculate shipping",
+                    //   style: TextStyle(
+                    //     fontSize: 12,
+                    //     color: Color(0xFFE51900),
+                    //     fontWeight: FontWeight.w500,
+                    //   ),
                     // ),
-                    const Text(
-                      "Calculate shipping",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFFE51900),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
                   ],
                 );
               }),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shree_radhey/features/footer_menu/controller/footer_controller.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
@@ -14,6 +16,7 @@ class ContactUsScreen extends StatefulWidget {
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
+  final FooterController footerController = Get.put(FooterController());
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController firstNameController = TextEditingController();
@@ -91,6 +94,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       hint: "Enter your first name",
                       controller: firstNameController,
                       isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "First Name is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
@@ -98,6 +107,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       hint: "Enter your last name",
                       controller: lastNameController,
                       isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Last Name is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonEmailTextField(
@@ -119,8 +134,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       label: "Phone Number*",
                       controller: phoneController,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Phone number required";
+                        if (value == null || value.trim().isEmpty) {
+                          return "Please enter phone number";
+                        } else if (!RegExp(
+                          r'^\d{10}$',
+                        ).hasMatch(value.trim())) {
+                          return "Enter a valid 10-digit phone number";
                         }
                         return null;
                       },
@@ -135,17 +154,34 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                     const SizedBox(height: 24),
 
                     /// Submit Button
-                    GradientButton(
-                      text: "Submit",
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          /// submit logic here
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Form Submitted")),
-                          );
-                        }
-                      },
-                    ),
+                    Obx(() {
+                      return GradientButton(
+                        text: "Submit",
+                        isLoading: footerController.isLoading.value,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            footerController
+                                .submitContact(
+                                  context: context,
+                                  firstName: firstNameController.text.trim(),
+                                  lastName: lastNameController.text.trim(),
+                                  email: emailController.text.trim(),
+                                  phone: phoneController.text.trim(),
+                                  message: messageController.text.trim(),
+                                )
+                                .then((_) {
+                                  firstNameController.clear();
+                                  lastNameController.clear();
+                                  emailController.clear();
+                                  phoneController.clear();
+                                  messageController.clear();
+                                  _formKey.currentState?.reset();
+                                });
+                          }
+                        },
+                      );
+                    }),
+
                     const SizedBox(height: 32),
                     ContactMapSection(
                       address:

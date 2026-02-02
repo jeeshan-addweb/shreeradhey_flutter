@@ -81,26 +81,26 @@ class _BannerComponentState extends State<BannerComponent> {
             ),
 
             // Left Button
-            Positioned(
-              left: 4,
-              top: 80,
-              child: _navButton(
-                Icons.arrow_back_ios,
-                _prevPage,
-                disabled: _currentPage == 0,
-              ),
-            ),
+            // Positioned(
+            //   left: 4,
+            //   top: 80,
+            //   child: _navButton(
+            //     Icons.arrow_back_ios,
+            //     _prevPage,
+            //     disabled: _currentPage == 0,
+            //   ),
+            // ),
 
             // Right Button
-            Positioned(
-              right: 4,
-              top: 80,
-              child: _navButton(
-                Icons.arrow_forward_ios,
-                _nextPage,
-                disabled: _currentPage == images.length - 1,
-              ),
-            ),
+            // Positioned(
+            //   right: 4,
+            //   top: 80,
+            //   child: _navButton(
+            //     Icons.arrow_forward_ios,
+            //     _nextPage,
+            //     disabled: _currentPage == images.length - 1,
+            //   ),
+            // ),
           ],
         ),
       );

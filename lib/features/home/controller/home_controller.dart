@@ -8,6 +8,7 @@ import '../../../common/components/custom_snackbar.dart';
 import '../../../common/model/ui_product_model.dart';
 import '../../shop/repo/shop_repo.dart';
 import '../model/get_blog_model.dart';
+import '../model/search_and_filter_blog_model.dart';
 import '../repo/home_repo.dart';
 
 class HomeController extends GetxController {
@@ -34,6 +35,19 @@ class HomeController extends GetxController {
   var blogDetail = Rxn<BlogDetailModel>();
   var homePageData = Rxn<HomeDataModel>();
   var isHomeLoading = false.obs;
+
+  // Search and Filter Blogs
+  var searchBlogs = <PostsNode>[].obs;
+  var isLoading = false.obs;
+  String? _endCursor;
+  bool _hasNextPage = true;
+  String? selectedCategory;
+  String? searchQuery;
+  @override
+  void onInit() {
+    super.onInit();
+    fetchSearchBlogs();
+  }
   // @override
   // void onInit() {
   //   super.onInit();
@@ -130,6 +144,52 @@ class HomeController extends GetxController {
     } finally {
       isDetailLoading.value = false;
     }
+  }
+
+  Future<void> fetchSearchBlogs({bool loadMore = false}) async {
+    if (isLoading.value || (!loadMore && blogs.isNotEmpty)) return;
+
+    if (loadMore && !_hasNextPage) return;
+
+    isLoading.value = true;
+    hasError.value = false;
+
+    try {
+      final posts = await _homerepo.fetchSearchandFilterBlogs(
+        first: 10,
+        after: loadMore ? _endCursor : null,
+        categoryName: selectedCategory,
+        search: searchQuery,
+      );
+
+      _endCursor = posts.pageInfo?.endCursor;
+      _hasNextPage = posts.pageInfo?.hasNextPage ?? false;
+
+      if (loadMore) {
+        searchBlogs.addAll(posts.nodes ?? []);
+      } else {
+        searchBlogs.value = posts.nodes ?? [];
+      }
+    } catch (e) {
+      hasError.value = true;
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void updateFilter(String category) {
+    selectedCategory = category == "All" ? null : category;
+    _endCursor = null;
+    _hasNextPage = true;
+    fetchSearchBlogs(); // filter uses the search/filter API
+  }
+
+  void updateSearch(String query) {
+    searchQuery = query.isEmpty ? null : query;
+    _endCursor = null;
+    _hasNextPage = true;
+    fetchSearchBlogs(); // call search API, not full fetch
   }
 
   Future<void> fetchHomePageData(BuildContext context) async {

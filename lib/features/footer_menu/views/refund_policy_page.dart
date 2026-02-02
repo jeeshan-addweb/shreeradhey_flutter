@@ -44,16 +44,16 @@ class _RefundPolicyPageState extends State<RefundPolicyPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Title
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  refundPolicy?.title ?? "Refund Policy",
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(16.0),
+              //   child: Text(
+              //     refundPolicy?.title ?? "Refund Policy",
+              //     style: const TextStyle(
+              //       fontSize: 24,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
 
               // Render all blocks in sequence
               Padding(

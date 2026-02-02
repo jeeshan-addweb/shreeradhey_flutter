@@ -226,6 +226,7 @@ currencySymbol
     slug
     description
     shortDescription
+    uri
     type
     ... on SimpleProduct {
       productSubtitle
@@ -385,7 +386,11 @@ currencySymbol
   ''';
 
     final result = await _client.query(
-      QueryOptions(document: gql(query), variables: variables),
+      QueryOptions(
+        document: gql(query),
+        variables: variables,
+        fetchPolicy: FetchPolicy.networkOnly,
+      ),
     );
     if (result.hasException) {
       throw Exception(result.exception.toString());
@@ -445,5 +450,89 @@ currencySymbol
     }
 
     return result.data?['createProductReview'] ?? {};
+  }
+
+  Future<List<ProductsNode>> getBestSellerProducts() async {
+    const query = r'''
+     query GetProductsByProductLabel {
+productLabel(id: "best-seller", idType: SLUG) {
+name
+slug
+products(first: 12, where: {orderby: {field: DATE, order: DESC}}) {
+  nodes {
+    id
+    name
+    slug
+    uri
+    image {
+      sourceUrl
+      altText
+    }
+    productCategories {
+      nodes {
+        name
+        slug
+      }
+    }
+productLabels {
+      nodes {
+        id
+        name
+        slug
+      }
+}
+    ... on SimpleProduct {
+     databaseId
+	currencySymbol
+      price
+      regularPrice
+      salePrice
+      bestPrice
+      discountPercentage
+      isInWishlist
+	isInCart
+      averageRating
+      reviewCount
+    }
+  }
+}
+}
+}
+    ''';
+
+    final result = await _client.query(QueryOptions(document: gql(query)));
+    if (result.hasException) throw Exception(result.exception.toString());
+
+    final nodes = result.data?["productLabel"]?["products"]?["nodes"] ?? [];
+    return (nodes as List).map((e) => ProductsNode.fromJson(e)).toList();
+  }
+
+  Future<Map<String, dynamic>> getDeliveryEstimate(int postcode) async {
+    const String query = r'''
+      query GetPostcodeData($postcode: Int!) {
+        postcodeData(postcode: $postcode) {
+          postcode
+          city
+          state
+          country
+          latitude
+          longitude
+          address
+          estimatedDelivery
+        }
+      }
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(document: gql(query), variables: {"postcode": postcode}),
+    );
+
+    if (result.hasException) {
+      throw Exception(
+        result.exception?.graphqlErrors.first.message ?? "Something went wrong",
+      );
+    }
+
+    return result.data?["postcodeData"] as Map<String, dynamic>;
   }
 }

@@ -67,18 +67,15 @@ class PageBy {
 }
 
 class Block {
-  Name? name;
+  String? name;
   String? content;
 
   Block({this.name, this.content});
 
   factory Block.fromJson(Map<String, dynamic> json) =>
-      Block(name: nameValues.map[json["name"]], content: json["content"]);
+      Block(name: json["name"], content: json["content"]);
 
-  Map<String, dynamic> toJson() => {
-    "name": nameValues.reverse[name],
-    "content": content,
-  };
+  Map<String, dynamic> toJson() => {"name": name, "content": content};
 }
 
 enum Name { CORE_HEADING, CORE_PARAGRAPH }

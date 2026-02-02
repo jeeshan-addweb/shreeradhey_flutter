@@ -7,6 +7,7 @@ class ProductVariantController extends GetxController {
   final ProductVariantRepo _repo = ProductVariantRepo();
 
   var isLoading = false.obs;
+  var selectedVariantIndex = 0.obs;
   var productVariants = <ProductsNode>[].obs;
 
   // @override
@@ -14,6 +15,9 @@ class ProductVariantController extends GetxController {
   //   super.onInit();
   //   fetchProductVariants(catehory);
   // }
+  void setSelectedVariant(int index) {
+    selectedVariantIndex.value = index;
+  }
 
   Future<void> fetchProductVariants(String category) async {
     try {

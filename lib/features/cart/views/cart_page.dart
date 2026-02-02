@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shree_radhey/common/components/product_shimmer.dart';
 import 'package:shree_radhey/features/cart/controller/cart_controller.dart';
 import 'package:shree_radhey/features/home/controller/home_controller.dart';
 
 import '../../../common/components/common_footer.dart';
+import '../../../common/components/empty_cart.dart';
 import '../../../constants/app_colors.dart';
 import '../../home/views/widgets/product_section_widget.dart';
 import 'components/cart_summary_section.dart';
@@ -42,56 +44,56 @@ class _CartPageState extends State<CartPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Home",
-                          style: TextStyle(
-                            color: AppColors.grey_3C403D,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextSpan(
-                          text: " / ",
-                          style: TextStyle(
-                            color: AppColors.red_CC0003,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "Cart",
-                          style: TextStyle(
-                            color: AppColors.red_CC0003,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
+                  // RichText(
+                  //   text: TextSpan(
+                  //     style: const TextStyle(
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w500,
+                  //     ),
+                  //     children: [
+                  //       TextSpan(
+                  //         text: "Home",
+                  //         style: TextStyle(
+                  //           color: AppColors.grey_3C403D,
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //       TextSpan(
+                  //         text: " / ",
+                  //         style: TextStyle(
+                  //           color: AppColors.red_CC0003,
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //       TextSpan(
+                  //         text: "Cart",
+                  //         style: TextStyle(
+                  //           color: AppColors.red_CC0003,
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (cartController.isFetchingCart.value) ...[
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: SizedBox(
-                              height: 36,
-                              width: 36,
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                        ),
+                        ProductCardShimmer(),
+                        // const Center(
+                        //   child: Padding(
+                        //     padding: EdgeInsets.all(20),
+                        //     child: SizedBox(
+                        //       height: 36,
+                        //       width: 36,
+                        //       child: CircularProgressIndicator(),
+                        //     ),
+                        //   ),
+                        // ),
                       ] else if (nodes.isNotEmpty) ...[
                         ...nodes
                             .map(
@@ -101,12 +103,11 @@ class _CartPageState extends State<CartPage> {
                                     currencySymbol:
                                         cartController
                                             .cart
-                                            .value!
-                                            .data!
-                                            .cart!
-                                            .contents!
-                                            .currencySymbol ??
-                                        "^",
+                                            .value
+                                            ?.data
+                                            ?.cart
+                                            ?.currencySymbol ??
+                                        "",
                                     isLoading:
                                         cartController.updatingItems[item
                                             .key!] ??
@@ -154,12 +155,11 @@ class _CartPageState extends State<CartPage> {
                             currencySymbol:
                                 cartController
                                     .cart
-                                    .value!
-                                    .data!
-                                    .cart!
-                                    .contents!
-                                    .currencySymbol ??
-                                "^",
+                                    .value
+                                    ?.data
+                                    ?.cart
+                                    ?.currencySymbol ??
+                                "",
                             subtotal:
                                 cartController
                                     .cart
@@ -173,12 +173,13 @@ class _CartPageState extends State<CartPage> {
                                 "0",
                           ),
                       ] else ...[
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Text("Your cart is empty."),
-                          ),
-                        ),
+                        EmptyCartView(),
+                        // const Center(
+                        //   child: Padding(
+                        //     padding: EdgeInsets.all(20),
+                        //     child: Text("Your cart is empty."),
+                        //   ),
+                        // ),
                       ],
                     ],
                   ),

@@ -26,6 +26,10 @@ class ApiClient {
     client = GraphQLClient(
       link: link,
       cache: GraphQLCache(store: InMemoryStore()),
+      defaultPolicies: DefaultPolicies(
+        query: Policies(fetch: FetchPolicy.noCache),
+      ),
+      queryRequestTimeout: Duration(seconds: 60), // default to 5 sec
     );
   }
 

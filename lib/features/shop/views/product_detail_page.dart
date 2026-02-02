@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/custom_snackbar.dart';
+import '../../../common/model/ui_product_model.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../utils/review_utils.dart';
+import '../../../utils/routes/app_route_path.dart';
+import '../../auth/controller/auth_controller.dart';
+import '../../cart/controller/cart_controller.dart';
+import '../../home/controller/home_controller.dart';
 import '../../home/controller/wishlist_controller.dart';
+import '../../home/views/widgets/product_section_widget.dart';
 import '../controller/product_variant_controller.dart';
 import '../controller/shop_controller.dart';
 import 'components/add_review_section.dart';
@@ -15,7 +24,6 @@ import 'components/product_detail_review_section.dart';
 import 'components/variant_card.dart';
 import 'widgets/additional_info_widget.dart';
 import 'widgets/description_widget.dart';
-import 'widgets/related_product_section.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String slug;
@@ -31,9 +39,18 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _reviewSectionKey = GlobalKey();
+  final cartController = Get.find<CartController>();
+  final HomeController homecontroller = Get.put(
+    HomeController(),
+    permanent: true,
+  );
+  final auth = Get.find<AuthController>();
   bool showFullVariants = false;
 
   final ShopController controller = Get.put(ShopController());
+  final TextEditingController pinController = TextEditingController();
   final ProductVariantController productVariantController = Get.put(
     ProductVariantController(),
   );
@@ -65,11 +82,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  int selectedVariantIndex = -1;
-
   int selectedImageIndex = 0;
 
   int quantity = 1;
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +95,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       controller.fetchProductDetail(context, widget.slug);
       controller.fetchProductReviews(widget.slug);
       productVariantController.fetchProductVariants(widget.category);
+      Get.find<ShopController>().resetDelivery();
     });
+  }
+
+  void _scrollToReviews() {
+    final context = _reviewSectionKey.currentContext;
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
@@ -156,7 +184,31 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // if (auth.isGuest) {
+                    //   CustomSnackbars.showError(
+                    //     context,
+                    //     "Login Required ! Please login to add items to cart",
+                    //   );
+
+                    //   // Navigate to login with go_router
+                    //   context.push(AppRoutePath.login);
+                    //   return;
+                    // }
+                    final detail =
+                        controller.productDetail.value?.data?.product;
+                    if (detail?.isInCart == true) {
+                      // Navigate to cart page
+                      context.go(AppRoutePath.cartPage);
+                    } else {
+                      // Add to cart
+                      cartController.addProductToCart(
+                        detail?.databaseId ?? 0,
+                        1,
+                        context,
+                      );
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     elevation: 0, // remove shadow since gradient is outside
                     backgroundColor: Colors.transparent,
@@ -165,21 +217,55 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Add to Cart",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                  child: Obx(() {
+                    final detail =
+                        controller.productDetail.value?.data?.product;
+                    if (detail?.databaseId == null) {
+                      return const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.shopping_cart, color: Colors.white),
-                    ],
-                  ),
+                      );
+                    }
+                    final productId = detail!.databaseId!;
+                    final isAdding =
+                        cartController.addingItems[productId] ?? false;
+                    final inCart = cartController.isInCart(productId);
+
+                    if (isAdding) {
+                      return const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      );
+                    } else {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            inCart ? 'View My Cart' : 'Add to Cart',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Icon(
+                            Icons.shopping_cart,
+                            color: AppColors.white,
+                            size: 20,
+                          ),
+                        ],
+                      );
+                    }
+                  }),
                 ),
               ),
             ),
@@ -187,34 +273,51 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             const SizedBox(width: 8),
 
             // Buy Now Button
-            // Expanded(
-            //   child: OutlinedButton(
-            //     onPressed: () {
-            //       // handle buy now
-            //     },
-            //     style: OutlinedButton.styleFrom(
-            //       side: BorderSide(color: AppColors.green_6cad10),
-            //       padding: const EdgeInsets.symmetric(vertical: 14),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(8),
-            //       ),
-            //     ),
-            //     child: const Text(
-            //       "Buy Now",
-            //       style: TextStyle(
-            //         fontSize: 16,
-            //         fontWeight: FontWeight.bold,
-            //         color: Colors.black,
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  // if (auth.isGuest) {
+                  //   CustomSnackbars.showError(
+                  //     context,
+                  //     "Login Required ! Please login to add items to cart",
+                  //   );
+
+                  //   // Navigate to login with go_router
+                  //   context.push(AppRoutePath.login);
+                  //   return;
+                  // }
+                  final detail = controller.productDetail.value?.data?.product;
+                  cartController.addProductToCart(
+                    detail?.databaseId ?? 0,
+                    1,
+                    context,
+                  );
+                  context.push(AppRoutePath.checkoutScreen);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.green_6cad10),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  "Buy Now",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
       backgroundColor: AppColors.white,
       body: Obx(() {
-        if (controller.isDetailLoading.value) {
+        if (controller.isDetailLoading.value ||
+            controller.isVariantLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -260,62 +363,63 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         final variants = productVariantController.productVariants;
 
         return SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "Home",
-                        style: TextStyle(
-                          color: AppColors.grey_3C403D,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: " / ",
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "Ghee",
-                        style: TextStyle(
-                          color: AppColors.grey_3C403D,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: " / ",
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: detail.name,
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(12.0),
+              //   child: RichText(
+              //     text: TextSpan(
+              //       style: const TextStyle(
+              //         fontSize: 16,
+              //         fontWeight: FontWeight.w500,
+              //       ),
+              //       children: [
+              //         // TextSpan(
+              //         //   text: "Home",
+              //         //   style: TextStyle(
+              //         //     color: AppColors.grey_3C403D,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //         // TextSpan(
+              //         //   text: " / ",
+              //         //   style: TextStyle(
+              //         //     color: AppColors.red_CC0003,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //         // TextSpan(
+              //         //   text: "Ghee",
+              //         //   style: TextStyle(
+              //         //     color: AppColors.grey_3C403D,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //         // TextSpan(
+              //         //   text: " / ",
+              //         //   style: TextStyle(
+              //         //     color: AppColors.red_CC0003,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //         // TextSpan(
+              //         //   text: detail.name,
+              //         //   style: TextStyle(
+              //         //     color: AppColors.red_CC0003,
+              //         //     fontSize: 18,
+              //         //     fontWeight: FontWeight.bold,
+              //         //   ),
+              //         // ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               // ====== IMAGE SECTION ======
               Stack(
                 children: [
@@ -349,30 +453,52 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             isWishlisted
                                 ? Icons.favorite
                                 : Icons.favorite_border,
-                            color: isWishlisted ? Colors.red : Colors.white,
+                            color:
+                                isWishlisted
+                                    ? Colors.red
+                                    : AppColors.red_CC0003,
 
                             onTap: () async {
+                              // if (auth.isGuest) {
+                              //   CustomSnackbars.showError(
+                              //     context,
+                              //     "Login Required ! Please login to add items to wishlist.",
+                              //   );
+
+                              //   // Navigate to login with go_router
+                              //   context.push(AppRoutePath.login);
+                              //   return;
+                              // }
                               final response = await wishlistController
                                   .toggleWishlist(detail.databaseId ?? 0);
-                              if (response["success"] == true) {
-                                CustomSnackbars.showSuccess(
-                                  context,
-                                  response["message"],
-                                );
-                              } else {
-                                CustomSnackbars.showError(
-                                  context,
-                                  response["message"],
-                                );
-                              }
+                              // if (response["success"] == true) {
+                              //   CustomSnackbars.showSuccess(
+                              //     context,
+                              //     response["message"],
+                              //   );
+                              // } else {
+                              //   CustomSnackbars.showError(
+                              //     context,
+                              //     response["message"],
+                              //   );
+                              // }
                             },
                           );
                         }),
 
+                        // const SizedBox(height: 12),
+                        // _buildCircleIcon(Icons.search, onTap: () {}),
                         const SizedBox(height: 12),
-                        _buildCircleIcon(Icons.search, onTap: () {}),
-                        const SizedBox(height: 12),
-                        _buildCircleIcon(Icons.download, onTap: () {}),
+                        _buildCircleIcon(
+                          Icons.ios_share_outlined,
+                          onTap: () {
+                            showShareOptions(
+                              context,
+                              detail.name ?? "",
+                              detail.uri ?? "",
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -481,35 +607,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star_half,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star_border,
-                          color: AppColors.orange_f29102,
-                          size: 20,
-                        ),
+                        ..._buildStarRating(detail.averageRating ?? 0.0),
                         const SizedBox(width: 4),
-                        Text(
-                          "${detail.averageRating.toString()} | ${detail.reviewCount.toString()} Reviews",
-                          style: TextStyle(fontSize: 14, color: AppColors.grey),
+                        GestureDetector(
+                          onTap: () {
+                            debugPrint("tapppppsndnddnd");
+                            _scrollToReviews();
+                          },
+                          child: Text(
+                            "${detail.averageRating.toString()} | ${detail.reviewCount.toString()} Reviews",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.grey,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -629,6 +740,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         // Pincode TextField
                         Expanded(
                           child: TextField(
+                            controller: pinController,
                             decoration: InputDecoration(
                               hintText: "Enter your pincode",
                               contentPadding: const EdgeInsets.symmetric(
@@ -659,32 +771,81 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         const SizedBox(width: 8),
 
                         // Check Button
-                        Container(
-                          height: 48,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            gradient: LinearGradient(
-                              colors: [
-                                AppColors.green_6cad10,
-                                AppColors.green_327801,
-                              ], // green gradient
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                        GestureDetector(
+                          onTap: () {
+                            final pin = int.tryParse(pinController.text.trim());
+                            if (pin != null) {
+                              controller.checkDelivery(pin);
+                            } else {
+                              CustomSnackbars.showError(
+                                context,
+                                "Enter a valid pincode",
+                              );
+                            }
+                          },
+                          child: Container(
+                            height: 48,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.green_6cad10,
+                                  AppColors.green_327801,
+                                ], // green gradient
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
                             ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Check",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                            child: Center(
+                              child: Text(
+                                "Check",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 20),
+                    Obx(() {
+                      if (controller.isLoading.value) {
+                        return Center(child: const CircularProgressIndicator());
+                      }
+
+                      if (controller.error.isNotEmpty) {
+                        return Center(
+                          child: Text(
+                            controller.error.value,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }
+
+                      final data = controller.deliveryData.value;
+                      if (data == null) return const SizedBox();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${data['city']}- ${data['postcode']}, ${data['state']}, ${data['country']}",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Html(data: data['estimatedDelivery'] ?? ""),
+                        ],
+                      );
+                    }),
                     const SizedBox(height: 20),
                     descriptionWidget(detail.description ?? ""),
 
@@ -703,7 +864,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ] else ...[
                       Text(
-                        "Reviews ${(detail.reviewCount)}",
+                        "Reviews (${detail.reviewCount})",
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w600,
@@ -712,6 +873,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                       const SizedBox(height: 20),
                       ProductDetailReviewSection(
+                        key: _reviewSectionKey,
                         averageRating: (detail.averageRating ?? 0).toDouble(),
                         totalReviews: detail.reviewCount ?? 0,
                         ratingDistribution: ratingDistribution,
@@ -720,6 +882,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
 
                     SizedBox(height: 20),
+
                     AddReviewSection(productId: detail.databaseId!),
                     SizedBox(height: 20),
 
@@ -727,7 +890,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         detail.faqContent!.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       const Text(
-                        "FAQ",
+                        "FAQ's",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -747,15 +910,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ],
 
-                    RelatedProductSection(
+                    ProductSection(
                       firstText: "",
                       firstTextColor: AppColors.black,
                       secondTextColor: AppColors.black,
                       secondText: "Similar Products".toUpperCase(),
                       sectionBgColor: AppColors.white,
-
-                      products: detail.related?.nodes ?? [],
+                      tagText: "Best Seller",
+                      products: homecontroller.allProducts,
+                      // (detail.related?.nodes ?? [])
+                      //     .map(
+                      //       (node) =>
+                      //           UiProductModelMapper.fromRelatedNode(node),
+                      //     )
+                      //     .toList(),
                     ),
+                    // RelatedProductSection(
+                    //   firstText: "",
+                    //   firstTextColor: AppColors.black,
+                    //   secondTextColor: AppColors.black,
+                    //   secondText: "Similar Products".toUpperCase(),
+                    //   sectionBgColor: AppColors.white,
+
+                    //   products: detail.related?.nodes ?? [],
+                    // ),
                     // ProductSection(firstText: "", firstTextColor: AppColors.black, secondTextColor: AppColors.black, secondText: "Similar Products".toUpperCase(), sectionBgColor: AppColors.white, tagText: "", products: detail)
 
                     // ProductSection(
@@ -780,7 +958,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
+  List<Widget> _buildStarRating(double rating) {
+    const maxStars = 5;
+    List<Widget> stars = [];
+
+    for (int i = 1; i <= maxStars; i++) {
+      if (i <= rating.floor()) {
+        stars.add(Icon(Icons.star, color: AppColors.orange_f29102, size: 18));
+      } else if (i - rating <= 0.5) {
+        stars.add(
+          Icon(Icons.star_half, color: AppColors.orange_f29102, size: 18),
+        );
+      } else {
+        stars.add(
+          Icon(Icons.star_border, color: AppColors.orange_f29102, size: 18),
+        );
+      }
+    }
+
+    return stars;
+  }
+
   Widget _buildVariantSection(List variants) {
+    final productVariantController = Get.find<ProductVariantController>();
+
     if (variants.isEmpty) {
       return const Text(
         "No variants found",
@@ -793,8 +994,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     }
 
     // Show only first 3 if longer
-    final showAll = variants.length <= 3 || showFullVariants;
-    final displayVariants = showAll ? variants : variants.take(3).toList();
+    final showAll = variants.length <= 4 || showFullVariants;
+    final displayVariants = showAll ? variants : variants.take(4).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -809,34 +1010,41 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
         const SizedBox(height: 12),
 
-        GridView.builder(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: displayVariants.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.3,
-          ),
-          itemBuilder: (context, index) {
-            final v = displayVariants[index];
-            return VariantCard(
-              variantName: v.productSubtitle ?? "",
-              originalPrice: v.regularPrice ?? "",
-              discountedPrice: v.salePrice ?? "",
-              discountPercent: v.discountPercentage ?? 0,
-              currencySymbol: v.currencySymbol ?? "",
-              isSelected: selectedVariantIndex == index,
-              onTap: () {
-                setState(() {
-                  selectedVariantIndex = index;
-                });
-              },
-            );
-          },
-        ),
+        Obx(() {
+          final selectedIndex =
+              productVariantController.selectedVariantIndex.value;
+
+          return GridView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: displayVariants.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.3,
+            ),
+            itemBuilder: (context, index) {
+              final v = displayVariants[index];
+              return VariantCard(
+                variantName: v.productSubtitle ?? "",
+                originalPrice: v.regularPrice ?? "",
+                discountedPrice: v.salePrice ?? "",
+                discountPercent: v.discountPercentage ?? 0,
+                currencySymbol: v.currencySymbol ?? "",
+                isSelected: selectedIndex == index,
+                onTap: () {
+                  // Update controller instead of local state
+                  productVariantController.setSelectedVariant(index);
+
+                  final slug = v.slug;
+                  Get.find<ShopController>().fetchProductDetail(context, slug);
+                },
+              );
+            },
+          );
+        }),
 
         if (variants.length > 3 && !showFullVariants)
           Padding(
@@ -863,5 +1071,84 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
       ],
     );
+  }
+}
+
+void showShareOptions(
+  BuildContext context,
+  String productName,
+  String productUrl,
+) {
+  showModalBottomSheet(
+    backgroundColor: AppColors.white,
+    context: context,
+    builder: (_) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            GestureDetector(
+              onTap: () {
+                debugPrint("Name $productName , Url $productUrl");
+                _shareWhatsApp(productName, productUrl);
+              },
+              child: Image.asset(AppImages.whatsapp, width: 30, height: 30),
+            ),
+            GestureDetector(
+              onTap: () => _shareFacebook(productName, productUrl),
+              child: Image.asset(AppImages.facebook, width: 30, height: 30),
+            ),
+            GestureDetector(
+              onTap: () => _shareEmail(productName, productUrl),
+              child: Image.asset(AppImages.email, width: 30, height: 30),
+            ),
+            GestureDetector(
+              onTap: () => _shareTwitter(productName, productUrl),
+              child: Image.asset(AppImages.twitter, width: 30, height: 30),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+void _shareWhatsApp(String productName, String productUrl) async {
+  final message = Uri.encodeComponent(
+    "Check out this product: $productName\n$productUrl",
+  );
+  final url = "https://wa.me/?text=$message";
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
+}
+
+/// Facebook
+void _shareFacebook(String productName, String productUrl) async {
+  final encodedUrl = Uri.encodeComponent(productUrl);
+  final url = "https://www.facebook.com/sharer/sharer.php?u=$encodedUrl";
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
+}
+
+/// Email
+void _shareEmail(String productName, String productUrl) async {
+  final subject = Uri.encodeComponent("Check out this product: $productName");
+  final body = Uri.encodeComponent("Here is the product link: $productUrl");
+  final url = "mailto:?subject=$subject&body=$body";
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url));
+  }
+}
+
+/// Twitter (X)
+void _shareTwitter(String productName, String productUrl) async {
+  final text = Uri.encodeComponent("Check out this product: $productName");
+  final encodedUrl = Uri.encodeComponent(productUrl);
+  final url = "https://twitter.com/intent/tweet?text=$text&url=$encodedUrl";
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 }

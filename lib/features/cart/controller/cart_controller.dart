@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shree_radhey/features/shop/controller/shop_controller.dart';
 import '../../../common/components/custom_snackbar.dart';
 import '../../auth/controller/auth_controller.dart';
@@ -29,6 +30,7 @@ class CartController extends GetxController {
   var cartCount = 0.obs;
 
   // Shipping Method
+  var isShippingLoading = false.obs;
   var shippingMethod = <AvailableShippingMethodCart>[].obs;
   @override
   void onInit() {
@@ -52,6 +54,11 @@ class CartController extends GetxController {
     }
   }
 
+  void clearCart() {
+    cart.value = null; // clear local reactive cart object
+    cartCount.value = 0;
+  }
+
   void updateCartCount() {
     final count = cart.value?.data?.cart?.contents?.itemCount ?? 0;
 
@@ -71,7 +78,7 @@ class CartController extends GetxController {
   bool isInCart(int productId) {
     final nodes = cart.value?.data?.cart?.contents?.nodes ?? [];
     final found = nodes.any(
-      (node) => node.product?.node?.id == productId.toString(),
+      (node) => node.product?.node?.databaseId == productId,
     );
     debugPrint("[CartController] isInCart($productId) → $found");
     return found;
@@ -84,6 +91,14 @@ class CartController extends GetxController {
       final response = await _repo.getCartItems();
       cart.value = response;
       updateCartCount();
+      final appliedCoupons = response.data?.cart?.appliedCoupons;
+      if (appliedCoupons != null && appliedCoupons.isNotEmpty) {
+        appliedCoupon.value = appliedCoupons.first.code;
+        couponControllerText.text = appliedCoupon.value!;
+      } else {
+        appliedCoupon.value = null;
+        couponControllerText.clear();
+      }
       debugPrint(
         '[CartController] fetchCartItems - success: items = ${response.data?.cart?.contents?.itemCount ?? 0}',
       );
@@ -98,6 +113,21 @@ class CartController extends GetxController {
     }
   }
 
+  Future<void> emptyCart() async {
+    try {
+      isLoading.value = true;
+
+      await _repo.emptyCart();
+      clearCart();
+
+      debugPrint("[CartController] Cart emptied successfully");
+    } catch (e) {
+      debugPrint("[CartController] Failed to empty cart: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> updateQuantity(String key, int quantity) async {
     if (key.isEmpty) return;
     try {
@@ -109,8 +139,6 @@ class CartController extends GetxController {
       if (response != null) {
         cart.value = response;
         updateCartCount();
-        // force sync from backend
-        await fetchCartItems();
       }
 
       debugPrint('[CartController] updateQuantity - success key:$key');
@@ -123,12 +151,79 @@ class CartController extends GetxController {
     }
   }
 
+  //   Future<void> updateQuantity(String key, int newQty) async {
+  //   if (key.isEmpty) return;
+
+  //   final nodes = cart.value?.data?.cart?.contents?.nodes;
+  //   if (nodes == null) return;
+
+  //   final index = nodes.indexWhere((item) => item.key == key);
+  //   if (index == -1) return;
+
+  //   // -----------------------------
+  //   // Step 1: Save old quantity for rollback
+  //   // -----------------------------
+  //   final oldQty = nodes[index].quantity;
+
+  //   // -----------------------------
+  //   // Step 2: Optimistic UI update
+  //   // -----------------------------
+  //   nodes[index].quantity = newQty;
+  //   _recalculateCartTotals(); // update subtotal/total immediately
+  //   cart.refresh(); // triggers Obx rebuild
+
+  //   try {
+  //     debugPrint('[CartController] updateQuantity - start key:$key qty:$newQty');
+
+  //     // You can still use updatingItems to show spinner if needed
+  //     // updatingItems[key] = true;
+  //     // updatingItems.refresh();
+
+  //     final response = await _repo.updateCartItem(key, newQty);
+
+  //     if (response != null) {
+  //       cart.value = response; // sync with server response
+  //       updateCartCount();
+  //     }
+
+  //     debugPrint('[CartController] updateQuantity - success key:$key');
+  //   } catch (e, st) {
+  //     debugPrint('[CartController] updateQuantity - error: $e\n$st');
+
+  //     // -----------------------------
+  //     // Step 3: Rollback on error
+  //     // -----------------------------
+  //     nodes[index].quantity = oldQty;
+  //     _recalculateCartTotals();
+  //     cart.refresh();
+  //   } finally {
+  //     // updatingItems[key] = false;
+  //     // updatingItems.refresh();
+  //     debugPrint('[CartController] updateQuantity - finished key:$key');
+  //   }
+  // }
+
+  /// Optional: instant cart total calculation
+  void _recalculateCartTotals() {
+    final nodes = cart.value?.data?.cart?.contents?.nodes;
+    if (nodes == null) return;
+
+    double subtotal = 0;
+    for (var item in nodes) {
+      final price = double.tryParse(item.product?.node?.price ?? "0") ?? 0;
+      subtotal += price * (item.quantity ?? 1);
+    }
+
+    cart.value?.data?.cart?.subtotal = subtotal.toStringAsFixed(2);
+    cart.value?.data?.cart?.total = subtotal.toStringAsFixed(2);
+  }
+
   Future<void> removeItem(String key) async {
     try {
       isUpdatingCart.value = true;
       cart.value = await _repo.removeCartItem(key);
       updateCartCount();
-      await fetchCartItems();
+      // await fetchCartItems();
       final shopController = Get.find<ShopController>();
       shopController.fetchProducts("all");
     } catch (e) {
@@ -150,9 +245,10 @@ class CartController extends GetxController {
       final result = await _repo.addToCart(productId, quantity);
       if (result != null) {
         cart.value = result; // refresh cart
+        await fetchCartItems();
         updateCartCount();
         debugPrint("[CartController] Added product $productId ✅");
-        await fetchCartItems();
+        // await fetchCartItems();
       }
 
       CustomSnackbars.showSuccess(
@@ -170,26 +266,71 @@ class CartController extends GetxController {
 
   Future<void> applyCoupon(String code, BuildContext context) async {
     try {
+      if (appliedCoupon.value == code) {
+        CustomSnackbars.showSuccess(context, "Coupon already applied");
+        return;
+      }
+
       isUpdatingCart.value = true;
       errorMessage.value = "";
+
       final response = await _repo.applyCoupon(code);
+
       if (response != null) {
         if (response.cart != null) {
           cart.value = response.cart;
           appliedCoupon.value = code;
           couponControllerText.text = code;
+          updateCartCount();
         }
 
         if (response.message != null) {
-          CustomSnackbars.showSuccess(
-            context,
-            response.message!,
-          ); // ✅ show message
+          CustomSnackbars.showSuccess(context, response.message!);
         }
       }
+    } on OperationException catch (e) {
+      // Handle GraphQL exceptions explicitly
+      debugPrint("[applyCoupon] GraphQL Error: ${e.graphqlErrors}");
+
+      String message = "Something went wrong";
+      if (e.graphqlErrors.isNotEmpty) {
+        final errorMsg = e.graphqlErrors.first.message.toLowerCase();
+        if (errorMsg.contains("already been applied")) {
+          message = "Coupon already applied";
+        } else if (errorMsg.contains(
+          "cannot be applied because it does not exist",
+        )) {
+          message = "Coupon is invalid";
+        } else if (errorMsg.contains("has expired")) {
+          message = "Coupon is expired";
+        } else {
+          message = e.graphqlErrors.first.message
+              .replaceAll("&quot;", '"')
+              .replaceAll("&amp;", "&");
+        }
+      }
+
+      // Reset applied coupon safely
+      appliedCoupon.value = null;
+      couponControllerText.clear();
+
+      // Show snackbar
+      CustomSnackbars.showError(context, message);
     } catch (e) {
       errorMessage.value = e.toString();
-      CustomSnackbars.showError(context, "Something went wrong");
+      debugPrint(e.toString());
+
+      String message = "Something went wrong";
+      if (e.toString().contains("already been applied")) {
+        message = "Coupon already applied";
+      } else if (e.toString().contains(
+        "cannot be applied because it does not exist",
+      )) {
+        message = "Coupon is invalid";
+      }
+
+      CustomSnackbars.showError(context, message);
+      appliedCoupon.value = null;
     } finally {
       isUpdatingCart.value = false;
     }
@@ -211,6 +352,7 @@ class CartController extends GetxController {
         if (response.message != null) {
           CustomSnackbars.showSuccess(context, response.message!);
         }
+        // await fetchCartItems();
       }
     } catch (e) {
       errorMessage.value = e.toString();
@@ -222,14 +364,14 @@ class CartController extends GetxController {
 
   Future<void> fetchAvailableShippingMethod() async {
     try {
-      isLoading.value = true;
+      isShippingLoading.value = true;
       errorMessage.value = '';
       final result = await _repo.getAvailableShippingMethod();
       shippingMethod.assignAll(result);
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isShippingLoading.value = false;
     }
   }
 }

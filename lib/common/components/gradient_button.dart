@@ -5,7 +5,12 @@ import '../../constants/app_colors.dart';
 class GradientButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
-  const GradientButton({required this.text, required this.onPressed});
+  final bool isLoading;
+  const GradientButton({
+    required this.text,
+    required this.onPressed,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +24,7 @@ class GradientButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -27,13 +32,23 @@ class GradientButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: FittedBox(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: AppColors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child:
+              isLoading
+                  ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                  : Text(
+                    text,
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
         ),
       ),
     );

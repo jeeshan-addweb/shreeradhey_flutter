@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
 import '../../../common/components/product_shimmer.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
+import '../../../utils/routes/app_route_path.dart';
 import '../controller/shop_controller.dart';
 
 class ShopPage extends StatefulWidget {
-  const ShopPage({super.key});
+  int selectedIndex;
+  ShopPage({super.key, this.selectedIndex = 0});
 
   @override
   State<ShopPage> createState() => _ShopPageState();
@@ -17,7 +20,7 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   final ShopController controller = Get.put(ShopController());
-  int selectedIndex = 0;
+  // int selectedIndex = 0;
 
   final List<Map<String, String>> categories = [
     {"title": "All", "image": AppImages.shree},
@@ -32,7 +35,8 @@ class _ShopPageState extends State<ShopPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchProducts("All");
+      final categoryTitle = categories[widget.selectedIndex]['title'] ?? 'All';
+      controller.fetchProducts(categoryTitle);
     });
   }
 
@@ -55,14 +59,19 @@ class _ShopPageState extends State<ShopPage> {
               separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final category = categories[index];
-                final bool isSelected = selectedIndex == index;
+                final bool isSelected = widget.selectedIndex == index;
 
                 return GestureDetector(
                   onTap: () {
+                    final selectedCategory = categories[index]['title']!;
+
                     setState(() {
-                      selectedIndex = index;
+                      widget.selectedIndex = index;
                       controller.fetchProducts(categories[index]['title']!);
                     });
+                    if (selectedCategory == "On Sale") {
+                      context.push(AppRoutePath.dealsScreen);
+                    }
                   },
                   child: Column(
                     children: [
@@ -111,53 +120,53 @@ class _ShopPageState extends State<ShopPage> {
               },
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // so text aligns like your design
-              children: [
-                Text(
-                  "SHOP",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "Home ",
-                        style: TextStyle(
-                          color: AppColors.grey_3C403D,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Home in black
-                      ),
-                      TextSpan(
-                        text: "/ ",
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Slash in black
-                      ),
-                      TextSpan(
-                        text: categories[selectedIndex]['title']!,
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Selected category in red
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          //   child: Column(
+          //     crossAxisAlignment:
+          //         CrossAxisAlignment.start, // so text aligns like your design
+          //     children: [
+          //       Text(
+          //         "SHOP",
+          //         style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          //       ),
+          //       RichText(
+          //         text: TextSpan(
+          //           style: const TextStyle(
+          //             fontSize: 16,
+          //             fontWeight: FontWeight.w500,
+          //           ),
+          //           children: [
+          //             TextSpan(
+          //               text: "Home ",
+          //               style: TextStyle(
+          //                 color: AppColors.grey_3C403D,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Home in black
+          //             ),
+          //             TextSpan(
+          //               text: "/ ",
+          //               style: TextStyle(
+          //                 color: AppColors.red_CC0003,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Slash in black
+          //             ),
+          //             TextSpan(
+          //               text: categories[selectedIndex]['title']!,
+          //               style: TextStyle(
+          //                 color: AppColors.red_CC0003,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Selected category in red
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           // SizedBox(height: 40),
           Obx(() {

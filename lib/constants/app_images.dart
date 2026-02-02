@@ -2,6 +2,8 @@ class AppImages {
   // Login
   static String no_result = "assets/images/no_result.gif";
   static String login_bg = "assets/images/login_bg.png";
+  static String empty_cart = "assets/images/empty_cart.png";
+  static String empty_wishlist = "assets/images/empty_wishlist.jpg";
 
   // Guests
   static String phone = "assets/icons/phone.png";
@@ -10,6 +12,8 @@ class AppImages {
   static String instagram = "assets/icons/instagram.png";
   static String facebook = "assets/icons/facebook.png";
   static String twitter = "assets/icons/twitter.png";
+  static String whatsapp = "assets/icons/whatsapp.png";
+  static String email = "assets/icons/email.png";
 
   // Botoom nav bar
   static String home = "assets/icons/home.png";

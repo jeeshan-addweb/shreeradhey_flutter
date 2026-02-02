@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/common_textfield.dart';
 import '../../../common/components/gradient_button.dart';
 import '../../../constants/app_colors.dart';
+import '../controller/footer_controller.dart';
 
 class DealershipFormScreen extends StatefulWidget {
   const DealershipFormScreen({super.key});
@@ -13,6 +15,7 @@ class DealershipFormScreen extends StatefulWidget {
 }
 
 class _DealershipFormScreenState extends State<DealershipFormScreen> {
+  final FooterController footerController = Get.put(FooterController());
   final _formKey = GlobalKey<FormState>();
 
   // Controllers
@@ -51,7 +54,6 @@ class _DealershipFormScreenState extends State<DealershipFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Heading
                     const Text(
                       "We are welcoming Dealers from all over the Globe",
                       textAlign: TextAlign.center,
@@ -70,23 +72,43 @@ class _DealershipFormScreenState extends State<DealershipFormScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    /// Basic Details
                     CommonLabeledTextField(
                       hint: "",
-                      label: "Name of Firm*",
+                      label: "Name of Firm",
                       controller: nameOfFirmController,
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Name of Firm is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
                       hint: "",
-                      label: "GST No.* (required)",
+                      label: "GST No. (required)",
                       controller: gstController,
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "GST No. is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
-                      label: "Address Line1*",
+                      label: "Address Line1",
                       controller: address1Controller,
                       hint: '',
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Address Line1 is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
@@ -96,54 +118,112 @@ class _DealershipFormScreenState extends State<DealershipFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
-                      label: "City*",
+                      label: "City",
                       controller: cityController,
                       hint: '',
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "City is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
                       label: "Pin Code",
                       hint: '',
                       controller: pinCodeController,
+                      keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
                       hint: '',
-                      label: "Country*",
+                      label: "Country",
                       controller: countryController,
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Country is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
                       hint: '',
                       label: "Name of Proprietor/Authorised Signatory*",
                       controller: proprietorController,
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Name of Proprietor is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
-                      hint: '',
-                      label: "Mobile Number*",
+                      label: "Mobile Number",
+                      hint: "",
                       controller: mobileController,
+                      isRequired: true,
                       keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty)
+                          return "Phone is required";
+                        if (!RegExp(r'^[0-9]{10}$').hasMatch(value))
+                          return "Enter a valid 10-digit phone number";
+                        return null;
+                      },
                     ),
+
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
                       hint: '',
-                      label: "Contact Person*",
+                      label: "Contact Person",
                       controller: contactPersonController,
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Contact Person is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
                       label: "Contact Person Mobile Number",
+                      hint: "",
                       controller: contactPersonMobileController,
+                      isRequired: true,
                       keyboardType: TextInputType.phone,
-                      hint: '',
+                      validator: (value) {
+                        if (value == null || value.isEmpty)
+                          return "Phone is required";
+                        if (!RegExp(r'^[0-9]{10}$').hasMatch(value))
+                          return "Enter a valid 10-digit phone number";
+                        return null;
+                      },
                     ),
+
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
-                      hint: '',
-                      label: "Email Address*",
+                      label: "Email address",
+                      hint: "",
                       controller: emailController,
+                      isRequired: true,
                       keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty)
+                          return "Email is required";
+                        final emailRegex = RegExp(
+                          r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+                        );
+                        if (!emailRegex.hasMatch(value))
+                          return "Enter a valid email";
+                        return null;
+                      },
                     ),
 
                     const SizedBox(height: 20),
@@ -164,7 +244,6 @@ class _DealershipFormScreenState extends State<DealershipFormScreen> {
                       hint: '',
                     ),
 
-                    /// Nature of Business
                     const SizedBox(height: 12),
                     const Text("Nature of Business"),
                     Column(
@@ -208,9 +287,16 @@ class _DealershipFormScreenState extends State<DealershipFormScreen> {
 
                     CommonLabeledTextField(
                       hint: '',
-                      label: "Annual Turnover*",
+                      label: "Annual Turnover",
                       controller: turnoverController,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Annual Turnover is required";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CommonLabeledTextField(
@@ -220,7 +306,6 @@ class _DealershipFormScreenState extends State<DealershipFormScreen> {
                       hint: '',
                     ),
 
-                    /// Applying For
                     const SizedBox(height: 12),
                     const Text("Applying For"),
                     Row(
@@ -257,14 +342,84 @@ class _DealershipFormScreenState extends State<DealershipFormScreen> {
 
                     CommonLabeledTextField(
                       hint: '',
-                      label: "Area of Operation*",
+                      label: "Area of Operation",
                       controller: areaOfOperationController,
+                      isRequired: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Area of Operation is required";
+                        }
+                        return null;
+                      },
                     ),
 
                     const SizedBox(height: 24),
 
-                    /// Submit & Cancel Buttons
-                    GradientButton(text: "Submit", onPressed: () {}),
+                    Obx(() {
+                      return GradientButton(
+                        text: "Submit",
+                        isLoading: footerController.isLoading.value,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            footerController
+                                .submitDealer(
+                                  context: context,
+                                  firmName: nameOfFirmController.text.trim(),
+                                  gstNo: gstController.text.trim(),
+                                  addressLine1: address1Controller.text.trim(),
+                                  addressLine2: address2Controller.text.trim(),
+                                  city: cityController.text.trim(),
+                                  pinCode: pinCodeController.text.trim(),
+                                  country: countryController.text.trim(),
+                                  nameofProp: proprietorController.text.trim(),
+                                  mobileNumber: mobileController.text.trim(),
+                                  contactPersonName:
+                                      contactPersonController.text.trim(),
+                                  contactPersonMobile:
+                                      contactPersonMobileController.text.trim(),
+                                  emailAddress: emailController.text.trim(),
+                                  brandsAlreadySelling:
+                                      brandsController.text.trim(),
+                                  natureOfBusiness: natureOfBusiness,
+                                  annualTurnover:
+                                      turnoverController.text.trim(),
+                                  supplyPoints:
+                                      supplyPointsController.text.trim(),
+                                  applyingFor: applyingFor,
+                                  areaofOperation:
+                                      areaOfOperationController.text.trim(),
+                                )
+                                .then((_) {
+                                  nameOfFirmController.clear();
+                                  gstController.clear();
+                                  address1Controller.clear();
+                                  address2Controller.clear();
+                                  cityController.clear();
+                                  pinCodeController.clear();
+                                  countryController.clear();
+                                  proprietorController.clear();
+                                  mobileController.clear();
+                                  contactPersonController.clear();
+                                  contactPersonMobileController.clear();
+                                  emailController.clear();
+                                  brandsController.clear();
+                                  turnoverController.clear();
+                                  supplyPointsController.clear();
+                                  areaOfOperationController.clear();
+
+                                  setState(() {
+                                    natureOfBusiness =
+                                        "Counter Sale+distribution";
+                                    applyingFor = "Distribution";
+                                  });
+
+                                  // Reset form state
+                                  _formKey.currentState?.reset();
+                                });
+                          }
+                        },
+                      );
+                    }),
                   ],
                 ),
               ),

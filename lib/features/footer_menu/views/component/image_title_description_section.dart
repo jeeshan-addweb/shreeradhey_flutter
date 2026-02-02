@@ -22,7 +22,7 @@ class ImageTitleDescriptionSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(image, fit: BoxFit.contain),
+        Image.network(image, fit: BoxFit.contain, height: 100, width: 100),
         const SizedBox(height: 4),
         Text(
           title,

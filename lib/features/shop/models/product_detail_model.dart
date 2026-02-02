@@ -42,9 +42,11 @@ class Product {
   String? slug;
   String? description;
   String? shortDescription;
+  String? uri;
   String? type;
   String? productSubtitle;
   bool? isInWishlist;
+  bool? isInCart;
   String? price;
   String? regularPrice;
   String? salePrice;
@@ -79,9 +81,11 @@ class Product {
     this.slug,
     this.description,
     this.shortDescription,
+    this.uri,
     this.type,
     this.productSubtitle,
     this.isInWishlist,
+    this.isInCart,
     this.price,
     this.regularPrice,
     this.salePrice,
@@ -117,9 +121,11 @@ class Product {
     slug: json["slug"],
     description: json["description"],
     shortDescription: json["shortDescription"],
+    uri: json["uri"],
     type: json["type"],
     productSubtitle: json["productSubtitle"],
     isInWishlist: json["isInWishlist"],
+    isInCart: json["isInCart"],
     price: json["price"],
     regularPrice: json["regularPrice"],
     salePrice: json["salePrice"],
@@ -174,9 +180,11 @@ class Product {
     "slug": slug,
     "description": description,
     "shortDescription": shortDescription,
+    "uri": uri,
     "type": type,
     "productSubtitle": productSubtitle,
     "isInWishlist": isInWishlist,
+    "isInCart": isInCart,
     "price": price,
     "regularPrice": regularPrice,
     "salePrice": salePrice,
@@ -367,25 +375,93 @@ class RelatedNode {
   String? id;
   String? name;
   String? slug;
+  String? uri;
+  int? databaseId;
+  bool? isInWishlist;
+  bool? isInCart;
+  ProductCategories? productCategories;
+  ProductLabels? productLabels;
+  String? currencySymbol;
+  String? productSubtitle;
   String? price;
+  String? regularPrice;
+  String? salePrice;
+  String? bestPrice;
+  double? discountPercentage;
+  double? averageRating;
+  int? reviewCount;
   NodeImage? image;
 
-  RelatedNode({this.id, this.name, this.slug, this.price, this.image});
+  RelatedNode({
+    this.id,
+    this.name,
+    this.slug,
+    this.uri,
+    this.databaseId,
+    this.isInWishlist,
+    this.isInCart,
+    this.image,
+    this.productCategories,
+    this.productLabels,
+    this.currencySymbol,
+    this.productSubtitle,
+    this.price,
+    this.regularPrice,
+    this.salePrice,
+    this.bestPrice,
+    this.discountPercentage,
+    this.averageRating,
+    this.reviewCount,
+  });
 
   factory RelatedNode.fromJson(Map<String, dynamic> json) => RelatedNode(
     id: json["id"],
     name: json["name"],
     slug: json["slug"],
-    price: json["price"],
+    uri: json["uri"],
+    databaseId: json["databaseId"],
+    isInWishlist: json["isInWishlist"],
+    isInCart: json["isInCart"],
     image: json["image"] == null ? null : NodeImage.fromJson(json["image"]),
+    productCategories:
+        json["productCategories"] == null
+            ? null
+            : ProductCategories.fromJson(json["productCategories"]),
+    productLabels:
+        json["productLabels"] == null
+            ? null
+            : ProductLabels.fromJson(json["productLabels"]),
+    currencySymbol: json["currencySymbol"],
+    productSubtitle: json["productSubtitle"],
+    price: json["price"],
+    regularPrice: json["regularPrice"],
+    salePrice: json["salePrice"],
+    bestPrice: json["bestPrice"],
+    discountPercentage: json["discountPercentage"]?.toDouble(),
+    averageRating: json["averageRating"]?.toDouble(),
+    reviewCount: json["reviewCount"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
     "slug": slug,
-    "price": price,
+    "uri": uri,
+    "databaseId": databaseId,
+    "isInWishlist": isInWishlist,
+    "isInCart": isInCart,
     "image": image?.toJson(),
+    "productCategories": productCategories?.toJson(),
+    "productLabels": productLabels?.toJson(),
+    "currencySymbol": currencySymbol,
+    "productSubtitle": productSubtitle,
+    "price": price,
+    "regularPrice": regularPrice,
+    "salePrice": salePrice,
+    "bestPrice": bestPrice,
+    "discountPercentage": discountPercentage,
+    "averageRating": averageRating,
+    "reviewCount": reviewCount,
   };
 }
 

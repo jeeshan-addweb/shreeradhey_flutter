@@ -19,24 +19,32 @@ class AdditionalInfoWidget extends StatelessWidget {
         ),
         childrenPadding: const EdgeInsets.all(12),
         children: [
-          Table(
-            columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(3)},
-            border: TableBorder(
-              horizontalInside: BorderSide(
-                color: Colors.grey.shade300,
-                width: 1,
+          attributes.isEmpty
+              ? Center(
+                child: Text("No additional info available for this product"),
+              )
+              : Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(2),
+                  1: FlexColumnWidth(3),
+                },
+                border: TableBorder(
+                  horizontalInside: BorderSide(
+                    color: Colors.grey.shade300,
+                    width: 1,
+                  ),
+                ),
+                children:
+                    attributes.map((attr) {
+                      final key = attr["label"] ?? attr["name"] ?? "";
+                      final value =
+                          (attr["options"] != null &&
+                                  attr["options"].isNotEmpty)
+                              ? (attr["options"] as List).join(", ")
+                              : "";
+                      return _buildTableRow(key, value);
+                    }).toList(),
               ),
-            ),
-            children:
-                attributes.map((attr) {
-                  final key = attr["label"] ?? attr["name"] ?? "";
-                  final value =
-                      (attr["options"] != null && attr["options"].isNotEmpty)
-                          ? (attr["options"] as List).join(", ")
-                          : "";
-                  return _buildTableRow(key, value);
-                }).toList(),
-          ),
         ],
       ),
     );

@@ -7,6 +7,7 @@ import '../../../common/components/custom_snackbar.dart';
 import '../models/api_product_model.dart';
 import '../models/product_detail_model.dart';
 import '../repo/shop_repo.dart';
+import 'product_variant_controller.dart';
 
 class ShopController extends GetxController {
   final ShopRepo _repo = ShopRepo();
@@ -16,6 +17,7 @@ class ShopController extends GetxController {
   var error = "".obs;
 
   var isDetailLoading = false.obs;
+  var isVariantLoading = false.obs;
   var productDetail = Rxn<ProductDetailModel>();
 
   var reviews = <NodeElement>[].obs;
@@ -24,6 +26,13 @@ class ShopController extends GetxController {
   var reviewCursor = "".obs;
 
   var isSubmitting = false.obs;
+
+  var deliveryData = Rxn<Map<String, dynamic>>();
+  void resetDelivery() {
+    deliveryData.value = null;
+    error.value = "";
+    isLoading.value = false;
+  }
 
   Future<void> fetchProducts(String category) async {
     try {
@@ -50,6 +59,9 @@ class ShopController extends GetxController {
         case "On Sale":
           apiData = await _repo.getOnSaleProducts();
           break;
+        case "Best Seller":
+          apiData = await _repo.getBestSellerProducts();
+          break;
       }
 
       products.assignAll(apiData.map((e) => e.toUiModel()).toList());
@@ -62,16 +74,21 @@ class ShopController extends GetxController {
 
   Future<void> fetchProductDetail(BuildContext context, String slug) async {
     try {
-      isDetailLoading.value = true;
-      productDetail.value = await _repo.getProductDetail(slug);
-      debugPrint("detail : ${productDetail.value?.data?.toJson()}");
-      //  = detail;
-    } catch (e) {
-      debugPrint("product detail error");
-      CustomSnackbars.showError(context, "Something went wrong: $e");
-      debugPrint("product detail error IS $e");
+      isVariantLoading.value = true;
+      isLoading.value = true;
+      final detail = await _repo.getProductDetail(slug);
+      productDetail.value = detail;
+
+      final variants = Get.find<ProductVariantController>().productVariants;
+      final index = variants.indexWhere(
+        (v) => v.slug == detail.data?.product?.slug,
+      );
+      if (index != -1) {
+        Get.find<ProductVariantController>().setSelectedVariant(index);
+      }
     } finally {
-      isDetailLoading.value = false;
+      isLoading.value = false;
+      isVariantLoading.value = false;
     }
   }
 
@@ -92,7 +109,6 @@ class ShopController extends GetxController {
 
       reviews.addAll(result);
 
-      // handle pagination
       final pageInfo = result.isNotEmpty ? result.last : null;
     } catch (e) {
       print("Review fetch error: $e");
@@ -131,6 +147,21 @@ class ShopController extends GetxController {
       debugPrint("Error $e");
     } finally {
       isSubmitting.value = false;
+    }
+  }
+
+  Future<void> checkDelivery(int postcode) async {
+    try {
+      isLoading.value = true;
+      error.value = "";
+      deliveryData.value = null;
+
+      final data = await _repo.getDeliveryEstimate(postcode);
+      deliveryData.value = data;
+    } catch (e) {
+      error.value = e.toString().replaceAll("Exception:", "").trim();
+    } finally {
+      isLoading.value = false;
     }
   }
 }

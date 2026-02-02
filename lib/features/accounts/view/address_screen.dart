@@ -27,6 +27,7 @@ class _AddressScreenState extends State<AddressScreen> {
   String? selectedAddressType;
   String? selectedCountry;
   String? selectedState;
+  int? _editingAddressId;
 
   // controllers
   final addressLabelCtrl = TextEditingController();
@@ -84,7 +85,6 @@ class _AddressScreenState extends State<AddressScreen> {
               ),
             ),
 
-            // address list
             Obx(() {
               if (_accountController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
@@ -113,24 +113,46 @@ class _AddressScreenState extends State<AddressScreen> {
                       pinCode: addr.postcode ?? "",
                       isDefault: addr.isDefault == 1,
                     ),
-                    // onEdit: () => _editAddress(index, addr),
-                    onDelete: () async {
-                      if (mounted) {
-                        // check if widget is still in the tree
-                        await _accountController.deleteAddress(
-                          addr.id!,
-                          int.parse(
-                            _authController.userData['id'].toString(),
-                          ), // convert to int
-                          context,
-                        );
-                      }
+                    onEdit: () {
+                      setState(() {
+                        _showForm = true;
+
+                        // Pre-fill controllers
+                        addressLabelCtrl.text = addr.addressLabel ?? "";
+                        firstNameCtrl.text = addr.firstName ?? "";
+                        lastNameCtrl.text = addr.lastName ?? "";
+                        phoneCtrl.text = addr.phone ?? "";
+                        emailCtrl.text = addr.email ?? "";
+                        companyCtrl.text = addr.company ?? "";
+                        addressLine1Ctrl.text = addr.address1 ?? "";
+                        addressLine2Ctrl.text = addr.address2 ?? "";
+                        cityCtrl.text = addr.city ?? "";
+                        postcodeCtrl.text = addr.postcode ?? "";
+
+                        selectedAddressType = addr.addressType ?? "Shipping";
+                        selectedCountry =
+                            addr.country == "IN" ? "India" : "USA";
+                        selectedState = addr.state ?? "Gujarat";
+
+                        _editingAddressId = addr.id;
+                      });
                     },
-                    // onSetDefault: () => _setDefaultAddress(index),
+
+                    onDelete: () async {
+                      await _accountController.deleteAddress(
+                        addr.id!,
+                        int.parse(_authController.userId.toString()),
+                        context,
+                      );
+                    },
+                    onSetDefault: () async {
+                      await _accountController.setDefaultAddress(addr, context);
+                    },
                   );
                 },
               );
             }),
+            const SizedBox(height: 40),
             const CommonFooter(),
           ],
         ),
@@ -146,7 +168,7 @@ class _AddressScreenState extends State<AddressScreen> {
           label: "Address Type",
           hintText: "Select address type",
           items: const ["Shipping", "Billing"],
-          initialValue: selectedAddressType,
+          value: selectedAddressType,
           onChanged: (val) => setState(() => selectedAddressType = val),
           validator: (_) => null,
         ),
@@ -156,7 +178,6 @@ class _AddressScreenState extends State<AddressScreen> {
           label: "Address Label",
           hint: "e.g. Home / Office",
           controller: addressLabelCtrl,
-          isRequired: true,
         ),
         const SizedBox(height: 16),
 
@@ -168,6 +189,12 @@ class _AddressScreenState extends State<AddressScreen> {
                 hint: "Enter first name",
                 controller: firstNameCtrl,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "First Name is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -177,6 +204,12 @@ class _AddressScreenState extends State<AddressScreen> {
                 hint: "Enter last name",
                 controller: lastNameCtrl,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Last Name is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
@@ -189,6 +222,14 @@ class _AddressScreenState extends State<AddressScreen> {
           controller: phoneCtrl,
           isRequired: true,
           keyboardType: TextInputType.phone,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return "Please enter phone number";
+            } else if (!RegExp(r'^\d{10}$').hasMatch(value.trim())) {
+              return "Enter a valid 10-digit phone number";
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 16),
 
@@ -197,6 +238,15 @@ class _AddressScreenState extends State<AddressScreen> {
           hint: "Enter email address",
           controller: emailCtrl,
           keyboardType: TextInputType.emailAddress,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Email is required";
+            }
+            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+              return "Enter valid email";
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 16),
 
@@ -210,8 +260,8 @@ class _AddressScreenState extends State<AddressScreen> {
         CustomDropdown(
           label: "Country",
           hintText: "Select country",
-          items: const ["India", "USA", "UK"],
-          initialValue: selectedCountry,
+          items: ["IN", "US", "UK"],
+          value: selectedCountry,
           onChanged: (val) => setState(() => selectedCountry = val),
           validator: (_) => null,
         ),
@@ -220,8 +270,8 @@ class _AddressScreenState extends State<AddressScreen> {
         CustomDropdown(
           label: "State",
           hintText: "Select state",
-          items: const ["Gujarat", "Maharashtra", "Rajasthan"],
-          initialValue: selectedState,
+          items: ["Gujarat", "Maharashtra", "Delhi", "Rajasthan"],
+          value: selectedState,
           onChanged: (val) => setState(() => selectedState = val),
           validator: (_) => null,
         ),
@@ -232,6 +282,12 @@ class _AddressScreenState extends State<AddressScreen> {
           hint: "House number and street name",
           controller: addressLine1Ctrl,
           isRequired: true,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Address Line 1 is required";
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 16),
 
@@ -250,6 +306,12 @@ class _AddressScreenState extends State<AddressScreen> {
                 hint: "Enter city",
                 controller: cityCtrl,
                 isRequired: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "City is required";
+                  }
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -260,89 +322,60 @@ class _AddressScreenState extends State<AddressScreen> {
                 controller: postcodeCtrl,
                 isRequired: true,
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Postcode is required";
+                  }
+                  return null;
+                },
               ),
             ),
           ],
         ),
         const SizedBox(height: 20),
 
-        // Row(
-        //   children: [
-        //     Expanded(
-        //       child: GradientButton(
-        //         text: 'Save address',
-        //         onPressed: _saveAddress,
-        //       ),
-        //     ),
-        //     const SizedBox(width: 12),
-        //     Expanded(
-        //       child: GradientButton(text: 'Cancel', onPressed: _cancelForm),
-        //     ),
-        //   ],
-        // ),
+        Row(
+          children: [
+            Expanded(
+              child: GradientButton(
+                text: 'Save address',
+                onPressed: () {
+                  final newAddress = {
+                    "id": _editingAddressId,
+                    "address_type": (selectedAddressType ?? "Shipping"),
+                    "address_label": addressLabelCtrl.text.trim(),
+                    "first_name": firstNameCtrl.text.trim(),
+                    "last_name": lastNameCtrl.text.trim(),
+                    "company": companyCtrl.text.trim(),
+                    "country":
+                        (selectedCountry ?? "India")
+                            .substring(0, 2)
+                            .toUpperCase(), // e.g. IN
+                    "address_1": addressLine1Ctrl.text.trim(),
+                    "address_2": addressLine2Ctrl.text.trim(),
+                    "city": cityCtrl.text.trim(),
+                    "state": (selectedState ?? "").toUpperCase(), // e.g. GJ
+                    "postcode": postcodeCtrl.text.trim(),
+                    "phone": phoneCtrl.text.trim(),
+                    "email": emailCtrl.text.trim(),
+                    "is_default": 0,
+                  };
+                  _accountController.saveOrUpdateAddress(newAddress, context);
+                  _cancelForm();
+                  _editingAddressId = null;
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: GradientButton(text: 'Cancel', onPressed: _cancelForm),
+            ),
+          ],
+        ),
         const SizedBox(height: 40),
       ],
     );
   }
-
-  // // --- CRUD actions ---
-  // void _saveAddress() {
-  //   if ((firstNameCtrl.text).trim().isEmpty ||
-  //       (lastNameCtrl.text).trim().isEmpty ||
-  //       (addressLine1Ctrl.text).trim().isEmpty ||
-  //       (cityCtrl.text).trim().isEmpty ||
-  //       (postcodeCtrl.text).trim().isEmpty ||
-  //       selectedAddressType == null ||
-  //       selectedCountry == null ||
-  //       selectedState == null) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Please fill all required fields.')),
-  //     );
-  //     return;
-  //   }
-
-  //   final newAddress = AddressModel(
-  //     pinCode: postcodeCtrl.text,
-  //     name: "${firstNameCtrl.text} ${lastNameCtrl.text}",
-
-  //     addressLine1: addressLine1Ctrl.text,
-  //     addressLine2: addressLine2Ctrl.text,
-  //     city: cityCtrl.text,
-
-  //     type: selectedAddressType!,
-  //   );
-
-  //   setState(() {
-  //     _addresses.add(newAddress);
-  //   });
-
-  //   ScaffoldMessenger.of(
-  //     context,
-  //   ).showSnackBar(const SnackBar(content: Text('Address saved')));
-  //   _cancelForm();
-  // }
-
-  // void _editAddress(int index, AddressModel addr) {
-  //   // TODO: prefill controllers with addr and set _showForm = true
-  //   ScaffoldMessenger.of(
-  //     context,
-  //   ).showSnackBar(const SnackBar(content: Text('Edit not implemented yet')));
-  // }
-
-  // void _deleteAddress(int index) {
-  //   setState(() {
-  //     _addresses.removeAt(index);
-  //   });
-  //   ScaffoldMessenger.of(
-  //     context,
-  //   ).showSnackBar(const SnackBar(content: Text('Address deleted')));
-  // }
-
-  // void _setDefaultAddress(int index) {
-  //   setState(() {
-  //     print("done");
-  //   });
-  // }
 
   void _cancelForm() {
     addressLabelCtrl.clear();

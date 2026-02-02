@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shree_radhey/utils/routes/app_route_path.dart';
 
 import '../../constants/app_colors.dart';
+import '../../features/auth/controller/auth_controller.dart';
 import '../../features/cart/controller/cart_controller.dart';
 import '../../features/home/controller/wishlist_controller.dart';
 import '../model/ui_product_model.dart';
@@ -20,6 +21,7 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   final cartController = Get.find<CartController>();
+  final auth = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     final WishlistController wishlistController = Get.put(WishlistController());
@@ -31,7 +33,7 @@ class _ProductCardState extends State<ProductCard> {
           AppRoutePath.productDetail,
           // pathParameters: {'slug': widget.model.slug ?? ""},
           extra: {
-            'hideNav': true,
+            'hideNav': false,
             'slug': widget.model.slug,
             'category': widget.model.category,
           },
@@ -143,32 +145,53 @@ class _ProductCardState extends State<ProductCard> {
                           // widget.model.tagText,
                           widget.model.productLabels.isNotEmpty
                               ? widget.model.productLabels.first
-                              : "No Label", // fallback empty
+                              : "",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        Container(width: 1, height: 14, color: Colors.white),
-                        const SizedBox(width: 4),
+                        widget.model.productLabels.isNotEmpty
+                            ? const SizedBox(width: 4)
+                            : SizedBox(),
+                        widget.model.productLabels.isNotEmpty
+                            ? Container(
+                              width: 1,
+                              height: 14,
+                              color: Colors.white,
+                            )
+                            : SizedBox(),
+                        widget.model.productLabels.isNotEmpty
+                            ? const SizedBox(width: 4)
+                            : SizedBox(),
 
                         GestureDetector(
                           onTap: () async {
+                            // if (auth.isGuest) {
+                            //   CustomSnackbars.showError(
+                            //     context,
+                            //     "Login Required ! Please login to add items to wishlist.",
+                            //   );
+
+                            //   // Navigate to login with go_router
+                            //   context.push(AppRoutePath.login);
+                            //   return;
+                            // }
+
                             final response = await wishlistController
                                 .toggleWishlist(widget.model.productId);
-                            if (response["success"] == true) {
-                              CustomSnackbars.showSuccess(
-                                context,
-                                response["message"],
-                              );
-                            } else {
-                              CustomSnackbars.showError(
-                                context,
-                                response["message"],
-                              );
-                            }
+                            // if (response["success"] == true) {
+                            //   CustomSnackbars.showSuccess(
+                            //     context,
+                            //     response["message"],
+                            //   );
+                            // } else {
+                            //   CustomSnackbars.showError(
+                            //     context,
+                            //     response["message"],
+                            //   );
+                            // }
                           },
                           child: Obx(() {
                             final isWishlisted =
@@ -220,19 +243,7 @@ class _ProductCardState extends State<ProductCard> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Row(
                 children: [
-                  Icon(Icons.star, color: AppColors.orange_f29102, size: 18),
-                  Icon(Icons.star, color: AppColors.orange_f29102, size: 18),
-                  Icon(Icons.star, color: AppColors.orange_f29102, size: 18),
-                  Icon(
-                    Icons.star_half,
-                    color: AppColors.orange_f29102,
-                    size: 18,
-                  ),
-                  Icon(
-                    Icons.star_border,
-                    color: AppColors.orange_f29102,
-                    size: 18,
-                  ),
+                  ..._buildStarRating(widget.model.rating ?? 0.0),
                   const SizedBox(width: 4),
                   Text(
                     '${widget.model.rating} | ${widget.model.reviewCount} Reviews',
@@ -247,8 +258,7 @@ class _ProductCardState extends State<ProductCard> {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
                   Text(
                     '${widget.model.currencySymbol}${widget.model.price}',
@@ -258,7 +268,7 @@ class _ProductCardState extends State<ProductCard> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(width: 5),
                   Text(
                     '${widget.model.currencySymbol}${widget.model.oldPrice}',
                     style: TextStyle(
@@ -267,30 +277,32 @@ class _ProductCardState extends State<ProductCard> {
                       color: AppColors.grey_212121,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Best Price ${widget.model.currencySymbol}${widget.model.couponPrice}',
-                          style: TextStyle(
-                            color: AppColors.green_327801,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'with coupon',
-                          style: TextStyle(
-                            color: AppColors.grey_212121,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: FittedBox(
+                child: Row(
+                  children: [
+                    Text(
+                      'Best Price ${widget.model.currencySymbol}${widget.model.couponPrice}',
+                      style: TextStyle(
+                        color: AppColors.green_327801,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'with coupon',
+                      style: TextStyle(
+                        color: AppColors.grey_212121,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -302,20 +314,21 @@ class _ProductCardState extends State<ProductCard> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (widget.model.isInCart.value) {
-                      // Navigate to cart page
+                    final inCart = cartController.isInCart(
+                      widget.model.productId,
+                    );
+
+                    if (inCart) {
                       context.go(AppRoutePath.cartPage);
                     } else {
-                      // Add to cart
                       cartController.addProductToCart(
                         widget.model.productId,
                         1,
                         context,
                       );
-
-                      widget.model.isInCart.value = true;
                     }
                   },
+
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
@@ -353,6 +366,20 @@ class _ProductCardState extends State<ProductCard> {
                                 .model
                                 .productId] ??
                             false;
+                        final inCart =
+                            cartController
+                                .cart
+                                .value
+                                ?.data
+                                ?.cart
+                                ?.contents
+                                ?.nodes
+                                ?.any(
+                                  (node) =>
+                                      node.product?.node?.databaseId ==
+                                      widget.model.productId,
+                                ) ??
+                            false;
 
                         if (isAdding) {
                           return const SizedBox(
@@ -369,9 +396,7 @@ class _ProductCardState extends State<ProductCard> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                widget.model.isInCart.value
-                                    ? 'View My Cart'
-                                    : 'Add to Cart',
+                                inCart ? 'View My Cart' : 'Add to Cart',
                                 style: TextStyle(
                                   color: AppColors.white,
                                   fontSize: 16,
@@ -437,6 +462,30 @@ class _ProductCardState extends State<ProductCard> {
       ),
     );
   }
+}
+
+List<Widget> _buildStarRating(double rating) {
+  const maxStars = 5;
+  List<Widget> stars = [];
+
+  for (int i = 1; i <= maxStars; i++) {
+    if (i <= rating.floor()) {
+      // Full star
+      stars.add(Icon(Icons.star, color: AppColors.orange_f29102, size: 18));
+    } else if (i - rating <= 0.5) {
+      // Half star
+      stars.add(
+        Icon(Icons.star_half, color: AppColors.orange_f29102, size: 18),
+      );
+    } else {
+      // Empty star
+      stars.add(
+        Icon(Icons.star_border, color: AppColors.orange_f29102, size: 18),
+      );
+    }
+  }
+
+  return stars;
 }
 
 class SaveTagClipper extends CustomClipper<Path> {

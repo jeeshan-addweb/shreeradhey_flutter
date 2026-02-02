@@ -5,7 +5,7 @@ class CustomDropdown extends StatefulWidget {
   final String label;
   final String hintText;
   final List<String> items;
-  final String? initialValue;
+  final String? value;
   final void Function(String?) onChanged;
   final bool useDefaultHeight;
 
@@ -16,7 +16,7 @@ class CustomDropdown extends StatefulWidget {
     required this.items,
     required this.onChanged,
     this.useDefaultHeight = false,
-    this.initialValue,
+    this.value,
     required String? Function(dynamic value) validator,
   });
 
@@ -27,11 +27,11 @@ class CustomDropdown extends StatefulWidget {
 class _CustomDropdownState extends State<CustomDropdown> {
   String? selected;
 
-  @override
-  void initState() {
-    super.initState();
-    selected = widget.initialValue;
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   selected = widget.initialValue;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,8 @@ class _CustomDropdownState extends State<CustomDropdown> {
             SizedBox(
               height: widget.useDefaultHeight ? null : 47,
               child: DropdownButtonFormField<String>(
-                value: selected,
+                value:
+                    widget.items.contains(widget.value) ? widget.value : null,
                 isExpanded: true,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
@@ -89,7 +90,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
                   fontWeight: FontWeight.w500,
                 ),
                 items:
-                    widget.items.map((item) {
+                    widget.items.toSet().map((item) {
                       return DropdownMenuItem<String>(
                         value: item,
                         child: Text(

@@ -83,7 +83,7 @@ class _ProductSectionState extends State<ProductSection> {
 
   @override
   Widget build(BuildContext context) {
-    final cardHeight = MediaQuery.of(context).size.width * 1.4;
+    final cardHeight = MediaQuery.of(context).size.width * 1.3;
     return Container(
       color: widget.sectionBgColor,
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -155,14 +155,14 @@ class _ProductSectionState extends State<ProductSection> {
           const SizedBox(height: 20),
 
           // Scroll Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildArrowButton(Icons.arrow_back_ios, isAtStart, scrollLeft),
-              const SizedBox(width: 16),
-              _buildArrowButton(Icons.arrow_forward_ios, isAtEnd, scrollRight),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     _buildArrowButton(Icons.arrow_back_ios, isAtStart, scrollLeft),
+          //     const SizedBox(width: 16),
+          //     _buildArrowButton(Icons.arrow_forward_ios, isAtEnd, scrollRight),
+          //   ],
+          // ),
         ],
       ),
     );

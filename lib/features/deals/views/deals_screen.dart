@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shree_radhey/utils/routes/app_route_path.dart';
 
 import '../../../common/components/common_footer.dart';
 import '../../../common/components/product_card.dart';
@@ -80,12 +82,17 @@ class _DealsScreenState extends State<DealsScreen> {
 
                 return GestureDetector(
                   onTap: () {
+                    final selectedCategory = categories[index]['title']!;
+
                     setState(() {
                       selectedIndex = index;
                       _scrollToSelected();
                       controller.fetchProducts(categories[index]['title']!);
                       // Trigger product list update here
                     });
+                    if (selectedCategory != "On Sale") {
+                      context.push(AppRoutePath.shopScreen, extra: index);
+                    }
                   },
                   child: Column(
                     children: [
@@ -134,53 +141,53 @@ class _DealsScreenState extends State<DealsScreen> {
               },
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // so text aligns like your design
-              children: [
-                Text(
-                  "SHOP",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "Home ",
-                        style: TextStyle(
-                          color: AppColors.grey_3C403D,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Home in black
-                      ),
-                      TextSpan(
-                        text: "/ ",
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Slash in black
-                      ),
-                      TextSpan(
-                        text: categories[selectedIndex]['title']!,
-                        style: TextStyle(
-                          color: AppColors.red_CC0003,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ), // Selected category in red
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          //   child: Column(
+          //     crossAxisAlignment:
+          //         CrossAxisAlignment.start, // so text aligns like your design
+          //     children: [
+          //       Text(
+          //         "SHOP",
+          //         style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          //       ),
+          //       RichText(
+          //         text: TextSpan(
+          //           style: const TextStyle(
+          //             fontSize: 16,
+          //             fontWeight: FontWeight.w500,
+          //           ),
+          //           children: [
+          //             TextSpan(
+          //               text: "Home ",
+          //               style: TextStyle(
+          //                 color: AppColors.grey_3C403D,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Home in black
+          //             ),
+          //             TextSpan(
+          //               text: "/ ",
+          //               style: TextStyle(
+          //                 color: AppColors.red_CC0003,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Slash in black
+          //             ),
+          //             TextSpan(
+          //               text: categories[selectedIndex]['title']!,
+          //               style: TextStyle(
+          //                 color: AppColors.red_CC0003,
+          //                 fontSize: 16,
+          //                 fontWeight: FontWeight.bold,
+          //               ), // Selected category in red
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           // SizedBox(height: 40),
           Obx(() {

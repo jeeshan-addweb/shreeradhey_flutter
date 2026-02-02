@@ -21,7 +21,9 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
-    accountController.fetchOrders();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      accountController.fetchOrders();
+    });
   }
 
   @override
@@ -29,11 +31,7 @@ class _OrderPageState extends State<OrderPage> {
     return Scaffold(
       body: Obx(() {
         if (accountController.isLoading.value) {
-          return ListView.builder(
-            itemBuilder: (context, index) {
-              return ProductCardShimmer(height: 30);
-            },
-          );
+          return ProductCardShimmer();
         }
 
         if (accountController.errorMessage.isNotEmpty) {
@@ -51,12 +49,18 @@ class _OrderPageState extends State<OrderPage> {
               return OrderCard(
                 order: order,
                 onView: () {
+                  debugPrint("Id is ${order.databaseId.toString()}");
                   context.push(
                     AppRoutePath.orderDetailScreen,
-                    extra: order.databaseId,
+                    extra: order.databaseId.toString(),
                   );
                 },
-                onInvoice: () {},
+                onInvoice: () {
+                  accountController.generateAndOpenInvoice(
+                    order.databaseId ?? 0,
+                    context,
+                  );
+                },
               );
             }).toList(),
             const SizedBox(height: 40),

@@ -6,6 +6,7 @@ import 'package:shree_radhey/features/accounts/model/order_history_model.dart';
 import '../../../data/network/api_client.dart';
 import '../model/create_order_model.dart';
 import '../model/order_detail_model.dart';
+import '../model/payment_gateway_model.dart';
 
 class AccountRepo {
   final _client = ApiClient().graphQLClient;
@@ -95,7 +96,7 @@ class AccountRepo {
     return Orders.fromJson(data['customer']['orders']);
   }
 
-  Future<OrderDetailModel> getOrderDetail(int orderId) async {
+  Future<OrderDetailModel> getOrderDetail(String orderId) async {
     const query = r'''
 query GetOrderDetails($orderId: ID!) {
   order(id: $orderId, idType: DATABASE_ID) {
@@ -157,15 +158,16 @@ query GetOrderDetails($orderId: ID!) {
     final result = await _client.query(
       QueryOptions(
         document: gql(query),
-        variables: {"orderId": orderId},
+        variables: {"orderId": orderId.toString()},
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
 
     if (result.hasException) {
+      print("ORDER DETAIL EXCEPTION: ${result.exception}");
       throw Exception(result.exception.toString());
     }
-
+    print("ORDER DETAIL RESPONSE: ${result.data}");
     return OrderDetailModel.fromJson({"data": result.data});
   }
 
@@ -192,9 +194,15 @@ query GetOrderDetails($orderId: ID!) {
         }
       }
     ''';
+    debugPrint('[Account repo ] checkout - starting query...');
+    final stopwatch = Stopwatch()..start();
 
     final result = await _client.mutate(
       MutationOptions(document: gql(mutation), variables: {"input": input}),
+    );
+
+    debugPrint(
+      '[Account repo] checkout - completed in ${stopwatch.elapsedMilliseconds} ms',
     );
 
     if (result.hasException) {
@@ -202,6 +210,44 @@ query GetOrderDetails($orderId: ID!) {
     }
 
     return CreateOrderModel.fromJson(result.data!['createOrder']);
+  }
+
+  Future<Map<String, dynamic>> saveAddress(Map<String, dynamic> address) async {
+    const String mutation = r'''
+      mutation SaveAddress($address: AddressInput!) {
+        saveAddress(input: { address: $address }) {
+          success
+          message
+          address {
+          id
+            address_type
+            address_label
+            first_name
+            last_name
+            company
+            country
+            address_1
+            address_2
+            city
+            state
+            postcode
+            phone
+            email
+            is_default
+          }
+        }
+      }
+    ''';
+
+    final result = await _client.mutate(
+      MutationOptions(document: gql(mutation), variables: {"address": address}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['saveAddress'] ?? {};
   }
 
   Future<GetAddressModel?> fetchCustomerAddresses() async {
@@ -260,5 +306,134 @@ query GetOrderDetails($orderId: ID!) {
 
     if (result.hasException) throw Exception(result.exception.toString());
     return result.data?['deleteAddress'] ?? {};
+  }
+
+  Future<Map<String, dynamic>?> updateCustomer({
+    required String firstName,
+    required String lastName,
+    required String displayName,
+    required String email,
+  }) async {
+    const String mutation = r'''
+    mutation UpdateFullCustomer($input: UpdateFullCustomerInput!) {
+      updateFullCustomer(input: $input) {
+        user {
+          id
+          databaseId
+          firstName
+          lastName
+          displayName
+          email
+        }
+        message
+      }
+    }
+    ''';
+
+    try {
+      final MutationOptions options = MutationOptions(
+        document: gql(mutation),
+        variables: {
+          "input": {
+            "firstName": firstName,
+            "lastName": lastName,
+            "displayName": displayName,
+            "email": email,
+          },
+        },
+      );
+
+      final result = await _client.mutate(options);
+
+      if (result.hasException) {
+        throw Exception(result.exception.toString());
+      }
+
+      return result.data?['updateFullCustomer'];
+    } catch (e) {
+      print("Error in updateCustomer: $e");
+      return null;
+    }
+  }
+
+  Future<List<WcPaymentGateway>> getPaymentGateways() async {
+    const query = r'''
+    query {
+      wcPaymentGateways(available: true, adminOnly: true) {
+        id
+        title
+        enabled
+        settings { key value }
+      }
+    }
+  ''';
+
+    final QueryOptions options = QueryOptions(
+      document: gql(query),
+      fetchPolicy: FetchPolicy.networkOnly,
+    );
+
+    final result = await _client.query(options);
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    final data = result.data?['wcPaymentGateways'] as List?;
+    if (data == null) return [];
+
+    return data.map((json) => WcPaymentGateway.fromJson(json)).toList();
+  }
+
+  Future<String?> generateInvoice(int orderId) async {
+    const String query = r'''
+      query GenerateInvoice($orderId: Int!) {
+        generateInvoice(orderId: $orderId) {
+          url
+        }
+      }
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(document: gql(query), variables: {'orderId': orderId}),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['generateInvoice']?['url'];
+  }
+
+  Future<Map<String, dynamic>> verifyTransaction({
+    required String transactionId,
+    required String provider,
+  }) async {
+    const query = r'''
+      query VerifyTransaction($transactionId: String!, $provider: String!) {
+        verifyTransaction(transactionId: $transactionId, provider: $provider) {
+          id
+          status
+          amount
+          currency
+          raw
+          error
+        }
+      }
+    ''';
+
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(query),
+        variables: {"transactionId": transactionId, "provider": provider},
+        fetchPolicy: FetchPolicy.noCache,
+      ),
+    );
+
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+
+    return result.data?['verifyTransaction'] ?? {};
   }
 }
